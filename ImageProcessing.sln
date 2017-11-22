@@ -35,6 +35,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dist", "Dist", "{EA446581-A60C-44A2-BCEA-7E02D24CC189}"
+	ProjectSection(SolutionItems) = preProject
+		Dist\BitMiracle.LibJpeg.Portable.dll = Dist\BitMiracle.LibJpeg.Portable.dll
+		Dist\FontEditor.exe = Dist\FontEditor.exe
+		Dist\FontLibrary.dll = Dist\FontLibrary.dll
+		Dist\ImageProcessing.JPEGCodec.dll = Dist\ImageProcessing.JPEGCodec.dll
+		Dist\ImageProcessing.PNGCodec.dll = Dist\ImageProcessing.PNGCodec.dll
+		Dist\ImageProcessing.TGACodec.dll = Dist\ImageProcessing.TGACodec.dll
+		Dist\MoyskleyTech.Charting.dll = Dist\MoyskleyTech.Charting.dll
+		Dist\MoyskleyTech.ImageProcessing.dll = Dist\MoyskleyTech.ImageProcessing.dll
+		Dist\MoyskleyTech.ImageProcessing.Recognition.dll = Dist\MoyskleyTech.ImageProcessing.Recognition.dll
+		Dist\MoyskleyTech.ImageProcessing.SVG.dll = Dist\MoyskleyTech.ImageProcessing.SVG.dll
+		Dist\MoyskleyTech.ImageProcessing.WinForm.dll = Dist\MoyskleyTech.ImageProcessing.WinForm.dll
+		Dist\MoyskleyTech.ImageProcessing.WPF.dll = Dist\MoyskleyTech.ImageProcessing.WPF.dll
+		Dist\MoyskleyTech.Math.dll = Dist\MoyskleyTech.Math.dll
+		Dist\MoyskleyTech.Serialization.dll = Dist\MoyskleyTech.Serialization.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
