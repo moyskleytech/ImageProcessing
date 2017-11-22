@@ -1,0 +1,592 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FontLibrary</RootNamespace>
+    <AssemblyName>FontLibrary</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="WindowsFonts.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\Agency FB.bin" />
+    <EmbeddedResource Include="Fonts\Algerian.bin" />
+    <EmbeddedResource Include="Fonts\AR BERKLEY.bin" />
+    <EmbeddedResource Include="Fonts\AR BLANCA.bin" />
+    <EmbeddedResource Include="Fonts\AR BONNIE.bin" />
+    <EmbeddedResource Include="Fonts\AR CARTER.bin" />
+    <EmbeddedResource Include="Fonts\AR CENA.bin" />
+    <EmbeddedResource Include="Fonts\AR CHRISTY.bin" />
+    <EmbeddedResource Include="Fonts\AR DARLING.bin" />
+    <EmbeddedResource Include="Fonts\AR DECODE.bin" />
+    <EmbeddedResource Include="Fonts\AR DELANEY.bin" />
+    <EmbeddedResource Include="Fonts\AR DESTINE.bin" />
+    <EmbeddedResource Include="Fonts\AR ESSENCE.bin" />
+    <EmbeddedResource Include="Fonts\AR HERMANN.bin" />
+    <EmbeddedResource Include="Fonts\AR JULIAN.bin" />
+    <EmbeddedResource Include="Fonts\Arial Black.bin" />
+    <EmbeddedResource Include="Fonts\Arial Narrow.bin" />
+    <EmbeddedResource Include="Fonts\Arial Rounded MT Bold.bin" />
+    <EmbeddedResource Include="Fonts\Arial Unicode MS.bin" />
+    <EmbeddedResource Include="Fonts\Arial.bin" />
+    <EmbeddedResource Include="Fonts\Baskerville Old Face.bin" />
+    <EmbeddedResource Include="Fonts\Bauhaus 93.bin" />
+    <EmbeddedResource Include="Fonts\Bell MT.bin" />
+    <EmbeddedResource Include="Fonts\Berlin Sans FB Demi.bin" />
+    <EmbeddedResource Include="Fonts\Berlin Sans FB.bin" />
+    <EmbeddedResource Include="Fonts\Bernard MT Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Blackadder ITC.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT Black.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT Poster Compressed.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT.bin" />
+    <EmbeddedResource Include="Fonts\Book Antiqua.bin" />
+    <EmbeddedResource Include="Fonts\Bookman Old Style.bin" />
+    <EmbeddedResource Include="Fonts\Bookshelf Symbol 7.bin" />
+    <EmbeddedResource Include="Fonts\Bradley Hand ITC.bin" />
+    <EmbeddedResource Include="Fonts\Britannic Bold.bin" />
+    <EmbeddedResource Include="Fonts\Broadway.bin" />
+    <EmbeddedResource Include="Fonts\Brush Script MT.bin" />
+    <EmbeddedResource Include="Fonts\Buxton Sketch.bin" />
+    <EmbeddedResource Include="Fonts\Calibri Light.bin" />
+    <EmbeddedResource Include="Fonts\Calibri.bin" />
+    <EmbeddedResource Include="Fonts\Californian FB.bin" />
+    <EmbeddedResource Include="Fonts\Calisto MT.bin" />
+    <EmbeddedResource Include="Fonts\Cambria Math.bin" />
+    <EmbeddedResource Include="Fonts\Cambria.bin" />
+    <EmbeddedResource Include="Fonts\Candara.bin" />
+    <EmbeddedResource Include="Fonts\Castellar.bin" />
+    <EmbeddedResource Include="Fonts\Centaur.bin" />
+    <EmbeddedResource Include="Fonts\Century Gothic.bin" />
+    <EmbeddedResource Include="Fonts\Century Schoolbook.bin" />
+    <EmbeddedResource Include="Fonts\Century.bin" />
+    <EmbeddedResource Include="Fonts\Chiller.bin" />
+    <EmbeddedResource Include="Fonts\Colonna MT.bin" />
+    <EmbeddedResource Include="Fonts\Comic Sans MS.bin" />
+    <EmbeddedResource Include="Fonts\Consolas.bin" />
+    <EmbeddedResource Include="Fonts\Constantia.bin" />
+    <EmbeddedResource Include="Fonts\Cooper Black.bin" />
+    <EmbeddedResource Include="Fonts\Copperplate Gothic Bold.bin" />
+    <EmbeddedResource Include="Fonts\Copperplate Gothic Light.bin" />
+    <EmbeddedResource Include="Fonts\Corbel.bin" />
+    <EmbeddedResource Include="Fonts\Courier New.bin" />
+    <EmbeddedResource Include="Fonts\Curlz MT.bin" />
+    <EmbeddedResource Include="Fonts\DengXian.bin" />
+    <EmbeddedResource Include="Fonts\Ebrima.bin" />
+    <EmbeddedResource Include="Fonts\Edwardian Script ITC.bin" />
+    <EmbeddedResource Include="Fonts\Elephant.bin" />
+    <EmbeddedResource Include="Fonts\Engravers MT.bin" />
+    <EmbeddedResource Include="Fonts\Eras Bold ITC.bin" />
+    <EmbeddedResource Include="Fonts\Eras Demi ITC.bin" />
+    <EmbeddedResource Include="Fonts\Eras Light ITC.bin" />
+    <EmbeddedResource Include="Fonts\Eras Medium ITC.bin" />
+    <EmbeddedResource Include="Fonts\Felix Titling.bin" />
+    <EmbeddedResource Include="Fonts\Footlight MT Light.bin" />
+    <EmbeddedResource Include="Fonts\Forte.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Book.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Demi Cond.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Demi.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Heavy.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Medium Cond.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Medium.bin" />
+    <EmbeddedResource Include="Fonts\Freestyle Script.bin" />
+    <EmbeddedResource Include="Fonts\French Script MT.bin" />
+    <EmbeddedResource Include="Fonts\Gabriola.bin" />
+    <EmbeddedResource Include="Fonts\Gadugi.bin" />
+    <EmbeddedResource Include="Fonts\Garamond.bin" />
+    <EmbeddedResource Include="Fonts\Georgia.bin" />
+    <EmbeddedResource Include="Fonts\Gigi.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans MT Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans MT Ext Condensed Bold.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans MT.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans Ultra Bold Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans Ultra Bold.bin" />
+    <EmbeddedResource Include="Fonts\Gloucester MT Extra Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Goudy Old Style.bin" />
+    <EmbeddedResource Include="Fonts\Goudy Stout.bin" />
+    <EmbeddedResource Include="Fonts\Haettenschweiler.bin" />
+    <EmbeddedResource Include="Fonts\Harlow Solid Italic.bin" />
+    <EmbeddedResource Include="Fonts\Harrington.bin" />
+    <EmbeddedResource Include="Fonts\High Tower Text.bin" />
+    <EmbeddedResource Include="Fonts\HP Simplified Light.bin" />
+    <EmbeddedResource Include="Fonts\HP Simplified.bin" />
+    <EmbeddedResource Include="Fonts\Impact.bin" />
+    <EmbeddedResource Include="Fonts\Imprint MT Shadow.bin" />
+    <EmbeddedResource Include="Fonts\Informal Roman.bin" />
+    <EmbeddedResource Include="Fonts\Javanese Text.bin" />
+    <EmbeddedResource Include="Fonts\Jokerman.bin" />
+    <EmbeddedResource Include="Fonts\Juice ITC.bin" />
+    <EmbeddedResource Include="Fonts\Kristen ITC.bin" />
+    <EmbeddedResource Include="Fonts\Kunstler Script.bin" />
+    <EmbeddedResource Include="Fonts\Leelawadee UI Semilight.bin" />
+    <EmbeddedResource Include="Fonts\Leelawadee UI.bin" />
+    <EmbeddedResource Include="Fonts\Leelawadee.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Bright.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Calligraphy.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Console.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Fax.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Handwriting.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Sans Typewriter.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Sans Unicode.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Sans.bin" />
+    <EmbeddedResource Include="Fonts\Magneto.bin" />
+    <EmbeddedResource Include="Fonts\Maiandra GD.bin" />
+    <EmbeddedResource Include="Fonts\Malgun Gothic Semilight.bin" />
+    <EmbeddedResource Include="Fonts\Malgun Gothic.bin" />
+    <EmbeddedResource Include="Fonts\Map Symbols.bin" />
+    <EmbeddedResource Include="Fonts\Marlett.bin" />
+    <EmbeddedResource Include="Fonts\Matura MT Script Capitals.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Himalaya.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei Light.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei UI Light.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei UI.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft MHei.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft NeoGothic.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft New Tai Lue.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft PhagsPa.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Sans Serif.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Tai Le.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Uighur.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei Light.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei UI Light.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei UI.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Yi Baiti.bin" />
+    <EmbeddedResource Include="Fonts\MingLiU-ExtB.bin" />
+    <EmbeddedResource Include="Fonts\MingLiU_HKSCS-ExtB.bin" />
+    <EmbeddedResource Include="Fonts\Mistral.bin" />
+    <EmbeddedResource Include="Fonts\Modern No. 20.bin" />
+    <EmbeddedResource Include="Fonts\Mongolian Baiti.bin" />
+    <EmbeddedResource Include="Fonts\Monotype Corsiva.bin" />
+    <EmbeddedResource Include="Fonts\MS Gothic.bin" />
+    <EmbeddedResource Include="Fonts\MS Outlook.bin" />
+    <EmbeddedResource Include="Fonts\MS PGothic.bin" />
+    <EmbeddedResource Include="Fonts\MS Reference Sans Serif.bin" />
+    <EmbeddedResource Include="Fonts\MS Reference Specialty.bin" />
+    <EmbeddedResource Include="Fonts\MS UI Gothic.bin" />
+    <EmbeddedResource Include="Fonts\MT Extra.bin" />
+    <EmbeddedResource Include="Fonts\MV Boli.bin" />
+    <EmbeddedResource Include="Fonts\Myanmar Text.bin" />
+    <EmbeddedResource Include="Fonts\Niagara Engraved.bin" />
+    <EmbeddedResource Include="Fonts\Niagara Solid.bin" />
+    <EmbeddedResource Include="Fonts\Nirmala UI Semilight.bin" />
+    <EmbeddedResource Include="Fonts\Nirmala UI.bin" />
+    <EmbeddedResource Include="Fonts\NSimSun.bin" />
+    <EmbeddedResource Include="Fonts\OCR A Extended.bin" />
+    <EmbeddedResource Include="Fonts\Old English Text MT.bin" />
+    <EmbeddedResource Include="Fonts\Onyx.bin" />
+    <EmbeddedResource Include="Fonts\Palace Script MT.bin" />
+    <EmbeddedResource Include="Fonts\Palatino Linotype.bin" />
+    <EmbeddedResource Include="Fonts\Papyrus.bin" />
+    <EmbeddedResource Include="Fonts\Parchment.bin" />
+    <EmbeddedResource Include="Fonts\Perpetua Titling MT.bin" />
+    <EmbeddedResource Include="Fonts\Perpetua.bin" />
+    <EmbeddedResource Include="Fonts\Playbill.bin" />
+    <EmbeddedResource Include="Fonts\PMingLiU-ExtB.bin" />
+    <EmbeddedResource Include="Fonts\Poor Richard.bin" />
+    <EmbeddedResource Include="Fonts\Pristina.bin" />
+    <EmbeddedResource Include="Fonts\Rage Italic.bin" />
+    <EmbeddedResource Include="Fonts\Ravie.bin" />
+    <EmbeddedResource Include="Fonts\Rockwell Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Rockwell Extra Bold.bin" />
+    <EmbeddedResource Include="Fonts\Rockwell.bin" />
+    <EmbeddedResource Include="Fonts\Script MT Bold.bin" />
+    <EmbeddedResource Include="Fonts\Segoe Marker.bin" />
+    <EmbeddedResource Include="Fonts\Segoe MDL2 Assets.bin" />
+    <EmbeddedResource Include="Fonts\Segoe Print.bin" />
+    <EmbeddedResource Include="Fonts\Segoe Script.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Black.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Emoji.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Historic.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Light.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Semibold.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Semilight.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Symbol.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP Black.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP Light.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP Semibold.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP SemiLight.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP.bin" />
+    <EmbeddedResource Include="Fonts\Showcard Gothic.bin" />
+    <EmbeddedResource Include="Fonts\SimSun-ExtB.bin" />
+    <EmbeddedResource Include="Fonts\SimSun.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Banner.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Display.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Heading.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Small.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Subheading.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Text.bin" />
+    <EmbeddedResource Include="Fonts\SketchFlow Print.bin" />
+    <EmbeddedResource Include="Fonts\Snap ITC.bin" />
+    <EmbeddedResource Include="Fonts\Stencil.bin" />
+    <EmbeddedResource Include="Fonts\Sylfaen.bin" />
+    <EmbeddedResource Include="Fonts\Symbol.bin" />
+    <EmbeddedResource Include="Fonts\Tahoma.bin" />
+    <EmbeddedResource Include="Fonts\Tempus Sans ITC.bin" />
+    <EmbeddedResource Include="Fonts\Times New Roman.bin" />
+    <EmbeddedResource Include="Fonts\Trebuchet MS.bin" />
+    <EmbeddedResource Include="Fonts\Tw Cen MT Condensed Extra Bold.bin" />
+    <EmbeddedResource Include="Fonts\Tw Cen MT Condensed.bin" />
+    <EmbeddedResource Include="Fonts\Tw Cen MT.bin" />
+    <EmbeddedResource Include="Fonts\Varela Round.bin" />
+    <EmbeddedResource Include="Fonts\Varela.bin" />
+    <EmbeddedResource Include="Fonts\Verdana.bin" />
+    <EmbeddedResource Include="Fonts\Viner Hand ITC.bin" />
+    <EmbeddedResource Include="Fonts\Vivaldi.bin" />
+    <EmbeddedResource Include="Fonts\Vladimir Script.bin" />
+    <EmbeddedResource Include="Fonts\Webdings.bin" />
+    <EmbeddedResource Include="Fonts\Wide Latin.bin" />
+    <EmbeddedResource Include="Fonts\Wingdings 2.bin" />
+    <EmbeddedResource Include="Fonts\Wingdings 3.bin" />
+    <EmbeddedResource Include="Fonts\Wingdings.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic Light.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic Medium.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI Light.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI Semibold.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI Semilight.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj">
+      <Project>{2c8478d7-77cc-4bc2-8909-cf0d2ecf2e0a}</Project>
+      <Name>MoyskleyTech.ImageProcessing</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\Agency FB_2x.bin" />
+    <EmbeddedResource Include="Fonts\Algerian_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR BERKLEY_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR BLANCA_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR BONNIE_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR CARTER_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR CENA_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR CHRISTY_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR DARLING_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR DECODE_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR DELANEY_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR DESTINE_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR ESSENCE_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR HERMANN_2x.bin" />
+    <EmbeddedResource Include="Fonts\AR JULIAN_2x.bin" />
+    <EmbeddedResource Include="Fonts\Arial Black_2x.bin" />
+    <EmbeddedResource Include="Fonts\Arial Narrow_2x.bin" />
+    <EmbeddedResource Include="Fonts\Arial Rounded MT Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Arial Unicode MS_2x.bin" />
+    <EmbeddedResource Include="Fonts\Arial_2x.bin" />
+    <EmbeddedResource Include="Fonts\Baskerville Old Face_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bauhaus 93_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bell MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Berlin Sans FB Demi_2x.bin" />
+    <EmbeddedResource Include="Fonts\Berlin Sans FB_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bernard MT Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Blackadder ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT Black_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT Poster Compressed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bodoni MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Book Antiqua_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bookman Old Style_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bookshelf Symbol 7_2x.bin" />
+    <EmbeddedResource Include="Fonts\Bradley Hand ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Britannic Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Broadway_2x.bin" />
+    <EmbeddedResource Include="Fonts\Brush Script MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Buxton Sketch_2x.bin" />
+    <EmbeddedResource Include="Fonts\Calibri Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Calibri_2x.bin" />
+    <EmbeddedResource Include="Fonts\Californian FB_2x.bin" />
+    <EmbeddedResource Include="Fonts\Calisto MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Cambria Math_2x.bin" />
+    <EmbeddedResource Include="Fonts\Cambria_2x.bin" />
+    <EmbeddedResource Include="Fonts\Candara_2x.bin" />
+    <EmbeddedResource Include="Fonts\Castellar_2x.bin" />
+    <EmbeddedResource Include="Fonts\Centaur_2x.bin" />
+    <EmbeddedResource Include="Fonts\Century Gothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\Century Schoolbook_2x.bin" />
+    <EmbeddedResource Include="Fonts\Century_2x.bin" />
+    <EmbeddedResource Include="Fonts\Chiller_2x.bin" />
+    <EmbeddedResource Include="Fonts\Colonna MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Comic Sans MS_2x.bin" />
+    <EmbeddedResource Include="Fonts\Consolas_2x.bin" />
+    <EmbeddedResource Include="Fonts\Constantia_2x.bin" />
+    <EmbeddedResource Include="Fonts\Cooper Black_2x.bin" />
+    <EmbeddedResource Include="Fonts\Copperplate Gothic Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Copperplate Gothic Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Corbel_2x.bin" />
+    <EmbeddedResource Include="Fonts\Courier New_2x.bin" />
+    <EmbeddedResource Include="Fonts\Curlz MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\DengXian_2x.bin" />
+    <EmbeddedResource Include="Fonts\Ebrima_2x.bin" />
+    <EmbeddedResource Include="Fonts\Edwardian Script ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Elephant_2x.bin" />
+    <EmbeddedResource Include="Fonts\Engravers MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Eras Bold ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Eras Demi ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Eras Light ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Eras Medium ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Felix Titling_2x.bin" />
+    <EmbeddedResource Include="Fonts\Footlight MT Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Forte_2x.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Book_2x.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Demi Cond_2x.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Demi_2x.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Heavy_2x.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Medium Cond_2x.bin" />
+    <EmbeddedResource Include="Fonts\Franklin Gothic Medium_2x.bin" />
+    <EmbeddedResource Include="Fonts\Freestyle Script_2x.bin" />
+    <EmbeddedResource Include="Fonts\French Script MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gabriola_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gadugi_2x.bin" />
+    <EmbeddedResource Include="Fonts\Garamond_2x.bin" />
+    <EmbeddedResource Include="Fonts\Georgia_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gigi_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans MT Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans MT Ext Condensed Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans Ultra Bold Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gill Sans Ultra Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Gloucester MT Extra Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Goudy Old Style_2x.bin" />
+    <EmbeddedResource Include="Fonts\Goudy Stout_2x.bin" />
+    <EmbeddedResource Include="Fonts\Haettenschweiler_2x.bin" />
+    <EmbeddedResource Include="Fonts\Harlow Solid Italic_2x.bin" />
+    <EmbeddedResource Include="Fonts\Harrington_2x.bin" />
+    <EmbeddedResource Include="Fonts\High Tower Text_2x.bin" />
+    <EmbeddedResource Include="Fonts\HP Simplified Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\HP Simplified_2x.bin" />
+    <EmbeddedResource Include="Fonts\Impact_2x.bin" />
+    <EmbeddedResource Include="Fonts\Imprint MT Shadow_2x.bin" />
+    <EmbeddedResource Include="Fonts\Informal Roman_2x.bin" />
+    <EmbeddedResource Include="Fonts\Javanese Text_2x.bin" />
+    <EmbeddedResource Include="Fonts\Jokerman_2x.bin" />
+    <EmbeddedResource Include="Fonts\Juice ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Kristen ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Kunstler Script_2x.bin" />
+    <EmbeddedResource Include="Fonts\Leelawadee UI Semilight_2x.bin" />
+    <EmbeddedResource Include="Fonts\Leelawadee UI_2x.bin" />
+    <EmbeddedResource Include="Fonts\Leelawadee_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Bright_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Calligraphy_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Console_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Fax_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Handwriting_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Sans Typewriter_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Sans Unicode_2x.bin" />
+    <EmbeddedResource Include="Fonts\Lucida Sans_2x.bin" />
+    <EmbeddedResource Include="Fonts\Magneto_2x.bin" />
+    <EmbeddedResource Include="Fonts\Maiandra GD_2x.bin" />
+    <EmbeddedResource Include="Fonts\Malgun Gothic Semilight_2x.bin" />
+    <EmbeddedResource Include="Fonts\Malgun Gothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\Map Symbols_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Arrows.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Arrows_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Cartographic.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Cartographic_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Dispersed Groups.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Dispersed Groups_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo ER Hazmat.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo ER Hazmat_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo ER Incident Centers.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo ER Incident Centers_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Gas.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Gas_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Miscellaneous.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Miscellaneous_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Oil&amp;Gas.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Oil&amp;Gas_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Points of Interest.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Points of Interest_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Real Estate.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Real Estate_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Shields.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Shields_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo StreetPro.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo StreetPro_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Symbols.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Symbols_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Transportation.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Transportation_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Water.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Water_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Weather.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo Weather_2x.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo World POI.bin" />
+    <EmbeddedResource Include="Fonts\MapInfo World POI_2x.bin" />
+    <EmbeddedResource Include="Fonts\Marlett_2x.bin" />
+    <EmbeddedResource Include="Fonts\Matura MT Script Capitals_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Himalaya_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei UI Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei UI_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft JhengHei_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft MHei_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft NeoGothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft New Tai Lue_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft PhagsPa_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Sans Serif_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Tai Le_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Uighur_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei UI Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei UI_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft YaHei_2x.bin" />
+    <EmbeddedResource Include="Fonts\Microsoft Yi Baiti_2x.bin" />
+    <EmbeddedResource Include="Fonts\MingLiU-ExtB_2x.bin" />
+    <EmbeddedResource Include="Fonts\MingLiU_HKSCS-ExtB_2x.bin" />
+    <EmbeddedResource Include="Fonts\Mistral_2x.bin" />
+    <EmbeddedResource Include="Fonts\Modern No. 20_2x.bin" />
+    <EmbeddedResource Include="Fonts\Mongolian Baiti_2x.bin" />
+    <EmbeddedResource Include="Fonts\Monotype Corsiva_2x.bin" />
+    <EmbeddedResource Include="Fonts\MS Gothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\MS Outlook_2x.bin" />
+    <EmbeddedResource Include="Fonts\MS PGothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\MS Reference Sans Serif_2x.bin" />
+    <EmbeddedResource Include="Fonts\MS Reference Specialty_2x.bin" />
+    <EmbeddedResource Include="Fonts\MS UI Gothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\MT Extra_2x.bin" />
+    <EmbeddedResource Include="Fonts\MV Boli_2x.bin" />
+    <EmbeddedResource Include="Fonts\Myanmar Text_2x.bin" />
+    <EmbeddedResource Include="Fonts\Niagara Engraved_2x.bin" />
+    <EmbeddedResource Include="Fonts\Niagara Solid_2x.bin" />
+    <EmbeddedResource Include="Fonts\Nirmala UI Semilight_2x.bin" />
+    <EmbeddedResource Include="Fonts\Nirmala UI_2x.bin" />
+    <EmbeddedResource Include="Fonts\NSimSun_2x.bin" />
+    <EmbeddedResource Include="Fonts\OCR A Extended_2x.bin" />
+    <EmbeddedResource Include="Fonts\Old English Text MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Onyx_2x.bin" />
+    <EmbeddedResource Include="Fonts\Palace Script MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Palatino Linotype_2x.bin" />
+    <EmbeddedResource Include="Fonts\Papyrus_2x.bin" />
+    <EmbeddedResource Include="Fonts\Parchment_2x.bin" />
+    <EmbeddedResource Include="Fonts\Perpetua Titling MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Perpetua_2x.bin" />
+    <EmbeddedResource Include="Fonts\Playbill_2x.bin" />
+    <EmbeddedResource Include="Fonts\PMingLiU-ExtB_2x.bin" />
+    <EmbeddedResource Include="Fonts\Poor Richard_2x.bin" />
+    <EmbeddedResource Include="Fonts\Pristina_2x.bin" />
+    <EmbeddedResource Include="Fonts\Rage Italic_2x.bin" />
+    <EmbeddedResource Include="Fonts\Ravie_2x.bin" />
+    <EmbeddedResource Include="Fonts\Rockwell Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Rockwell Extra Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Rockwell_2x.bin" />
+    <EmbeddedResource Include="Fonts\Script MT Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe Marker_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe MDL2 Assets_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe Print_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe Script_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Black_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Emoji_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Historic_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Semibold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Semilight_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI Symbol_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe UI_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP Black_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP Semibold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP SemiLight_2x.bin" />
+    <EmbeddedResource Include="Fonts\Segoe WP_2x.bin" />
+    <EmbeddedResource Include="Fonts\Showcard Gothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\SimSun-ExtB_2x.bin" />
+    <EmbeddedResource Include="Fonts\SimSun_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Banner_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Display_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Heading_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Small_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Subheading_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sitka Text_2x.bin" />
+    <EmbeddedResource Include="Fonts\SketchFlow Print_2x.bin" />
+    <EmbeddedResource Include="Fonts\Snap ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Stencil_2x.bin" />
+    <EmbeddedResource Include="Fonts\Sylfaen_2x.bin" />
+    <EmbeddedResource Include="Fonts\Symbol_2x.bin" />
+    <EmbeddedResource Include="Fonts\Tahoma_2x.bin" />
+    <EmbeddedResource Include="Fonts\Tempus Sans ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Times New Roman_2x.bin" />
+    <EmbeddedResource Include="Fonts\Trebuchet MS_2x.bin" />
+    <EmbeddedResource Include="Fonts\Tw Cen MT Condensed Extra Bold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Tw Cen MT Condensed_2x.bin" />
+    <EmbeddedResource Include="Fonts\Tw Cen MT_2x.bin" />
+    <EmbeddedResource Include="Fonts\Varela Round_2x.bin" />
+    <EmbeddedResource Include="Fonts\Varela_2x.bin" />
+    <EmbeddedResource Include="Fonts\Verdana_2x.bin" />
+    <EmbeddedResource Include="Fonts\Viner Hand ITC_2x.bin" />
+    <EmbeddedResource Include="Fonts\Vivaldi_2x.bin" />
+    <EmbeddedResource Include="Fonts\Vladimir Script_2x.bin" />
+    <EmbeddedResource Include="Fonts\Webdings_2x.bin" />
+    <EmbeddedResource Include="Fonts\Wide Latin_2x.bin" />
+    <EmbeddedResource Include="Fonts\Wingdings 2_2x.bin" />
+    <EmbeddedResource Include="Fonts\Wingdings 3_2x.bin" />
+    <EmbeddedResource Include="Fonts\Wingdings_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic Medium_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI Light_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI Semibold_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI Semilight_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic UI_2x.bin" />
+    <EmbeddedResource Include="Fonts\Yu Gothic_2x.bin" />
+    <None Include="project.json" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Dist\$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
