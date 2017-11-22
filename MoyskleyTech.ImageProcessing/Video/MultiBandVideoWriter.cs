@@ -12,7 +12,6 @@ namespace MoyskleyTech.ImageProcessing.Video
     {
         private Stream s;
         private OneBandImage[] bands;
-        int ct;
         public byte Quality { get; set; }
         public MultiBandVideoWriter(Stream s,byte quality=0)
         {

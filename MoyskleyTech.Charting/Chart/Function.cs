@@ -157,7 +157,7 @@ namespace MoyskleyTech.Charting
                     x += DX;
                 }
             }
-            catch ( OverflowException o ) { }
+            catch ( OverflowException ) { }
             g.ScaleTransform(1 , -1);
             g.TranslateTransform(0 , -height);
             g.ResetClip();

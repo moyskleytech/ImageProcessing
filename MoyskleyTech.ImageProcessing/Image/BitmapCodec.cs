@@ -71,7 +71,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         BitmapPalette2bpp palette2bpp;
         BitmapPalette1bpp palette1bpp;
         int index;
-        bool error=false;
         private byte Read()
         {
             index++;

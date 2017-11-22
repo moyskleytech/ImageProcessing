@@ -40,10 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\MoyskleyTech.Data\MoyskleyTech.Data.csproj">
-      <Project>{567eff4d-72cc-4849-b70c-50a1699882ff}</Project>
-      <Name>MoyskleyTech.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj">
       <Project>{2c8478d7-77cc-4bc2-8909-cf0d2ecf2e0a}</Project>
       <Name>MoyskleyTech.ImageProcessing</Name>
