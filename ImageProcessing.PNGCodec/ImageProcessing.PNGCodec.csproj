@@ -137,10 +137,6 @@
       <Project>{db1e3f2b-b6fa-425a-a8c2-2a994303f05d}</Project>
       <Name>MoyskleyTech.Math</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SharpZipLib.Portable-master\src\ICSharpCode.SharpZib.Portable.csproj">
-      <Project>{74ff9e31-751b-4aa3-b441-175e3c17e037}</Project>
-      <Name>ICSharpCode.SharpZib.Portable</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <PropertyGroup>

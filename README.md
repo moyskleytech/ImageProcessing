@@ -5,4 +5,4 @@ The library is built to allow you to use System.Drawing style classes in .NetSta
 
 To use any of the Codecs, simply write ImageProcessing.CodecName.Register() for the BitmapFactory to understand the codec while decoding.
 
-The dist Folder contains Releases
+The /dist Folder contains Releases
