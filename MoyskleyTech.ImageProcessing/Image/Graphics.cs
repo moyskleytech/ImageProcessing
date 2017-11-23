@@ -117,7 +117,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Get the transformation matrix for editing purpose
         /// </summary>
-        public Matrix TransformationMatrix { get { return transformationMatrix; } }
+        public Matrix TransformationMatrix
+        {
+            get { return transformationMatrix; }
+            set
+            {
+                if ( value == null )
+                    ResetTransform();
+                else
+                    for ( var i = 0; i < transformationMatrix.Lignes; i++ )
+                        for ( var j = 0; j < transformationMatrix.Colonnes; j++ )
+                            transformationMatrix[i , j] = value[i , j];
+            }
+        }
 
         /// <summary>
         /// Draw a rectangle of the specified color
@@ -514,7 +526,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="source">Source</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public virtual void DrawImage(Bitmap source , Rectangle dest,Rectangle src)
+        public virtual void DrawImage(Bitmap source , Rectangle dest , Rectangle src)
         {
             var tmp = source.Crop(src);
             DrawImage(tmp , dest);

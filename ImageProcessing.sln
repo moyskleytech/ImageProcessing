@@ -52,6 +52,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dist", "Dist", "{EA446581-A
 		Dist\MoyskleyTech.Serialization.dll = Dist\MoyskleyTech.Serialization.dll
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{35C1F50A-062F-4563-BFC8-6508F1E3C9E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EllipseDemo", "EllipseDemo\EllipseDemo.csproj", "{69342FD2-AE78-4748-B64B-6DE3B9B99999}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -272,12 +276,29 @@ Global
 		{90227F02-4CA5-436D-9691-78518DCEC4DB}.Release|x64.Build.0 = Release|Any CPU
 		{90227F02-4CA5-436D-9691-78518DCEC4DB}.Release|x86.ActiveCfg = Release|Any CPU
 		{90227F02-4CA5-436D-9691-78518DCEC4DB}.Release|x86.Build.0 = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|x64.Build.0 = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Debug|x86.Build.0 = Debug|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|x64.ActiveCfg = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|x64.Build.0 = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|x86.ActiveCfg = Release|Any CPU
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EA446581-A60C-44A2-BCEA-7E02D24CC189} = {BD8653E6-4656-4851-898A-FA7EE0430BD3}
+		{69342FD2-AE78-4748-B64B-6DE3B9B99999} = {35C1F50A-062F-4563-BFC8-6508F1E3C9E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {602B0D55-4ABB-4B5D-B1FA-E537312CD11C}

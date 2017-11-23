@@ -74,10 +74,10 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     }
 
                     //total rgba values for this pixel
-                    bt = Math.Sqrt(( xb * xb ) + ( yb * yb ));
-                    gt = Math.Sqrt(( xg * xg ) + ( yg * yg ));
-                    rt = Math.Sqrt(( xr * xr ) + ( yr * yr ));
-                    at = Math.Sqrt(( xa * xa ) + ( ya * ya ));
+                    bt = System.Math.Sqrt(( xb * xb ) + ( yb * yb ));
+                    gt = System.Math.Sqrt(( xg * xg ) + ( yg * yg ));
+                    rt = System.Math.Sqrt(( xr * xr ) + ( yr * yr ));
+                    at = System.Math.Sqrt(( xa * xa ) + ( ya * ya ));
                     //set limits, bytes can hold values from 0 up to 255;
                     if ( bt > 255 ) bt = 255;
                     else if ( bt < 0 ) bt = 0;

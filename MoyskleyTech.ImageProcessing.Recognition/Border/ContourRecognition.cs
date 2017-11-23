@@ -30,6 +30,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                                 visited.Add(pt);
                             });
                             contour.ImageArea = new ImageProxy(bmp , contour.Area);
+                            contour.CleanPoints();
                             contours.Add(contour);
                         }
                     }
@@ -49,10 +50,10 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
         public void CleanPoints()
         {
             var rct= Area;
-            bool[,] tmp = new bool[rct.Width+1,rct.Height+1];
+            bool[,] tmp = new bool[rct.Width+2,rct.Height+2];
             foreach ( var pt in Points )
             {
-                tmp[pt.X + 1 , pt.Y + 1] = true;
+                tmp[pt.X + 1 - rct.Left , pt.Y + 1 - rct.Top] = true;
             }
             Points.Clear();
             for ( var x = 0; x < rct.Width; x++ )
@@ -64,7 +65,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     if ( tmp[tx , ty] )
                     {
                         if ( !( tmp[tx - 1 , ty] && tmp[tx + 1 , ty] && tmp[tx , ty - 1] && tmp[tx , ty + 1] ) )
-                            Points.Add(new Point(x , y));
+                            Points.Add(new Point(x + rct.Left , y+rct.Top));
                     }
                 }
             }

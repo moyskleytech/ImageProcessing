@@ -254,5 +254,25 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return "Pixel["+R+","+G+","+B+"]";
         }
+
+
+        public static bool operator ==(Pixel a , Pixel b)
+        {
+            return a.ToArgb() == b.ToArgb();
+        }
+        public static bool operator !=(Pixel a , Pixel b)
+        {
+            return a.ToArgb() != b.ToArgb();
+        }
+        public override bool Equals(object obj)
+        {
+            if ( obj is Pixel p )
+                return p == this;
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return ToArgb().GetHashCode();
+        }
     }
 }
