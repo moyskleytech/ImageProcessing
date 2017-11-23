@@ -1001,6 +1001,17 @@ namespace MoyskleyTech.ImageProcessing.Image
             cropped.Dispose();
             return stats;
         }
+
+        public void ApplyFilter(Func<Pixel , Point , Pixel> func)
+        {
+            for ( var y = 0; y < height; y++ )
+                for ( var x = 0; x < width; x++ )
+                    this[x , y] = func(this[x , y] , new Point(x , y));
+        }
+        public ImageProxy Proxy(Rectangle rectangle)
+        {
+            return new ImageProxy(this , rectangle);
+        }
     }
 
 }

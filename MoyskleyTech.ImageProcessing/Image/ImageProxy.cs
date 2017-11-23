@@ -44,5 +44,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return ip.ToBitmap();
         }
+        public void ApplyFilter(Func<Pixel , Point , Pixel> func)
+        {
+            for ( var y = 0; y < Height; y++ )
+                for ( var x = 0; x < Width; x++ )
+                    this[x , y] = func(this[x , y] , new Point(x , y));
+        }
     }
 }
