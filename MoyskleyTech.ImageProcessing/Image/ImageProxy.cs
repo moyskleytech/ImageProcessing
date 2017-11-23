@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// Main use is ROI
+    /// </summary>
     public class ImageProxy
     {
         private Bitmap img;
@@ -15,7 +18,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             this.img = bitmap;
             this.rct = rectangle;
         }
-
+        public int Left => rct.Left;
+        public int Top => rct.Top;
+        public int Width => rct.Width;
+        public int Height => rct.Height;
+        public Bitmap ToBitmap()
+        {
+            return img.Crop(rct);
+        }
         public Pixel this[int x , int y]
         {
             get
@@ -30,6 +40,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                     img[x + rct.X , y + rct.Y] = value;
             }
         }
-
+        public static implicit operator Bitmap(ImageProxy ip)
+        {
+            return ip.ToBitmap();
+        }
     }
 }
