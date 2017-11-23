@@ -18,6 +18,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             bmp.CopyFromARGB(this.data);
             return bmp;
         }
+        public Bitmap Resize(int width , int height , ScalingMode mode = ScalingMode.Auto)
+        {
+            return Rescale(width , height , mode);
+        }
         public Bitmap Rescale(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             if ( width <= 0 )
@@ -25,7 +29,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( height <= 0 )
                 throw new ArgumentException(nameof(height) + " cannot be less than 1");
             Bitmap destination = new Bitmap(width,height);
-           
+
             if ( mode == ScalingMode.Auto )
             {
                 if ( width > this.width )
@@ -81,9 +85,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                     int sey = (int)((y+1)*scaleY);
                     var dsex = ((x+1)*scaleX);
                     var dsey = ((y+1)*scaleY);
-                    if ( interpolate && ( dsex-dsx<1 || dsey -dsy<1 ) )
+                    if ( interpolate && ( dsex - dsx < 1 || dsey - dsy < 1 ) )
                     {
-                       
+
                         var dx = dsx-sx;
                         var dy = dsy-sy;
                         var dx2 = 1-dx;
@@ -224,5 +228,25 @@ namespace MoyskleyTech.ImageProcessing.Image
                 destination[ex , ey] = this[sx , sy];
             }
         }
+        public Bitmap GetSubBitmap(Rectangle location)
+        {
+            Bitmap bmp = new Bitmap(location.Width,location.Height);
+            for ( int x1 = 0, x = location.Left; x <= location.Right && x < width; x++, x1++ )
+            {
+                for ( int y1 = 0, y = location.Top; y <= location.Bottom && x < height; y++, y1++ )
+                {
+                    bmp[x1 , y1] = this[x , y];
+                }
+            }
+            return bmp;
+        }
+        public Bitmap GetBitmap(int x , int y , int w , int h)
+        {
+            return GetSubBitmap(new Rectangle(x , y , w , h));
+        }
+        public Bitmap Crop(Rectangle rectangle)
+        { return GetSubBitmap(rectangle); }
+        public Bitmap Clone(Rectangle rectangle)
+        { return GetSubBitmap(rectangle); }
     }
 }

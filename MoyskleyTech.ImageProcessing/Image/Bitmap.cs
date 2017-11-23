@@ -990,6 +990,17 @@ namespace MoyskleyTech.ImageProcessing.Image
                 o++->B = *inp++;
             }
         }
+        public ImageStatistics GetStatistics()
+        {
+            return new ImageStatistics(this);
+        }
+        public ImageStatistics GetStatistics(Rectangle rectangle)
+        {
+            var cropped = this.Crop(rectangle);
+            var stats= new ImageStatistics(cropped);
+            cropped.Dispose();
+            return stats;
+        }
     }
 
 }

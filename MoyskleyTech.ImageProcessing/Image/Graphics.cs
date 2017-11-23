@@ -497,6 +497,30 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
         }
         /// <summary>
+        /// Draw image in bitmap
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public virtual void DrawImage(Bitmap source , Rectangle dest)
+        {
+            var tmp = source.Resize(dest.Width , dest.Height, ScalingMode.AverageInterpolate);
+            DrawImage(tmp , dest.X , dest.Y);
+            tmp.Dispose();
+        }
+        /// <summary>
+        /// Draw image in bitmap
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public virtual void DrawImage(Bitmap source , Rectangle dest,Rectangle src)
+        {
+            var tmp = source.Crop(src);
+            DrawImage(tmp , dest);
+            tmp.Dispose();
+        }
+        /// <summary>
         /// Draw a line
         /// </summary>
         /// <param name="p">The color</param>
