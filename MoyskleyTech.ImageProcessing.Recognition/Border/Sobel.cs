@@ -10,16 +10,13 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
     public class Sobel
     {
         //Thanks to Epoch abuse https://epochabuse.com/csharp-sobel/
-
-        private static Bitmap ConvolutionFilter(Bitmap sourceImage , double[ , ] xkernel , double[ , ] ykernel , double factor = 1 , int bias = 0)
+        public static Bitmap ConvolutionFilter(Bitmap sourceImage , double[ , ] xkernel , double[ , ] ykernel , double factor = 1 , int bias = 0)
         {
             Bitmap result = sourceImage.Clone();
             //Image dimensions stored in variables for convenience
             int width = sourceImage.Width;
             int height = sourceImage.Height;
-
-            //Lock source image bits into system memory
-
+            
             //Get the total number of bytes in your image - 32 bytes per pixel x image width x image height -> for 32bpp images
             int bytes = sourceImage.Width*sourceImage.Height;
 
@@ -88,17 +85,42 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     if ( at > 255 ) at = 255;
                     else if ( at < 0 ) at = 0;
 
-                    var px = result[byteOffset];
+                    var px = new Pixel();
                     px.B = ( byte ) ( bt );
                     px.G = ( byte ) ( gt );
                     px.R = ( byte ) ( rt );
-                    px.A = ( byte ) ( at );
+                    px.A = 255;// ( byte ) ( at );
                     result[byteOffset] = px;
                 }
             }
 
             return result;
         }
+        public static double[ , ] xSobel
+        {
+            get
+            {
+                return new double[ , ]
+                {
+                    { -1, 0, 1 },
+                    { -2, 0, 2 },
+                    { -1, 0, 1 }
+                };
+            }
+        }
 
+        //Sobel operator kernel for vertical pixel changes
+        public static double[ , ] ySobel
+        {
+            get
+            {
+                return new double[ , ]
+                {
+                    {  1,  2,  1 },
+                    {  0,  0,  0 },
+                    { -1, -2, -1 }
+                };
+            }
+        }
     }
 }

@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Image\BaseFonts.cs" />
+    <Compile Include="Image\Filters\Filters.cs" />
     <Compile Include="Image\ImageProxy.cs" />
     <Compile Include="Image\ImageStatistics.cs" />
     <Compile Include="Image\OneBandImageScaling.cs" />
