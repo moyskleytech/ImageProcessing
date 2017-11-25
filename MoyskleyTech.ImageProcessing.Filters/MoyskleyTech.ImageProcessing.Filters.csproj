@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj" />
+    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Math.csproj" />
+  </ItemGroup>
+
+</Project>

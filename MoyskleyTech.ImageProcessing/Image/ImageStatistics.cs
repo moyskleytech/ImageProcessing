@@ -15,8 +15,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         public BandStatistics Hue { get; set; }
         public BandStatistics Saturation { get; set; }
         public BandStatistics Brightness { get; set; }
-
-        public ImageStatistics(Bitmap bmp)
+        public ColorStatistics ColorStatistics { get; set; }
+        public ImageStatistics(ImageProxy bmp)
         {
             int ct = bmp.Width*bmp.Height;
             var numberSelector = from x in Enumerable.Range(0 , ct) select x;
@@ -25,11 +25,30 @@ namespace MoyskleyTech.ImageProcessing.Image
             Green = new BandStatistics(from x in numberSelector select bmp[x].G , Band.Green);
             Blue = new BandStatistics(from x in numberSelector select bmp[x].B , Band.Blue);
 
-            var hsb = bmp.ToHSB();
+            ColorStatistics = new ColorStatistics(from x in numberSelector select bmp[x]);
+
+            var tbmp = bmp.ToBitmap();
+            var hsb = tbmp.ToHSB();
+            tbmp.Dispose();
             Hue = new BandStatistics(from x in numberSelector select hsb[x].H , Band.Hue);
             Saturation = new BandStatistics(from x in numberSelector select hsb[x].S , Band.Saturation);
             Brightness = new BandStatistics(from x in numberSelector select hsb[x].B , Band.Brightness);
             hsb.Dispose();
+           
+        }
+    }
+    public class ColorStatistics
+    {
+        public Dictionary<Pixel , int> Dominance { get; set; } = new Dictionary<Pixel , int>();
+        public ColorStatistics(IEnumerable<Pixel> enumerable)
+        {
+            foreach ( var px in enumerable )
+            {
+                if ( Dominance.ContainsKey(px) )
+                    Dominance[px]++;
+                else
+                    Dominance[px] = 1;
+            }
         }
     }
     public class BandStatistics

@@ -26,23 +26,40 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return img.Crop(rct);
         }
+        public Pixel this[int t]
+        {
+            get {
+                int y = t/Width;
+                int x = t-y*Width;
+                return this[x , y];
+            }
+            set {
+                int y = t/Width;
+                int x = t-y*Width;
+                this[x , y]=value;
+            }
+        }
         public Pixel this[int x , int y]
         {
             get
             {
-                if ( x <= rct.Width && x >= 0 && y <= rct.Height && y >= 0 )
+                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
                     return img[x + rct.X , y + rct.Y];
                 return Pixels.Transparent;
             }
             set
             {
-                if ( x <= rct.Width && x >= 0 && y <= rct.Height && y >= 0 )
+                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
                     img[x + rct.X , y + rct.Y] = value;
             }
         }
         public static implicit operator Bitmap(ImageProxy ip)
         {
             return ip.ToBitmap();
+        }
+        public static implicit operator ImageProxy(Bitmap ip)
+        {
+            return new ImageProxy(ip,new Rectangle(0,0,ip.Width,ip.Height));
         }
         public void ApplyFilter(Func<Pixel , Point , Pixel> func)
         {

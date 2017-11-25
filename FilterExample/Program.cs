@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MoyskleyTech.ImageProcessing.Recognition.Border;
-using MoyskleyTech.ImageProcessing.Recognition.Shape;
 using MoyskleyTech.ImageProcessing.WinForm;
-namespace SobelExample
+using MoyskleyTech.ImageProcessing.Filters;
+
+namespace FilterExample
 {
     public class Program
     {
@@ -23,18 +23,24 @@ namespace SobelExample
             {
                 var fs = ofd.OpenFile();
                 Bitmap bmp = new BitmapFactory().Decode(fs);
+                Bitmap ori = bmp.Clone();
                 fs.Dispose();
-                //bmp.SetGrayscale();
-                //bmp.Blur(2);
 
-                var sobelled = Sobel.ConvolutionFilter(bmp, Sobel.xSobel,Sobel.ySobel,2,0);
-                //sobelled.Blur(2);
-                byte threashold=96;
-                //sobelled.ApplyFilter(Filters.Invert());
-                sobelled.ApplyFilter(Filters.Max());
-                sobelled.ApplyFilter(Filters.Threashold(threashold));
-                ShowImage(bmp , "Original");
-                ShowImage(sobelled , "Sobel");
+                ShowImage(bmp , "original");
+
+                Squarify.Apply(bmp.Proxy(new Rectangle(10 , 10 , bmp.Width - 20 , bmp.Height - 20)) , 20);
+
+                ShowImage(bmp , "squarified");
+
+                bmp = ori.Clone();
+                ColorReducer.FromKMeans(bmp , 10);
+
+                ShowImage(bmp , "color reduced to 10");
+
+                bmp = ori.Clone();
+                ColorReducer.FromKMeans(bmp , 20);
+
+                ShowImage(bmp , "color reduced to 20");
             }
         }
         public static void ShowImage(Bitmap bmp , string name = "")
