@@ -11,7 +11,7 @@ namespace ImageProcessing.JPEGCodec
     internal struct COMP3 { public byte A,B,C; };
     public class JPEGCodec : IBitmapCodec
     {
-        
+
         public static void Register()
         {
             BitmapFactory.RegisterCodec(new JPEGCodec());
@@ -29,7 +29,7 @@ namespace ImageProcessing.JPEGCodec
             if ( signature.Length == 0 )
             {
                 JPEGDecoder decoder = new JPEGDecoder();
-                decoder.SetStream(new BufferedStream(f, new byte[0]));
+                decoder.SetStream(new BufferedStream(f , new byte[0]));
                 return decoder;
             }
             if ( signature[0] == 0xFF )
@@ -69,7 +69,7 @@ namespace ImageProcessing.JPEGCodec
                 rows[r] = new SampleRow(rowB , bmp.Width , 8 , 3);
             }
             JpegImage img = new JpegImage(rows, Colorspace.RGB);
-            
+
             img.WriteJpeg(s);
         }
 
@@ -84,7 +84,7 @@ namespace ImageProcessing.JPEGCodec
     internal class JPEGDecoder : IBitmapDecoder
     {
         BufferedStream s;
-        
+
         public Bitmap ReadBitmap()
         {
             JpegImage img = new JpegImage(s);
@@ -101,7 +101,7 @@ namespace ImageProcessing.JPEGCodec
                         components[0] = ( byte ) sample.GetComponent(0);
                         components[1] = ( byte ) sample.GetComponent(1);
                         components[2] = ( byte ) sample.GetComponent(2);
-                        bmp[c,r]=Pixel.FromArgb(255, components[0], components[1], components[2]);
+                        bmp[c , r] = Pixel.FromArgb(255 , components[0] , components[1] , components[2]);
                     }
                 }
                 return bmp;
