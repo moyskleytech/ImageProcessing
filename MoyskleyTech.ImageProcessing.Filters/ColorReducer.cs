@@ -72,6 +72,13 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 yield return actual / max;
             }
         }
+        private static Func<Pixel[ ]> GetBeginningMean(int count,ImageStatistics stats)
+        {
+            Random r = new Random();
+            return () => {
+                return (from x in stats.ColorStatistics.Dominance orderby r.Next() select x.Key).Take(count).ToArray();
+            };
+        }
         public static void FromKMeans(ImageProxy bmp , int colorCount)
         {
             var statistics = new ImageStatistics(bmp);
@@ -83,10 +90,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
             if ( statistics.ColorStatistics.Dominance.Count > colorCount )
             {
                 Random r = new Random();
-                Pixel[ ] initMeans()
-                {
-                    return ( from x in Enumerable.Range(1 , colorCount) select Pixel.FromArgb(r.Next()) ).ToArray();
-                }
+              
 
                 Pixel getMean(IEnumerable<Pixel> inp)
                 {
@@ -100,10 +104,65 @@ namespace MoyskleyTech.ImageProcessing.Filters
                     return Pixels.DeepPink;
                 }
                 //var colors = statistics.ColorStatistics.Dominance.OrderByDescending((x) => x.Value).Take(colorCount).Select((x)=>x.Key).ToArray() ;
-                KMeans<Pixel> p = new KMeans<Pixel>(colorCount,initMeans,getDistance,getMean,
+                KMeans<Pixel> p = new KMeans<Pixel>(colorCount,GetBeginningMean(colorCount,statistics),getDistance,getMean,
                 statistics.ColorStatistics.Dominance.SelectMany((x)=>
                 from n in Enumerable.Range(1,x.Value) select x.Key)
-                ,20);
+                ,100);
+                colors = p.Means;
+            }
+            else
+                colors = from x in statistics.ColorStatistics.Dominance select x.Key;
+            Pixel getClosest(Pixel inp)
+            {
+                Pixel output = Pixels.Black;
+                double distance=double.MaxValue;
+                foreach ( var c in colors )
+                {
+                    var d = getDistance(inp,c);
+                    if ( d < distance )
+                    {
+                        distance = d;
+                        output = c;
+                    }
+                    if ( d == 0 )
+                        break;
+                }
+                return output;
+            }
+
+            for ( var x = 0; x < bmp.Width; x++ )
+                for ( var y = 0; y < bmp.Height; y++ )
+                    bmp[x , y] = getClosest(bmp[x , y]);
+        }
+
+        public static void FromXMeans(ImageProxy bmp , int colorCount,int maxDistance=50)
+        {
+            var statistics = new ImageStatistics(bmp);
+            IEnumerable<Pixel> colors=null;
+            double getDistance(Pixel a , Pixel b)
+            {
+                return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
+            }
+            if ( statistics.ColorStatistics.Dominance.Count > colorCount )
+            {
+                Random r = new Random();
+               
+                Pixel getMean(IEnumerable<Pixel> inp)
+                {
+                    if ( inp.Any() )
+                    {
+                        double avgR = inp.Average((x) => x.R);
+                        double avgG = inp.Average((x) => x.G);
+                        double avgB = inp.Average((x) => x.B);
+                        return Pixel.FromArgb(255 , ( byte ) avgR , ( byte ) avgG , ( byte ) avgB);
+                    }
+                    return Pixels.DeepPink;
+                }
+                //var colors = statistics.ColorStatistics.Dominance.OrderByDescending((x) => x.Value).Take(colorCount).Select((x)=>x.Key).ToArray() ;
+                XMeansDistanceBased<Pixel> p = new XMeansDistanceBased<Pixel>(colorCount,GetBeginningMean(colorCount,statistics),getDistance,getMean,
+                statistics.ColorStatistics.Dominance.SelectMany((x)=>
+                from n in Enumerable.Range(1,x.Value) select x.Key)
+                ,1000,maxDistance);
                 colors = p.Means;
             }
             else

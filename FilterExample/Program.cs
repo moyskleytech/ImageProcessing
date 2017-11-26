@@ -41,6 +41,14 @@ namespace FilterExample
                 ColorReducer.FromKMeans(bmp , 20);
 
                 ShowImage(bmp , "color reduced to 20");
+                bmp = ori.Clone();
+                ColorReducer.FromKMeans(bmp , 128);
+
+                ShowImage(bmp , "color reduced to 128");
+                bmp = ori.Clone();
+                ColorReducer.FromKMeans(bmp , 512);
+
+                ShowImage(bmp , "color reduced to 512");
             }
         }
         public static void ShowImage(Bitmap bmp , string name = "")
@@ -49,6 +57,7 @@ namespace FilterExample
             f.Width = bmp.Width;
             f.Height = bmp.Height;
             f.Text = name;
+            f.BackgroundImageLayout = ImageLayout.Stretch;
             f.BackgroundImage = bmp.ToWinFormBitmap();
             f.ShowDialog();
         }
