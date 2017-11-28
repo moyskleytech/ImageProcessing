@@ -9,4 +9,8 @@
     <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Math.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(SolutionDir)Dist\$(TargetFileName)&quot;" />
+  </Target>
+
 </Project>

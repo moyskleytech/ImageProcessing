@@ -32,19 +32,19 @@ namespace FilterExample
 
                 ShowImage(bmp , "squarified");
 
-                bmp = ori.Clone();
-                ColorReducer.FromKMeans(bmp , 10);
+                //bmp = ori.Clone();
+                //ColorReducer.FromKMeans(bmp , 10);
 
-                ShowImage(bmp , "color reduced to 10");
+                //ShowImage(bmp , "color reduced to 10");
 
-                bmp = ori.Clone();
-                ColorReducer.FromKMeans(bmp , 20);
+                //bmp = ori.Clone();
+                //ColorReducer.FromKMeans(bmp , 20);
 
-                ShowImage(bmp , "color reduced to 20");
-                bmp = ori.Clone();
-                ColorReducer.FromKMeans(bmp , 128);
+                //ShowImage(bmp , "color reduced to 20");
+                //bmp = ori.Clone();
+                //ColorReducer.FromKMeans(bmp , 128);
 
-                ShowImage(bmp , "color reduced to 128");
+                //ShowImage(bmp , "color reduced to 128");
                 bmp = ori.Clone();
                 ColorReducer.FromKMeans(bmp , 512);
 
