@@ -139,6 +139,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
                 ErrorAnalysis(iteration);
             }
             FillOutput();
+            ClearMatrices();
         }
 
         private void ErrorAnalysis(int iteration)
@@ -151,12 +152,13 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
             List<double> global = new List<double>(nbObs);
             bool pass = (nbObs > 0);
 
+            global.Clear();
             for ( int i = 0; i < nbObs; ++i )
             {
                 double x = m_observations[i, 0];
                 double y = m_observations[i, 1];
 
-                global[i] = SolveAt(x , y); // should be zero
+                global.Add(SolveAt(x , y)); // should be zero
                 pass = pass && System.Math.Abs(global[i]) < 0.01; // TODO: Is this too lax?
             }
 
@@ -241,13 +243,23 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
         protected abstract int m_numUnknowns { get; }
         private void ResizeMatrices()
         {
-            m_provisionals = new Math.Matrix.Matrix(5 , 1);
+            m_provisionals = new Math.Matrix.Matrix(m_numUnknowns , 1);
             m_residuals = new Math.Matrix.Matrix(nbObs , 1);
             m_design = new Math.Matrix.Matrix(nbObs , m_numUnknowns);
             m_l = new Math.Matrix.Matrix(nbObs , 1);
             m_qweight = new Math.Matrix.Matrix(nbObs , nbObs);
             m_observations = new Math.Matrix.Matrix(nbObs , 2);
             m_b = new Math.Matrix.Matrix(nbObs , nbObs * 2);
+        }
+        private void ClearMatrices()
+        {
+            m_provisionals = null;
+            m_residuals = null;
+            m_design = null;
+            m_l = null;
+            m_qweight = null;
+            m_observations = null;
+            m_b = null;
         }
     }
     public class LineShape : BestFit

@@ -1974,6 +1974,47 @@ namespace MoyskleyTech.ImageProcessing.Image
             mx = System.Math.Max(mx , x);
             return new StringMeasurement() { Height = y + mh * size , Width = mx };
         }
+        public virtual void DrawRotatedEllipse(Pixel b , double x , double y , double major , double minor , double angle , int thickness = 0 , double angleIncrement = 0)
+        {
+            DrawRotatedEllipse(new SolidBrush(b) , x , y , major , minor , angle , thickness , angleIncrement);
+        }
+
+        public virtual void DrawRotatedEllipse(Brush b , double x , double y , double major , double minor , double angle,int thickness=0,double angleIncrement=0)
+        {
+            const double D_PI = System.Math.PI*2;
+            if ( angleIncrement == 0 )
+                angleIncrement = D_PI / major/minor;
+            List<PointF> pts = new List<PointF>();
+            for ( var i = 0d; i < D_PI; i+= angleIncrement )
+                pts.Add(FindEllipsePoint(major , minor , angle ,x,y, i));
+            DrawPolygon(b , thickness , pts);
+        }
+
+        public virtual void FillRotatedEllipse(Pixel b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
+        {
+            FillRotatedEllipse(new SolidBrush(b) , x , y , major , minor , angle  , angleIncrement);
+        }
+
+        public virtual void FillRotatedEllipse(Brush b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
+        {
+            const double D_PI = System.Math.PI*2;
+            if ( angleIncrement == 0 )
+                angleIncrement = D_PI / major / minor;
+            List<PointF> pts = new List<PointF>();
+            for ( var i = 0d; i < D_PI; i += angleIncrement )
+                pts.Add(FindEllipsePoint(major , minor , angle , x , y , i));
+            FillPolygon(b , pts.ToArray());
+        }
+
+        private static PointF FindEllipsePoint(double a , double b , double theta,double x,double y , double t)
+        {
+            Func<double,double> cos = System.Math.Cos;
+            Func<double,double> sin = System.Math.Sin;
+            double xt = x+ (a*cos(t)*cos(theta)-b*sin(t)*sin(theta));
+            double yt = y+(a*cos(t)*sin(theta)+b*sin(t)*cos(theta));
+
+            return new PointF(xt ,yt);
+        }
         #region Transform
         /// <summary>
         /// Rotate graphics using specified angle in radian
