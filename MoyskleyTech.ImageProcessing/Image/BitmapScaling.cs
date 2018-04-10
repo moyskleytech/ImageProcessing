@@ -126,12 +126,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                             sg += px.G * dy;
                             sb += px.B * dy;
                         }
-                        Pixel destinationpx = new Pixel();
-
-                        destinationpx.R = ( byte ) ( sr / 3 );
-                        destinationpx.G = ( byte ) ( sg / 3 );
-                        destinationpx.B = ( byte ) ( sb / 3 );
-                        destinationpx.A = ( byte ) ( sa / 3 );
+                        Pixel destinationpx = new Pixel()
+                        {
+                            R = ( byte ) ( sr / 3 ),
+                            G = ( byte ) ( sg / 3 ),
+                            B = ( byte ) ( sb / 3 ),
+                            A = ( byte ) ( sa / 3 )
+                        };
 
                         destination[x , y] = destinationpx;
                     }
@@ -157,8 +158,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                                 sb += source.B;
                             }
                         }
-                        Pixel destinationpx = new Pixel();
-                        destinationpx.A = ( byte ) ( sa / count );
+                        Pixel destinationpx = new Pixel
+                        {
+                            A = ( byte ) ( sa / count )
+                        };
                         if ( acount > 0 )
                         {
                             destinationpx.R = ( byte ) ( sr * 255 / acount );
@@ -233,7 +236,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             Bitmap bmp = new Bitmap(location.Width,location.Height);
             for ( int x1 = 0, x = location.Left; x <= location.Right && x < width; x++, x1++ )
             {
-                for ( int y1 = 0, y = location.Top; y <= location.Bottom && x < height; y++, y1++ )
+                for ( int y1 = 0, y = location.Top; y <= location.Bottom && y < height; y++, y1++ )
                 {
                     bmp[x1 , y1] = this[x , y];
                 }

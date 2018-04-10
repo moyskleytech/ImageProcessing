@@ -10,10 +10,11 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
 {
     public static class ContourRecognition
     {
-        public static List<Contour> Analyse(Bitmap bmp , Func<Pixel , bool> condition)
+        public static List<Contour> Analyse(ImageProxy bmp , Func<Pixel , bool> condition)
         {
             HashSet<Point> visited=new HashSet<Point>();
             List<Contour> contours = new List<Contour>();
+            var work = bmp.ToBitmap();
             for ( var y = 0; y < bmp.Height; y++ )
             {
                 for ( var x = 0; x < bmp.Width; x++ )
@@ -21,14 +22,15 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     Contour contour = new Contour();
                     if ( !visited.Contains(new Point(x , y)) )
                     {
-                        var px = bmp[x,y];
+                        var px = work[x,y];
                         if ( condition(px) )
                         {
-                            bmp.Match8Connex(x , y , condition , (pt , pxl) =>
+                            work.Match8Connex(x , y , condition , (pt , pxl) =>
                             {
                                 contour.Points.Add(pt);
                                 visited.Add(pt);
                             });
+                            
                             contour.ImageArea = new ImageProxy(bmp , contour.Area);
                             contour.CleanPoints();
                             contours.Add(contour);

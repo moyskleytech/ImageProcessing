@@ -5,37 +5,29 @@ using System.Text;
 
 namespace Hjg.Pngcs.Zlib
 {
-
-
     public class ZlibStreamFactory
     {
-        public static AZlibInputStream createZlibInputStream(Stream st , bool leaveOpen)
+        public static ZlibInputStreamMs createZlibInputStream(Stream st , bool leaveOpen)
         {
-                return new ZlibInputStreamMs(st,leaveOpen);
-#if SHARPZIPLIB
-            return new ZlibInputStreamIs(st, leaveOpen);
-#endif
+            return new ZlibInputStreamMs(st,leaveOpen);
         }
 
-        public static AZlibInputStream createZlibInputStream(Stream st)
+        public static ZlibInputStreamMs createZlibInputStream(Stream st)
         {
             return createZlibInputStream(st , false);
         }
 
-        public static AZlibOutputStream createZlibOutputStream(Stream st , int compressLevel , EDeflateCompressStrategy strat , bool leaveOpen)
+        public static ZlibOutputStreamMs createZlibOutputStream(Stream st , int compressLevel , EDeflateCompressStrategy strat , bool leaveOpen)
         {
             return new ZlibOutputStreamMs(st , compressLevel , strat , leaveOpen);
-#if SHARPZIPLIB
-            return new ZlibOutputStreamIs(st, compressLevel, strat, leaveOpen);
-#endif
         }
 
-        public static AZlibOutputStream createZlibOutputStream(Stream st)
+        public static ZlibOutputStreamMs createZlibOutputStream(Stream st)
         {
             return createZlibOutputStream(st , false);
         }
 
-        public static AZlibOutputStream createZlibOutputStream(Stream st , bool leaveOpen)
+        public static ZlibOutputStreamMs createZlibOutputStream(Stream st , bool leaveOpen)
         {
             return createZlibOutputStream(st , DeflateCompressLevel.DEFAULT , EDeflateCompressStrategy.Default , leaveOpen);
         }

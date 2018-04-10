@@ -7,7 +7,7 @@ using System.IO.Compression;
 namespace Hjg.Pngcs.Zlib {
 
 
-   internal class ZlibOutputStreamMs : AZlibOutputStream {
+   public class ZlibOutputStreamMs : AZlibOutputStream {
 
         public ZlibOutputStreamMs(Stream st, int compressLevel, EDeflateCompressStrategy strat, bool leaveOpen) : base(st, compressLevel, strat, leaveOpen){ 
         }
@@ -38,6 +38,8 @@ namespace Hjg.Pngcs.Zlib {
             closed = true;
             // sigh ... no only must I close the parent stream to force a flush, but I must save a reference
             // raw stream because (apparently) Close() sets it to null (shame on you, MS developers)
+            deflateStream?.Flush();
+            deflateStream?.Dispose();
             if (deflateStream == null) {
                 rawStream.WriteByte(3);
                 rawStream.WriteByte(0);
@@ -48,7 +50,8 @@ namespace Hjg.Pngcs.Zlib {
             rawStream.WriteByte((byte)((crcv >> 16) & 0xFF));
             rawStream.WriteByte((byte)((crcv >> 8) & 0xFF));
             rawStream.WriteByte((byte)((crcv) & 0xFF));
-
+            if ( !leaveOpen )
+                rawStream.Dispose();
         }
 
         private void initStream() {
@@ -79,7 +82,7 @@ namespace Hjg.Pngcs.Zlib {
         }
 
         public override void Flush() {
-            if(deflateStream!=null) deflateStream.Flush();
+            deflateStream?.Flush();
         }
 
         public override String getImplementationId() {

@@ -29,7 +29,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
-
+        public int this[Pixel index]
+        {
+            get
+            {
+                return Array.IndexOf<Pixel>(inner , index);
+            }
+        }
         internal void CheckIfAlphaZero()
         {
             if ( inner.All((x) => x.A == 0) )
@@ -62,7 +68,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
-
+        public int this[Pixel index]
+        {
+            get
+            {
+                return Array.IndexOf<Pixel>(inner , index);
+            }
+        }
         internal void CheckIfAlphaZero()
         {
             if ( inner.All((x) => x.A == 0) )
@@ -85,7 +97,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
-
+        public int this[Pixel index]
+        {
+            get
+            {
+                return Array.IndexOf<Pixel>(inner , index);
+            }
+        }
         internal void CheckIfAlphaZero()
         {
             if ( inner.All((x) => x.A == 0) )

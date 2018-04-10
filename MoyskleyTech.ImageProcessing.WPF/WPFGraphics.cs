@@ -299,9 +299,9 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             DrawLine(p ,new PointF(x , y), new PointF(x+1 , y),1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py)
+        protected override void SetPixelInternal(Pixel p , double px , double py,bool alpha)
         {
-           
+            FillRectangle(p , px , py , 1 , 1);
         }
         public void DrawImage(System.Windows.Media.ImageSource src , int x , int y)
         {

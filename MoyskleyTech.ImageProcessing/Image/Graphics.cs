@@ -12,13 +12,14 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <summary>
     /// PCL Portability to System.Drawing.Graphics
     /// </summary>
-    public unsafe partial class Graphics : IDisposable
+    public partial class Graphics : IDisposable
     {
-        private static List<Type> subTypes = new List<Type>();
         /// <summary>
         /// The bitmap where to draw
         /// </summary>
         private Bitmap bmp;
+        private ImageProxy proxy;
+        private Graphics gProxy;
         /// <summary>
         /// The transformation matrix
         /// </summary>
@@ -31,17 +32,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         private double[]clipPolygonConstant , clipPolygonMultiple;
 
         public LineMode LineMode = LineMode.ForLoop;
-        /// <summary>
-        /// Register Subtype
-        /// </summary>
-        /// <param name="t"></param>
-        public static void RegisterSubType(Type t)
-        {
-            if ( t.GetTypeInfo().IsSubclassOf(typeof(Graphics)) )
-                subTypes.Add(t);
-            else
-                throw new ArgumentException("t is not typeof(Graphics)" , "t");
-        }
+        public Func<PointF , PointF> PreTransformFunction { get; set; }
+        public Func<PointF,PointF> PostTransformFunction { get; set; }
         /// <summary>
         /// Only for subclassing
         /// </summary>
@@ -54,34 +46,51 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static Graphics FromImage(Bitmap bmp)
         {
             Graphics instance;
-            instance = new Graphics(1);
-            instance.bmp = bmp;
+            instance = new Graphics(1)
+            {
+                bmp = bmp
+            };
             instance.ResetClip();
             return instance;
         }
         /// <summary>
-        /// Create a graphics object from type
+        /// Create a Graphics object from image
         /// </summary>
-        /// <param name="type">Type of graphics</param>
-        /// <returns></returns>
-        public static Graphics FromType(string type)
+        /// <param name="bmp">The bitmap where to Draw</param>
+        /// <returns>Return null if not applicable</returns>
+        public static Graphics FromProxy(ImageProxy bmp)
         {
             Graphics instance;
-            foreach ( var t in subTypes )
+            instance = new Graphics(1)
             {
-                var method = t.GetRuntimeMethod("_FromType" , new Type[ ] { typeof(string) });
-                instance = ( Graphics ) method.Invoke(null , new object[ ] { type });
-                if ( instance != null )
-                    return instance;
-            }
-            return null;
+                proxy = bmp
+            };
+            instance.ResetClip();
+            return instance;
         }
+
         /// <summary>
         /// Private constructor to things not related to bitmap
         /// </summary>
         private Graphics(int u)
         {
             transformationMatrix = Matrix.Identity(3);
+            PreTransformFunction = null;
+            PostTransformFunction = null;
+        }
+        protected int? width,height,x,y;
+        public virtual int Width { get => width ?? bmp?.Width ?? proxy?.Width ?? gProxy?.Width?? 0; set { width = value; } }
+        public virtual int Height { get => height ?? bmp?.Height ?? proxy?.Height ?? gProxy?.Height ?? 0; set { height = value; } }
+
+        public virtual Graphics Proxy(Rectangle r)
+        {
+            Graphics instance;
+            instance = new Graphics(1)
+            {
+                gProxy = this, x=r.X,y=r.Y,width=r.Width,height=r.Height
+            };
+            instance.ResetClip();
+            return instance;
         }
         /// <summary>
         /// Set the clipping for SetPixel
@@ -109,7 +118,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         public virtual void ResetClip()
         {
-            clip = new Rectangle() { X = 0 , Y = 0 , Width = bmp.Width , Height = bmp.Height };
+            clip = new Rectangle() { X = 0 , Y = 0 , Width = Width , Height = Height };
             clipPolygon = null;
             clipPolygonConstant = null;
             clipPolygonMultiple = null;
@@ -122,11 +131,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             get { return transformationMatrix; }
             set
             {
-                if ( value == null )
+                if ( object.ReferenceEquals(value , null) )
                     ResetTransform();
                 else
-                    for ( var i = 0; i < transformationMatrix.Lignes; i++ )
-                        for ( var j = 0; j < transformationMatrix.Colonnes; j++ )
+                    for ( var i = 0; i < transformationMatrix.Rows; i++ )
+                        for ( var j = 0; j < transformationMatrix.Columns; j++ )
                             transformationMatrix[i , j] = value[i , j];
             }
         }
@@ -141,10 +150,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void DrawRectangle(Pixel p , double x , double y , double w , double h)
         {
-            DrawLine(p , x , y , x , y + h); //Left
-            DrawLine(p , x , y , x + w , y); //Top
-            DrawLine(p , x + w , y , x + w , y + h);//Right
-            DrawLine(p , x , y + h , x + w , y + h);//Bottom
+            DrawLine(p , x , y , x , y + h-1); //Left
+            DrawLine(p , x , y , x + w-1 , y); //Top
+            DrawLine(p , x + w-1 , y , x + w-1 , y + h-1);//Right
+            DrawLine(p , x , y + h-1 , x + w-1 , y + h-1);//Bottom
         }
         /// <summary>
         /// Draw a rectangle of the specified color
@@ -156,10 +165,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void DrawRectangle(Brush p , double x , double y , double w , double h)
         {
-            DrawLine(p , x , y , x , y + h); //Left
-            DrawLine(p , x , y , x + w , y); //Top
-            DrawLine(p , x + w , y , x + w , y + h);//Right
-            DrawLine(p , x , y + h , x + w , y + h);//Bottom
+            DrawLine(p , x , y , x , y + h-1); //Left
+            DrawLine(p , x , y , x + w-1 , y); //Top
+            DrawLine(p , x + w-1 , y , x + w-1 , y + h-1);//Right
+            DrawLine(p , x , y + h -1, x + w-1 , y + h-1);//Bottom
         }
         /// <summary>
         /// Draw a rectangle of the specified color
@@ -172,10 +181,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="thick">Line thickness</param>
         public virtual void DrawRectangle(Pixel p , double x , double y , double w , double h , int thick)
         {
-            DrawLine(p , x , y , x , y + h , thick); //Left
-            DrawLine(p , x , y , x + w , y , thick); //Top
-            DrawLine(p , x + w , y , x + w , y + h , thick);//Right
-            DrawLine(p , x , y + h , x + w , y + h , thick);//Bottom
+            DrawLine(p , x , y , x , y + h-1 , thick); //Left
+            DrawLine(p , x , y , x + w-1 , y , thick); //Top
+            DrawLine(p , x + w-1 , y , x + w -1, y + h-1 , thick);//Right
+            DrawLine(p , x , y + h-1 , x + w-1 , y + h-1 , thick);//Bottom
         }
         /// <summary>
         /// Draw a rectangle of the specified color
@@ -188,10 +197,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="thick">Line thickness</param>
         public virtual void DrawRectangle(Brush p , double x , double y , double w , double h , int thick)
         {
-            DrawLine(p , x , y , x , y + h , thick); //Left
-            DrawLine(p , x , y , x + w , y , thick); //Top
-            DrawLine(p , x + w , y , x + w , y + h , thick);//Right
-            DrawLine(p , x , y + h , x + w , y + h , thick);//Bottom
+            DrawLine(p , x , y , x , y + h-1 , thick); //Left
+            DrawLine(p , x , y , x + w-1 , y , thick); //Top
+            DrawLine(p , x + w-1 , y , x + w-1 , y + h-1 , thick);//Right
+            DrawLine(p , x , y + h -1, x + w-1 , y + h-1 , thick);//Bottom
         }
         /// <summary>
         /// Draw a rectangle of the specified color
@@ -542,12 +551,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="y2">Y destination</param>
         public virtual void DrawLine(Pixel p , double x , double y , double x2 , double y2)
         {
-            Matrix p1,p2;
-            p1 = new Matrix(new double[ , ] { { x } , { y } , { 1 } });
-            p2 = new Matrix(new double[ , ] { { x2 } , { y2 } , { 1 } });
-
-            p1 = Transform(p1);
-            p2 = Transform(p2);
+            PointF p1,p2;
+           
+            p1 = TransformUsingMatrix(new PointF(x,y));
+            p2 = TransformUsingMatrix(new PointF(x2 , y2));
 
             DrawLineInternal(p , p1 , p2);
         }
@@ -561,12 +568,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="y2">Y destination</param>
         public virtual void DrawLine(Brush p , double x , double y , double x2 , double y2)
         {
-            Matrix p1,p2;
-            p1 = new Matrix(new double[ , ] { { x } , { y } , { 1 } });
-            p2 = new Matrix(new double[ , ] { { x2 } , { y2 } , { 1 } });
+            PointF p1,p2;
 
-            p1 = Transform(p1);
-            p2 = Transform(p2);
+            p1 = TransformUsingMatrix(new PointF(x , y));
+            p2 = TransformUsingMatrix(new PointF(x2 , y2));
 
             DrawLineInternal(p , p1 , p2);
         }
@@ -616,8 +621,6 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             // < line x1 = "0" y1 = "0" x2 = "200" y2 = "200" style = "stroke:rgb(255,0,0);stroke-width:2" />
 
-            //bmp.instructions.AddLast(new Instruction("line" , x1 , y1 , x2 , y2 , p));
-
             double dx = (x2 - x1) ;
             double dy = (y2 - y1) ;
             double dydx = dy/dx;
@@ -650,8 +653,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
 
             // < line x1 = "0" y1 = "0" x2 = "200" y2 = "200" style = "stroke:rgb(255,0,0);stroke-width:2" />
-
-            //bmp.instructions.AddLast(new Instruction("line" , x1 , y1 , x2 , y2 , p));
 
             double dx = (x2 - x1) ;
             double dy = (y2 - y1) ;
@@ -726,11 +727,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         public virtual void Clear(Pixel p)
         {
-            //bmp.instructions.Clear();
-            Pixel* ptr = bmp.Source;
-            for ( var i = 0; i < bmp.Width; i++ )
-                for ( var j = 0; j < bmp.Height; j++ )
-                    *ptr++ = p;
+            for ( var i = 0; i < Width; i++ )
+                for ( var j = 0; j < Height; j++ )
+                    this[i , j] = p;
         }
         /// <summary>
         /// Clear the Bitmap using specified color
@@ -738,11 +737,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         public virtual void Clear(Brush p)
         {
-            //bmp.instructions.Clear();
-            Pixel* ptr = bmp.Source;
-            for ( var i = 0; i < bmp.Width; i++ )
-                for ( var j = 0; j < bmp.Height; j++ )
-                    *ptr++ = p.GetColor(i , j);
+            for ( var i = 0; i < Width; i++ )
+                for ( var j = 0; j < Height; j++ )
+                    this[i , j] = p.GetColor(i,j);
         }
         /// <summary>
         /// Helper to set pixel
@@ -752,23 +749,30 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="py">Y position</param>
         protected virtual void SetPixelInternal(Pixel p , double px , double py)
         {
+            SetPixelInternal(p , px , py , true);
+        }
+        protected virtual void SetPixelInternal(Pixel p, double px,double py,bool alpha)
+        {
             int x,y;
             x = ( int ) px;
             y = ( int ) py;
 
             if ( IsInClipRange(x , y) )
             {
-                if ( p.A == 255 )
-                    bmp[x , y] = p;
+                if ( gProxy != null )
+                {
+                    gProxy.SetPixelInternal(p , px + this.x.Value , py + this.y.Value,alpha);
+                }
+                else if ( p.A == 255 )
+                    this[x , y] = p;
                 else
                 {
-                    Pixel fromImage = bmp[x,y];
+                    Pixel fromImage = this[x,y];
                     Pixel that = p;
-                    bmp[x , y] = that.Over(fromImage);
+                    this[x , y] = that.Over(fromImage);
                 }
             }
         }
-
         private bool IsInClipRange(int x , int y)
         {
             if ( !( x >= clip.X && x < clip.X + clip.Width && y >= clip.Y && y < clip.Y + clip.Height ) )
@@ -788,6 +792,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="py">Y position</param>
         private void SetPixelInternal(Brush b , double px , double py)
         {
+            SetPixelInternal(b , px , py , true);
+        }
+        private void SetPixelInternal(Brush b , double px , double py,bool alpha)
+        {
             int x,y;
             x = ( int ) px;
             y = ( int ) py;
@@ -795,14 +803,18 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( x >= clip.X && x < clip.X + clip.Width )
                 if ( y >= clip.Y && y < clip.Y + clip.Height )
                 {
+                    if ( gProxy != null )
+                    {
+                        gProxy.SetPixelInternal(b.GetColor(x , y) , px + this.x.Value , py + this.y.Value,alpha);
+                    }
                     Pixel p = b.GetColor(x,y);
                     if ( p.A == 255 )
-                        bmp[x , y] = p;
+                        this[x , y] = p;
                     else
                     {
-                        Pixel fromImage = bmp[x,y];
+                        Pixel fromImage = this[x,y];
                         Pixel that = p;
-                        bmp[x , y] = that.Over(fromImage);
+                        this[x , y] = that.Over(fromImage);
                     }
                 }
         }
@@ -812,18 +824,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
-        private void DrawLineInternal(Pixel p , Matrix p1 , Matrix p2)
+        private void DrawLineInternal(Pixel p , PointF p1 , PointF p2)
         {
 
             // < line x1 = "0" y1 = "0" x2 = "200" y2 = "200" style = "stroke:rgb(255,0,0);stroke-width:2" />
-            int x1 = (int)p1[0,0];
-            int x2 = (int)p2[0,0];
-            int y1 = (int)p1[1,0];
-            int y2 = (int)p2[1,0];
+            int x1 = (int)p1.X;
+            int x2 = (int)p2.X;
+            int y1 = (int)p1.Y;
+            int y2 = (int)p2.Y;
 
             if ( LineMode == LineMode.ForLoop )
             {
-                //bmp.instructions.AddLast(new Instruction("line" , x1 , y1 , x2 , y2 , p));
 
                 double dx = (x2 - x1) ;
                 double dy = (y2 - y1) ;
@@ -849,11 +860,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 SetPixelInternal(p , x1 , y1);
                 while ( y1 != y2 || x2 != x1 )
                 {
-                    var options = new List<Point>(4);
-                    options.Add(new Point(x1 - 1 , y1));
-                    options.Add(new Point(x1 + 1 , y1));
-                    options.Add(new Point(x1 , y1 - 1));
-                    options.Add(new Point(x1 , y1 + 1));
+                    var options = new List<Point>(4)
+                    {
+                        new Point(x1 - 1 , y1) ,
+                        new Point(x1 + 1 , y1) ,
+                        new Point(x1 , y1 - 1) ,
+                        new Point(x1 , y1 + 1)
+                    };
                     var pt = FindBestOption(x2,y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
@@ -865,16 +878,18 @@ namespace MoyskleyTech.ImageProcessing.Image
                 SetPixelInternal(p , x1 , y1);
                 while ( y1 != y2 || x2 != x1 )
                 {
-                    var options = new List<Point>(8);
-                    options.Add(new Point(x1 - 1 , y1));
-                    options.Add(new Point(x1 + 1 , y1));
-                    options.Add(new Point(x1 , y1 - 1));
-                    options.Add(new Point(x1 , y1 + 1));
+                    var options = new List<Point>(8)
+                    {
+                        new Point(x1 - 1 , y1) ,
+                        new Point(x1 + 1 , y1) ,
+                        new Point(x1 , y1 - 1) ,
+                        new Point(x1 , y1 + 1) ,
 
-                    options.Add(new Point(x1 - 1 , y1 - 1));
-                    options.Add(new Point(x1 - 1 , y1 + 1));
-                    options.Add(new Point(x1 + 1 , y1 - 1));
-                    options.Add(new Point(x1 + 1 , y1 + 1));
+                        new Point(x1 - 1 , y1 - 1) ,
+                        new Point(x1 - 1 , y1 + 1) ,
+                        new Point(x1 + 1 , y1 - 1) ,
+                        new Point(x1 + 1 , y1 + 1)
+                    };
                     var pt = FindBestOption(x2,y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
@@ -906,35 +921,79 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
-        private void DrawLineInternal(Brush p , Matrix p1 , Matrix p2)
+        private void DrawLineInternal(Brush p , PointF p1 , PointF p2)
         {
 
             // < line x1 = "0" y1 = "0" x2 = "200" y2 = "200" style = "stroke:rgb(255,0,0);stroke-width:2" />
-            int x1 = (int)p1[0,0];
-            int x2 = (int)p2[0,0];
-            int y1 = (int)p1[1,0];
-            int y2 = (int)p2[1,0];
+            int x1 = (int)p1.X;
+            int x2 = (int)p2.X;
+            int y1 = (int)p1.Y;
+            int y2 = (int)p2.Y;
 
-            //bmp.instructions.AddLast(new Instruction("line" , x1 , y1 , x2 , y2 , p));
+            
+            if ( LineMode == LineMode.ForLoop )
+            {
 
-            double dx = (x2 - x1) ;
-            double dy = (y2 - y1) ;
-            double dydx = dy/dx;
-            double dxdy = dx/dy;
+                double dx = (x2 - x1) ;
+                double dy = (y2 - y1) ;
+                double dydx = dy/dx;
+                double dxdy = dx/dy;
 
-            if ( dx < 0 )
-                for ( var i = x2; i < x1; i++ )
-                    SetPixelInternal(p , i , y2 + dydx * ( i - x2 ));
-            else
-                for ( var i = x1; i < x2; i++ )
-                    SetPixelInternal(p , i , y1 + dydx * ( i - x1 ));
+                if ( dx < 0 )
+                    for ( var i = x2; i < x1; i++ )
+                        SetPixelInternal(p , i , y2 + dydx * ( i - x2 ));
+                else
+                    for ( var i = x1; i < x2; i++ )
+                        SetPixelInternal(p , i , y1 + dydx * ( i - x1 ));
 
-            if ( dy < 0 )
-                for ( var i = y2; i < y1; i++ )
-                    SetPixelInternal(p , x2 + dxdy * ( i - y2 ) , i);
-            else
-                for ( var i = y1; i < y2; i++ )
-                    SetPixelInternal(p , x1 + dxdy * ( i - y1 ) , i);
+                if ( dy < 0 )
+                    for ( var i = y2; i < y1; i++ )
+                        SetPixelInternal(p , x2 + dxdy * ( i - y2 ) , i);
+                else
+                    for ( var i = y1; i < y2; i++ )
+                        SetPixelInternal(p , x1 + dxdy * ( i - y1 ) , i);
+            }
+            else if ( LineMode == LineMode.FourConnex )
+            {
+                SetPixelInternal(p , x1 , y1);
+                while ( y1 != y2 || x2 != x1 )
+                {
+                    var options = new List<Point>(4)
+                    {
+                        new Point(x1 - 1 , y1) ,
+                        new Point(x1 + 1 , y1) ,
+                        new Point(x1 , y1 - 1) ,
+                        new Point(x1 , y1 + 1)
+                    };
+                    var pt = FindBestOption(x2,y2, options);
+                    x1 = pt.X;
+                    y1 = pt.Y;
+                    SetPixelInternal(p , x1 , y1);
+                }
+            }
+            else if ( LineMode == LineMode.EightConnex )
+            {
+                SetPixelInternal(p , x1 , y1);
+                while ( y1 != y2 || x2 != x1 )
+                {
+                    var options = new List<Point>(8)
+                    {
+                        new Point(x1 - 1 , y1) ,
+                        new Point(x1 + 1 , y1) ,
+                        new Point(x1 , y1 - 1) ,
+                        new Point(x1 , y1 + 1) ,
+
+                        new Point(x1 - 1 , y1 - 1) ,
+                        new Point(x1 - 1 , y1 + 1) ,
+                        new Point(x1 + 1 , y1 - 1) ,
+                        new Point(x1 + 1 , y1 + 1)
+                    };
+                    var pt = FindBestOption(x2,y2, options);
+                    x1 = pt.X;
+                    y1 = pt.Y;
+                    SetPixelInternal(p , x1 , y1);
+                }
+            }
         }
         /// <summary>
         /// Draw circle outline
@@ -945,9 +1004,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="r">Radius</param>
         public virtual void DrawCircle(Pixel p , int x0 , int y0 , double r)
         {
-            Matrix px = Transform(x0,y0);
-
-            //bmp.instructions.AddLast(new Instruction("circle" , px[0 , 0] , px[1 , 0] , r , 1 , p));
+            Point px = TransformUsingMatrix(x0,y0);
 
             var poly = GetCirclePolygon(x0 , y0 , r);
 
@@ -962,9 +1019,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="r">Radius</param>
         public virtual void DrawCircle(Brush p , int x0 , int y0 , double r)
         {
-            Matrix px = Transform(x0,y0);
-
-            //bmp.instructions.AddLast(new Instruction("circle" , px[0 , 0] , px[1 , 0] , r , 1 , p));
+            Point px = TransformUsingMatrix(x0,y0);
 
             var poly = GetCirclePolygon(x0 , y0 , r);
 
@@ -1021,9 +1076,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="r">Radius</param>
         public virtual void FillCircle(Pixel p , int x0 , int y0 , double r)
         {
-            Matrix px = Transform(x0,y0);
-
-            //bmp.instructions.AddLast(new Instruction("circleF" , px[0 , 0] , px[1 , 0] , r , p));
+            Point px = TransformUsingMatrix(x0,y0);
 
             var poly = GetCirclePolygon(x0 , y0 , r);
 
@@ -1038,9 +1091,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="r">Radius</param>
         public virtual void FillCircle(Brush p , int x0 , int y0 , double r)
         {
-            Matrix px = Transform(x0,y0);
-
-            //bmp.instructions.AddLast(new Instruction("circleF" , px[0 , 0] , px[1 , 0] , r , p));
+            Point px = TransformUsingMatrix(x0,y0);
 
             var poly = GetCirclePolygon(x0 , y0 , r);
 
@@ -1056,7 +1107,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void FillEllipse(Pixel p , int x , int y , int w , int h)
         {
-            var poly = getEllipse(x , y , w,h);
+            var poly = GetEllipse(x , y , w,h);
             FillPolygon(p , poly);
         }
         /// <summary>
@@ -1069,7 +1120,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void FillEllipse(Brush p , int x , int y , int w , int h)
         {
-            var poly = getEllipse(x , y , w,h);
+            var poly = GetEllipse(x , y , w,h);
             FillPolygon(p , poly);
         }
         /// <summary>
@@ -1082,7 +1133,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void DrawEllipse(Pixel p , int x , int y , int w , int h)
         {
-            var poly = getEllipse(x , y , w,h);
+            var poly = GetEllipse(x , y , w,h);
             DrawPolygon(p , poly);
         }
         /// <summary>
@@ -1095,7 +1146,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void DrawEllipse(Brush p , int x , int y , int w , int h)
         {
-            var poly = getEllipse(x , y , w,h);
+            var poly = GetEllipse(x , y , w,h);
             DrawPolygon(p , poly);
         }
         /// 
@@ -1114,7 +1165,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 DrawEllipse(p , x , y , w , h);
             else
             {
-                var poly = getEllipse(x , y , w,h);
+                var poly = GetEllipse(x , y , w,h);
                 DrawPolygon(p , t , poly);
             }
         }
@@ -1134,7 +1185,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 DrawEllipse(p , x , y , w , h);
             else
             {
-                var poly = getEllipse(x , y , w,h);
+                var poly = GetEllipse(x , y , w,h);
                 DrawPolygon(p , t , poly);
             }
         }
@@ -1376,7 +1427,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns></returns>
         private PointF[ ] GetPiePolygon(int x0 , int y0 , double w , double h , double spanAngle , double startAngle)
         {
-            var poly = getEllipse(x0-(int)w/2 , y0-(int)h/2 , (int)w,(int)h);
+            var poly = GetEllipse(x0-(int)w/2 , y0-(int)h/2 , (int)w,(int)h);
             var count = poly.Length;
 
             int start = (int)System.Math.Ceiling(startAngle/2/System.Math.PI*count);
@@ -1437,7 +1488,7 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return ret;
         }
-        private PointF[ ] getEllipse(int x , int y , int w , int h)
+        private PointF[ ] GetEllipse(int x , int y , int w , int h)
         {
             var min=System.Math.Min(w , h);
             var points =GetCirclePolygon(w/2 , h/2 , min);
@@ -1483,10 +1534,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="y">Y position</param>
         public virtual void SetPixel(Pixel p , double x , double y)
         {
-            var p1 = new Matrix(new double[ , ] { { x } , { y }, { 1 } });
-            p1 = Transform(p1);
+            var p1 = new PointF(x,y);
+            p1 = TransformUsingMatrix(p1);
 
-            SetPixelInternal(p , p1[0 , 0] , p1[1 , 0]);
+            SetPixelInternal(p , p1.X , p1.Y);
         }
         /// <summary>
         /// Set the pixel with specified color
@@ -1496,19 +1547,32 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="y">Y position</param>
         public virtual void SetPixel(Brush p , double x , double y)
         {
-            var p1 = new Matrix(new double[ , ] { { x } , { y }, { 1 } });
-            p1 = Transform(p1);
+            var p1 = new PointF(x,y);
+            p1 = TransformUsingMatrix(p1);
 
-            SetPixelInternal(p.GetColor(( int ) x , ( int ) y) , p1[0 , 0] , p1[1 , 0]);
+            SetPixelInternal(p.GetColor(( int ) x , ( int ) y) , p1.X , p1.Y);
         }
-        /// <summary>
-        /// Used to transform point using transforamtion matrix
-        /// </summary>
-        /// <param name="p1">Point</param>
-        /// <returns>Transformed point</returns>
-        private Matrix Transform(Matrix p1)
+
+        public PointF TransformUsingMatrix(PointF a,Matrix transformationMatrix)
         {
-            return transformationMatrix * p1;
+            if ( PreTransformFunction != null )
+                a = PreTransformFunction(a);
+            var mt = transformationMatrix * new Matrix(new double[,]{{a.X},{a.Y},{ 1 } });
+
+            a=new PointF(( double ) mt[0 , 0] / mt[2 , 0] , ( double ) mt[1 , 0] / mt[2 , 0]);
+            if ( PostTransformFunction != null )
+                a = PostTransformFunction(a);
+            return a;
+        }
+        public PointF TransformUsingMatrix(PointF a)
+        {
+            if ( PreTransformFunction != null )
+                a = PreTransformFunction(a);
+            var mt = transformationMatrix * new Matrix(new double[,]{{a.X},{a.Y},{ 1 } });
+            a = new PointF(( double ) mt[0 , 0] / mt[2 , 0] , ( double ) mt[1 , 0] / mt[2 , 0]);
+            if ( PostTransformFunction != null )
+                a = PostTransformFunction(a);
+            return a;
         }
         /// <summary>
         /// Used to transform point using transforamtion matrix
@@ -1516,10 +1580,30 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="x">X position</param>
         /// <param name="y">Y position</param>
         /// <returns>Transformed point</returns>
-        private Matrix Transform(int x , int y)
+        private PointF TransformUsingMatrix(double x , double y)
         {
-            Matrix p1 = new Matrix(new double[,] { {x }, {y }, {0 } });
-            return transformationMatrix * p1;
+            return TransformUsingMatrix(new PointF(x , y));
+        }
+
+        public Point TransformUsingMatrix(Point a)
+        {
+            if ( PreTransformFunction != null )
+                a = (Point)PreTransformFunction(a);
+            var mt = transformationMatrix * new Matrix(new double[,]{{a.X},{a.Y},{ 1 } });
+            a = (Point)new PointF(( double ) mt[0 , 0] / mt[2 , 0] , ( double ) mt[1 , 0] / mt[2 , 0]);
+            if ( PostTransformFunction != null )
+                a = (Point)PostTransformFunction(a);
+            return a;
+        }
+        /// <summary>
+        /// Used to transform point using transforamtion matrix
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
+        /// <returns>Transformed point</returns>
+        private Point TransformUsingMatrix(int x , int y)
+        {
+            return TransformUsingMatrix(new Point(x , y));
         }
         /// <summary>
         /// Write specifie text in bitmap
@@ -1551,7 +1635,6 @@ namespace MoyskleyTech.ImageProcessing.Image
             float x=ox,y=oy;
             if ( sf == null || sf.Alignment == StringAlignment.Near && sf.LineAlignment == StringAlignment.Near )
             {
-                //bmp.instructions.AddLast(new Instruction("text" , str , x , y , p , size));
                 int mh = 0;
 
                 foreach ( char c in str )
@@ -1614,7 +1697,6 @@ namespace MoyskleyTech.ImageProcessing.Image
             float x=ox,y=oy;
             if ( sf == null || sf.Alignment == StringAlignment.Near && sf.LineAlignment == StringAlignment.Near )
             {
-                //bmp.instructions.AddLast(new Instruction("text" , str , x , y , p , size));
                 int mh = 0;
 
                 foreach ( char c in str )
@@ -1979,20 +2061,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             DrawRotatedEllipse(new SolidBrush(b) , x , y , major , minor , angle , thickness , angleIncrement);
         }
 
-        public virtual void DrawRotatedEllipse(Brush b , double x , double y , double major , double minor , double angle,int thickness=0,double angleIncrement=0)
+        public virtual void DrawRotatedEllipse(Brush b , double x , double y , double major , double minor , double angle , int thickness = 0 , double angleIncrement = 0)
         {
             const double D_PI = System.Math.PI*2;
             if ( angleIncrement == 0 )
-                angleIncrement = D_PI / major/minor;
+                angleIncrement = D_PI / major / minor;
             List<PointF> pts = new List<PointF>();
-            for ( var i = 0d; i < D_PI; i+= angleIncrement )
-                pts.Add(FindEllipsePoint(major , minor , angle ,x,y, i));
+            for ( var i = 0d; i < D_PI; i += angleIncrement )
+                pts.Add(FindEllipsePoint(major , minor , angle , x , y , i));
             DrawPolygon(b , thickness , pts);
         }
 
         public virtual void FillRotatedEllipse(Pixel b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
         {
-            FillRotatedEllipse(new SolidBrush(b) , x , y , major , minor , angle  , angleIncrement);
+            FillRotatedEllipse(new SolidBrush(b) , x , y , major , minor , angle , angleIncrement);
         }
 
         public virtual void FillRotatedEllipse(Brush b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
@@ -2006,16 +2088,89 @@ namespace MoyskleyTech.ImageProcessing.Image
             FillPolygon(b , pts.ToArray());
         }
 
-        private static PointF FindEllipsePoint(double a , double b , double theta,double x,double y , double t)
+        private static PointF FindEllipsePoint(double a , double b , double theta , double x , double y , double t)
         {
             Func<double,double> cos = System.Math.Cos;
             Func<double,double> sin = System.Math.Sin;
             double xt = x+ (a*cos(t)*cos(theta)-b*sin(t)*sin(theta));
             double yt = y+(a*cos(t)*sin(theta)+b*sin(t)*cos(theta));
 
-            return new PointF(xt ,yt);
+            return new PointF(xt , yt);
         }
         #region Transform
+        public virtual void ProjectTransform(PointF[ ] src , PointF[ ] dst)
+        {
+            Matrix A = new Matrix(new double[,]{
+                { src[0].X,src[0].Y,1,0,0,0,-src[0].X*dst[0].X,-src[0].X*dst[0].Y },
+                { 0,0,0,src[0].X,src[0].Y,1,-src[0].Y*dst[0].X,-src[0].Y*dst[0].Y },
+                 { src[1].X,src[1].Y,1,0,0,0,-src[1].X*dst[1].X,-src[1].X*dst[1].Y },
+                { 0,0,0,src[1].X,src[1].Y,1,-src[1].Y*dst[1].X,-src[1].Y*dst[1].Y },
+                 { src[2].X,src[2].Y,1,0,0,0,-src[2].X*dst[2].X,-src[2].X*dst[2].Y },
+                { 0,0,0,src[2].X,src[2].Y,1,-src[2].Y*dst[2].X,-src[2].Y*dst[2].Y },
+                 { src[3].X,src[3].Y,1,0,0,0,-src[3].X*dst[3].X,-src[3].X*dst[3].Y },
+                { 0,0,0,src[3].X,src[3].Y,1,-src[3].Y*dst[3].X,-src[3].Y*dst[3].Y }
+            });
+            Matrix B = new Matrix(new double[,]{ { dst[0].X },{ dst[0].Y },{ dst[1].X },{ dst[1].Y },{ dst[2].X },{ dst[2].Y },{ dst[3].X },{ dst[3].Y }  });
+            try
+            {
+                //var h = (A.Inverted * B).GetColumn(0).ToArray();
+
+                var gauss= A.Augment(B).Gauss();
+
+                double findValue(int pos)
+                {
+                    for ( var l = 0; l < gauss.Rows; l++ )
+                    {
+                        var c = pos;
+                        {
+                            if ( gauss[l , c] == 1 )
+                                return gauss[l , gauss.Columns - 1];
+                        }
+                    }
+                    return 0;
+                }
+                double[] h = new double[]{findValue(0),findValue(1),findValue(2),findValue(3),findValue(4),findValue(5),findValue(6),findValue(7)};
+
+                var H = new Matrix(3,3).Feed(h);
+                /*H[0 , 0] = h[0];
+                H[0 , 1] = h[1];
+                H[0 , 2] = h[2];
+                H[1 , 0] = h[3];
+                H[1 , 1] = h[4];
+                H[1 , 2] = h[5];
+                H[2 , 0] = h[6];
+                H[2 , 1] = h[7];*/
+                H[2 , 2] = 1;
+
+                var M3D = H.InsertRow(2,0,0,0).InsertColumn(2,0,0,1,0);
+
+                string dbg = ("matrix3d("+string.Join(",",M3D.AllValuesByRow().Select((X)=>X.ToString()))+")");
+                string dbg2 = ("matrix3d("+string.Join(",",M3D.AllValuesByColumn().Select((X)=>X.ToString()))+")");
+
+                //try
+                {
+                    PointF[] r = new PointF[4];
+                    for ( var j = 0; j < 4; j++ )
+                    {
+                        r[j] = TransformUsingMatrix(src[0] , H);
+
+                        if ( System.Math.Abs(dst[j].X - r[j].X) > 2 )
+                        {
+                            int shouldNotGetHere=2;
+                        }
+                        if ( System.Math.Abs(dst[j].Y - r[j].Y) > 2 )
+                        {
+                            int shouldNotGetHere=2;
+                        }
+                    }
+                }
+                transformationMatrix = transformationMatrix * H;
+                int i=6;
+            }
+            catch
+            {
+            }
+        }
         /// <summary>
         /// Rotate graphics using specified angle in radian
         /// </summary>
@@ -2030,7 +2185,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             mt[0 , 0] = System.Math.Cos(angle);
             mt[0 , 1] = System.Math.Sin(angle);
             mt[1 , 0] = -System.Math.Sin(angle);
-            mt[2 , 1] = System.Math.Cos(angle);
+            mt[1 , 1] = System.Math.Cos(angle);
             transformationMatrix = transformationMatrix * mt;
         }
         /// <summary>
@@ -2083,8 +2238,47 @@ namespace MoyskleyTech.ImageProcessing.Image
         public virtual void ResetTransform()
         {
             transformationMatrix = Matrix.Identity(3);
+            PreTransformFunction = null;
+            PostTransformFunction = null;
         }
         #endregion
+
+        protected Pixel this[int m]
+        {
+            get
+            {
+                if ( bmp != null )
+                    return bmp[m];
+                else
+                    return proxy[m];
+            }
+            set
+            {
+                if ( bmp != null )
+                    bmp[m] = value ;
+                else
+                    proxy[m] = value;
+            }
+        }
+        protected Pixel this[int x,int y]
+        {
+            get
+            {
+                if ( bmp != null )
+                    return bmp[x,y];
+                else
+                    return proxy[x,y];
+            }
+            set
+            {
+                if ( bmp != null )
+                    bmp[x , y] = value;
+                else if ( proxy != null )
+                    proxy[x , y] = value;
+                else
+                    gProxy.SetPixelInternal(value , x+this.x.Value , y + this.y.Value,false);
+            }
+        }
     }
 }
 

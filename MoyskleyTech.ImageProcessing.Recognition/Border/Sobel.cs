@@ -10,8 +10,12 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
     public class Sobel
     {
         //Thanks to Epoch abuse https://epochabuse.com/csharp-sobel/
-        public static Bitmap ConvolutionFilter(Bitmap sourceImage , double[ , ] xkernel , double[ , ] ykernel , double factor = 1 , int bias = 0)
+        public static Bitmap ConvolutionFilter(Bitmap sourceImage , double[ , ] xkernel =null, double[ , ] ykernel = null , double factor = 1 , int bias = 0)
         {
+            if ( xkernel == null )
+                xkernel = xSobel;
+            if ( ykernel == null )
+                ykernel = ySobel;
             Bitmap result = sourceImage.Clone();
             //Image dimensions stored in variables for convenience
             int width = sourceImage.Width;
@@ -85,18 +89,22 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     if ( at > 255 ) at = 255;
                     else if ( at < 0 ) at = 0;
 
-                    var px = new Pixel();
-                    px.B = ( byte ) ( bt );
-                    px.G = ( byte ) ( gt );
-                    px.R = ( byte ) ( rt );
-                    px.A = 255;// ( byte ) ( at );
+                    var px = new Pixel
+                    {
+                        B = ( byte ) ( bt ) ,
+                        G = ( byte ) ( gt ) ,
+                        R = ( byte ) ( rt ) ,
+                        A = 255// ( byte ) ( at );
+                    };
                     result[byteOffset] = px;
                 }
             }
 
             return result;
         }
+#pragma warning disable IDE1006 // Naming Styles
         public static double[ , ] xSobel
+#pragma warning restore IDE1006 // Naming Styles
         {
             get
             {
@@ -108,9 +116,10 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                 };
             }
         }
-
+#pragma warning disable IDE1006 // Naming Styles
         //Sobel operator kernel for vertical pixel changes
         public static double[ , ] ySobel
+#pragma warning restore IDE1006 // Naming Styles
         {
             get
             {

@@ -6,13 +6,10 @@ using System.IO.Compression;
 // ONLY FOR .NET 4.5
 namespace Hjg.Pngcs.Zlib
 {
-
-
-
     /// <summary>
     /// Zip input (deflater) based on Ms DeflateStream (.net 4.5)
     /// </summary>
-    internal class ZlibInputStreamMs : AZlibInputStream
+    public class ZlibInputStreamMs : AZlibInputStream
     {
 
         public ZlibInputStreamMs(Stream st , bool leaveOpen)

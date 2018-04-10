@@ -10,6 +10,7 @@ using MoyskleyTech.ImageProcessing.Image;
 using MoyskleyTech.ImageProcessing;
 using Microsoft.VisualBasic;
 using System.Drawing.Text;
+using MoyskleyTech.ImageProcessing.WinForm;
 
 namespace FontEditor
 {
@@ -17,8 +18,9 @@ namespace FontEditor
     public partial class Form1 : Form
     {
         Font current= new MoyskleyTech.ImageProcessing.Image.Font("");
-        Bitmap bmp;
-        Graphics g;
+        //Bitmap bmp;
+        Graphics g,gu;
+        
         System.Drawing.Bitmap img;
         int currentCharIndex=0;
         bool[,] currentChar= new bool[0,0];
@@ -30,13 +32,13 @@ namespace FontEditor
 
         private void Form1_Load(object sender , EventArgs e)
         {
-            bmp = new Bitmap(pbChar.Width , pbChar.Height);
+            // bmp = new Bitmap(pbChar.Width , pbChar.Height);
             img = new System.Drawing.Bitmap(pbChar.Width , pbChar.Height);
             grid = Pixel.FromArgb(0xFF0072FF);
             black = Pixel.FromArgb(0xFF000000);
             transparent = Pixel.FromArgb(0);
-            g = Graphics.FromImage(bmp);
-
+            g = (gu=new NativeGraphicsWrapper(System.Drawing.Graphics.FromImage(img))).Proxy(new Rectangle(0 , 0 , img.Width , img.Height));
+            //g = Graphics.FromImage(bmp);
         }
 
         private void ouvrirToolStripMenuItem_Click(object sender , EventArgs e)
@@ -100,8 +102,8 @@ namespace FontEditor
             int charh = currentChar.GetLength(0);
             if ( charh != 0 && charw != 0 )
             {
-                int width = bmp.Width/charw;
-                int height = bmp.Height/charh;
+                int width = img.Width/charw;
+                int height = img.Height/charh;
 
                 int x,y;
                 x = e.X / width;
@@ -253,24 +255,24 @@ namespace FontEditor
 
         private void ShowChar()
         {
-            g.Clear(transparent);
+            gu.Clear(transparent);
 
             int charw = currentChar.GetLength(1);
             int charh = currentChar.GetLength(0);
             if ( charh != 0 && charw != 0 )
             {
-                int width = bmp.Width/charw;
-                int height = bmp.Height/charh;
+                int width = img.Width/charw;
+                int height = img.Height/charh;
 
                 for ( var i = 0 ; i < charh ; i++ )
                 {
-                    g.DrawLine(grid , 0 , i * height , bmp.Width , i * height);
+                    gu.DrawLine(grid , 0 , i * height , img.Width , i * height);
                 }
 
                 for ( var i = 0 ; i < charh ; i++ )
                 {
-                    g.DrawLine(grid , i * width , 0 , i * width , bmp.Height);
-                    g.DrawLine(grid , ( i + 1 ) * width , 0 , ( i + 1 ) * width , bmp.Height);
+                    gu.DrawLine(grid , i * width , 0 , i * width , img.Height);
+                    gu.DrawLine(grid , ( i + 1 ) * width , 0 , ( i + 1 ) * width , img.Height);
                 }
 
                 for ( var i = 0 ; i < charh ; i++ )
@@ -278,16 +280,17 @@ namespace FontEditor
                     for ( var j = 0 ; j < charw ; j++ )
                     {
                         if ( currentChar[i , j] )
-                            for ( var k = 0 ; k < width ; k++ )
-                                g.DrawLine(black , j * width + k , i * height , j * width + k , i * height + height);
+                            gu.FillRectangle(black , j * width , i * height , width , height);
+                            //for ( var k = 0 ; k < width ; k++ )
+                            //    gu.DrawLine(black , j * width + k , i * height , j * width + k , i * height + height);
                     }
                 }
 
             }
             g.DrawString(tbDemo.Text.Replace("\\t","\t") , grid , 3 , 3 , current , 1);
-            var loc = img.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            bmp.CopyToBGRA(loc.Scan0);
-            img.UnlockBits(loc);
+            //var loc = img.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            //bmp.CopyToBGRA(loc.Scan0);
+            //img.UnlockBits(loc);
             pbChar.Image = img;
             pbChar.Invalidate();
         }

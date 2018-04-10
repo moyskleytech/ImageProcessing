@@ -59,6 +59,10 @@
       <Project>{154dd636-43af-45e8-bf4f-d10f85298a4b}</Project>
       <Name>ImageProcessing.PNGCodec</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MoyskleyTech.Core\MoyskleyTech.Core.csproj">
+      <Project>{abf04cae-0c9a-4a4b-b99a-4fad666d5d86}</Project>
+      <Name>MoyskleyTech.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing.Filters\MoyskleyTech.ImageProcessing.Filters.csproj">
       <Project>{d6048839-427c-4e84-9d3c-a56202d7a2d5}</Project>
       <Name>MoyskleyTech.ImageProcessing.Filters</Name>

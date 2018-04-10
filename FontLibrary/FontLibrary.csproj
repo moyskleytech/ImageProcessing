@@ -576,6 +576,8 @@
     <EmbeddedResource Include="Fonts\Yu Gothic UI Semilight_2x.bin" />
     <EmbeddedResource Include="Fonts\Yu Gothic UI_2x.bin" />
     <EmbeddedResource Include="Fonts\Yu Gothic_2x.bin" />
+    <EmbeddedResource Include="Fonts\POKEMON GB.bin" />
+    <EmbeddedResource Include="Fonts\POKEMON UNOWN GB.bin" />
     <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

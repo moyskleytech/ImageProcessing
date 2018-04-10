@@ -9,7 +9,20 @@ namespace Hjg.Pngcs {
     using System.Runtime.CompilerServices;
     using Chunks;
     using Hjg.Pngcs.Zlib;
+    using System.Reflection;
+    using System.Linq;
 
+    public static class ObjectE
+    {
+        public static object TryExecute(this object o,string name,params object[] parameters)
+        {
+            try
+            {
+                return o.GetType().GetRuntimeMethod(name , ( from x in parameters select x.GetType() ).ToArray())?.Invoke(o , parameters);
+            }
+            catch { return null; }
+        }
+    }
     /// <summary>
     ///  Writes a PNG image, line by line.
     /// </summary>
@@ -40,10 +53,6 @@ namespace Hjg.Pngcs {
         /// 9 is the maximum compression
         /// </remarks>
         public int CompLevel { get; set; }
-        /// <summary>
-        /// true: closes stream after ending write
-        /// </summary>
-        public bool ShouldCloseStream { get; set; }
         /// <summary>
         /// Maximum size of IDAT chunks
         /// </summary>
@@ -120,7 +129,6 @@ namespace Hjg.Pngcs {
             this.ImgInfo = imgInfo;
             // defaults settings
             this.CompLevel = 6;
-            this.ShouldCloseStream = true;
             this.IdatMaxSize = 0; // use default
             this.CompressionStrategy = EDeflateCompressStrategy.Filtered;
             // prealloc
@@ -183,6 +191,7 @@ namespace Hjg.Pngcs {
         private void WriteLastChunks() { // not including end
             CurrentChunkGroup = ChunksList.CHUNK_GROUP_5_AFTERIDAT;
             chunksList.writeChunks(outputStream, CurrentChunkGroup);
+            outputStream.Flush();
             // should not be unwriten chunks
             List<PngChunk> pending = chunksList.GetQueuedChunks();
             if (pending.Count > 0)
@@ -339,6 +348,7 @@ namespace Hjg.Pngcs {
         private void filterAndSend(int rown) {
             FilterRow(rown);
             datStreamDeflated.Write(rowbfilter, 0, ImgInfo.BytesPerRow + 1);
+            datStreamDeflated.Flush();
         }
 
         private void FilterRowAverage() {
@@ -475,8 +485,10 @@ namespace Hjg.Pngcs {
                 throw new PngjOutputException("all rows have not been written");
             try {
                 datStreamDeflated?.Flush();
+                datStreamDeflated?.TryExecute("Close");
                 datStreamDeflated?.Dispose();
 
+                datStream.Flush();
                 datStream.Close();
                 
                 WriteLastChunks();

@@ -72,10 +72,11 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 yield return actual / max;
             }
         }
-        private static Func<Pixel[ ]> GetBeginningMean(int count,ImageStatistics stats)
+        private static Func<Pixel[ ]> GetBeginningMean(int count , ImageStatistics stats)
         {
             Random r = new Random();
-            return () => {
+            return () =>
+            {
                 var dom = stats.ColorStatistics.Dominance;
                 var range=dom.Count;
                 return ( from x in Enumerable.Range(0 , count) select dom.ElementAt(range / count * x).Key ).ToArray();
@@ -86,18 +87,17 @@ namespace MoyskleyTech.ImageProcessing.Filters
         private static Func<HSB[ ]> GetBeginningMeanHSB(int count , ImageStatistics stats)
         {
             Random r = new Random();
-            return () => {
+            return () =>
+            {
                 return GetBeginningMean(count , stats)().Select((x) => x.ToHSB()).ToArray();
             };
         }
-        public static List<Pixel> FromKMeans(ImageProxy bmp , int colorCount)
+        public static List<Pixel> FromKMeans(ImageProxy bmp , int colorCount, Func<Pixel , Pixel , double> getDistance=null)
         {
             var statistics = new ImageStatistics(bmp);
             IEnumerable<Pixel> colors=null;
-            double getDistance(Pixel a , Pixel b)
-            {
-                return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
-            }
+            if ( getDistance == null )
+                getDistance = RGBDistanceBasic;
             if ( statistics.ColorStatistics.Dominance.Count > colorCount )
             {
                 Random r = new Random();
@@ -146,14 +146,12 @@ namespace MoyskleyTech.ImageProcessing.Filters
 
             return colors.ToList();
         }
-        public static List<Pixel> FromKMeansHSB(ImageProxy bmp , int colorCount)
+        public static List<Pixel> FromKMeansHSB(ImageProxy bmp , int colorCount , Func<HSB , HSB , double> getDistance = null)
         {
             var statistics = new ImageStatistics(bmp);
             IEnumerable<HSB> colors=null;
-            double getDistance(HSB a , HSB b)
-            {
-                return 5*System.Math.Abs(a.H - b.H) + 2*System.Math.Abs(a.S - b.S) + System.Math.Abs(a.B - b.B);
-            }
+            if ( getDistance == null )
+                getDistance = HSBDistanceBasic;
             if ( statistics.ColorStatistics.Dominance.Count > colorCount )
             {
                 Random r = new Random();
@@ -167,7 +165,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
                         double avgB = inp.Average((x) => x.B);
                         return HSB.FromHSB(( byte ) avgR , ( byte ) avgG , ( byte ) avgB);
                     }
-                    return HSB.FromHSB(128,0,0);
+                    return HSB.FromHSB(128 , 0 , 0);
                 }
                 //var colors = statistics.ColorStatistics.Dominance.OrderByDescending((x) => x.Value).Take(colorCount).Select((x)=>x.Key).ToArray() ;
                 KMeans<HSB> p = new KMeans<HSB>(colorCount,GetBeginningMeanHSB(colorCount,statistics),getDistance,getMean,
@@ -200,21 +198,19 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 for ( var y = 0; y < bmp.Height; y++ )
                     bmp[x , y] = getClosest(bmp[x , y]);
 
-            return colors.Select((x)=>x.ToRGB()).ToList();
+            return colors.Select((x) => x.ToRGB()).ToList();
         }
 
-        public static void FromXMeans(ImageProxy bmp , int colorCount,int maxDistance=50)
+        public static void FromXMeans(ImageProxy bmp , int colorCount , int maxDistance = 50 , Func<Pixel , Pixel , double> getDistance = null)
         {
             var statistics = new ImageStatistics(bmp);
             IEnumerable<Pixel> colors=null;
-            double getDistance(Pixel a , Pixel b)
-            {
-                return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
-            }
+            if ( getDistance == null )
+                getDistance = RGBDistanceBasic;
             if ( statistics.ColorStatistics.Dominance.Count > colorCount )
             {
                 Random r = new Random();
-               
+
                 Pixel getMean(IEnumerable<Pixel> inp)
                 {
                     if ( inp.Any() )
@@ -257,17 +253,15 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 for ( var y = 0; y < bmp.Height; y++ )
                     bmp[x , y] = getClosest(bmp[x , y]);
         }
-        public static void FromPalette(ImageProxy bmp , BitmapPalette8bpp palette)
+        public static void FromPalette(ImageProxy bmp , BitmapPalette8bpp palette, Func<Pixel , Pixel , double> getDistance = null)
         {
-            double getDistance(Pixel a , Pixel b)
-            {
-                return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
-            }
+            if ( getDistance == null )
+                getDistance = RGBDistanceBasic;
             Pixel getClosest(Pixel inp)
             {
                 Pixel output = Pixels.Black;
                 double distance=double.MaxValue;
-                for(var i=0;i<256;i++)
+                for ( var i = 0; i < 256; i++ )
                 {
                     var c = palette[i];
                     var d = getDistance(inp,c);
@@ -285,14 +279,12 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 for ( var y = 0; y < bmp.Height; y++ )
                     bmp[x , y] = getClosest(bmp[x , y]);
         }
-        public static void FromPalette(ImageProxy bmp , List<Pixel> palette, Dictionary<Pixel , Pixel> cache=null)
+        public static void FromPalette(ImageProxy bmp , List<Pixel> palette , Dictionary<Pixel , Pixel> cache = null , Func<Pixel , Pixel , double> getDistance = null)
         {
             if ( cache == null )
                 cache = new Dictionary<Pixel , Pixel>();
-            double getDistance(Pixel a , Pixel b)
-            {
-                return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
-            }
+            if ( getDistance == null )
+                getDistance = RGBDistanceBasic;
             Pixel getClosest(Pixel inp)
             {
                 Pixel output = Pixels.Black;
@@ -318,8 +310,58 @@ namespace MoyskleyTech.ImageProcessing.Filters
                     if ( cache.ContainsKey(px) )
                         bmp[x , y] = cache[px];
                     else
-                        bmp[x , y] = cache[px]= getClosest(bmp[x , y]);
+                        bmp[x , y] = cache[px] = getClosest(bmp[x , y]);
                 }
+        }
+
+        public static Func<Pixel , Pixel , double> RGBDistanceBasic
+        {
+            get
+            {
+                double getDistance(Pixel a , Pixel b)
+                {
+                    return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
+                }
+                return getDistance;
+            }
+        }
+        public static Func<HSB , HSB , double> HSBDistanceBasic
+        {
+            get
+            {
+                double getDistance(HSB a , HSB b)
+                {
+                    return 5 * System.Math.Abs(a.H - b.H) + 2 * System.Math.Abs(a.S - b.S) + System.Math.Abs(a.B - b.B);
+                }
+                return getDistance;
+            }
+        }
+        public static Func<HSB , HSB , double> RGBDistanceInHSBImage
+        {
+            get
+            {
+                double getDistance(HSB c , HSB d)
+                {
+                    var a = c.ToRGB();
+                    var b = d.ToRGB();
+
+                    return System.Math.Abs(a.R - b.R) + System.Math.Abs(a.G - b.G) + System.Math.Abs(a.B - b.B);
+                }
+                return getDistance;
+            }
+        }
+        public static Func<Pixel , Pixel , double> HSBDistanceInRGBImage
+        {
+            get
+            {
+                double getDistance(Pixel c, Pixel d)
+                {
+                    var a = c.ToHSB();
+                    var b = d.ToHSB();
+                    return 5 * System.Math.Abs(a.H - b.H) + 2 * System.Math.Abs(a.S - b.S) + System.Math.Abs(a.B - b.B);
+                }
+                return getDistance;
+            }
         }
     }
 }

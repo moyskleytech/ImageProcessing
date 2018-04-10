@@ -215,9 +215,15 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             FillRectangle(p , x , y , 1 , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py)
+        protected override void SetPixelInternal(Pixel p , double px , double py, bool alpha)
         {
-
+            var brush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(p.A,p.R,p.G,p.B));
+            var mode = ctx.CompositingMode;
+            if(!alpha)
+                ctx.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+            ctx.FillRectangle(brush , (float)px , ( float ) py , 1 , 1);
+            ctx.CompositingMode = mode;
+            brush.Dispose();
         }
         public void DrawImage(System.Drawing.Bitmap src , int x , int y)
         {
@@ -272,6 +278,8 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
         private System.Drawing.StringFormat Convert(Image.StringFormat sf)
         {
+            if ( sf == null )
+                return new System.Drawing.StringFormat();
             return new System.Drawing.StringFormat() { Alignment = Convert(sf.Alignment) , LineAlignment = Convert(sf.LineAlignment) };
         }
         private System.Drawing.StringAlignment Convert(Image.StringAlignment alignment)

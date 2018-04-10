@@ -17,8 +17,10 @@ namespace SobelExample
         {
             ImageProcessing.PNGCodec.PngCodec.Register();
             ImageProcessing.JPEGCodec.JPEGCodec.Register();
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files(*.BMP;*.PNG;*.JPG)|*.BMP;*.PNG;*.JPG";
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "Image Files(*.BMP;*.PNG;*.JPG)|*.BMP;*.PNG;*.JPG"
+            };
             if ( ofd.ShowDialog() == DialogResult.OK )
             {
                 var fs = ofd.OpenFile();
@@ -39,12 +41,13 @@ namespace SobelExample
         }
         public static void ShowImage(Bitmap bmp , string name = "")
         {
-            Form f = new Form();
-            f.Width = bmp.Width;
-            f.Height = bmp.Height;
-            f.Text = name;
-            f.BackgroundImage = bmp.ToWinFormBitmap();
-            f.ShowDialog();
+            new Form()
+            {
+                Width = bmp.Width ,
+                Height = bmp.Height ,
+                Text = name ,
+                BackgroundImage = bmp.ToWinFormBitmap()
+            }.ShowDialog();
         }
     }
 }

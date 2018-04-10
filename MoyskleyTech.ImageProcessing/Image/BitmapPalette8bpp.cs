@@ -40,6 +40,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
+        public int this[Pixel index]
+        {
+            get
+            {
+               return Array.IndexOf<Pixel>(inner,index);
+            }
+        }
 
         internal void CheckIfAlphaZero()
         {

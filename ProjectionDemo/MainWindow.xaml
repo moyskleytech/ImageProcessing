@@ -1,0 +1,19 @@
+﻿<Window x:Class="ProjectionDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjectionDemo"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="418.971">
+    <Canvas>
+
+        <Border MouseLeftButtonUp="SelectNewImage" Background="Black" BorderBrush="Black" BorderThickness="1" Height="300" Canvas.Left="10" Canvas.Top="10" Width="190">
+            <Image x:Name="imgSrc" />
+        </Border>
+        <Border  MouseLeftButtonUp="SetProjectPoint" Background="Black" BorderBrush="Black" BorderThickness="1" Height="300" Canvas.Left="210" Canvas.Top="10" Width="190">
+            <Image x:Name="imgDst"/>
+        </Border>
+
+    </Canvas>
+</Window>

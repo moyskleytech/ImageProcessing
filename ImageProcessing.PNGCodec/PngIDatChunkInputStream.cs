@@ -87,7 +87,7 @@ namespace Hjg.Pngcs {
                 Hjg.Pngcs.PngHelperInternal.ReadBytes(inputStream, idLastChunk, 0, 4);
                 offset += 8;
 
-                ended = !PngCsUtils.arraysEqual4(idLastChunk, Hjg.Pngcs.Chunks.ChunkHelper.b_IDAT);
+                ended = !PngCsUtils.ArraysEqual4(idLastChunk, Hjg.Pngcs.Chunks.ChunkHelper.b_IDAT);
                 if (!ended) {
                     foundChunksInfo.Add(new PngIDatChunkInputStream.IdatChunkInfo(lenLastChunk, (offset - 8)));
                     if (checkCrc)

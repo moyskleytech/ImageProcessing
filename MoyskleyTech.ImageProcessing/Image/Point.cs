@@ -40,12 +40,30 @@ namespace MoyskleyTech.ImageProcessing.Image
             return new Point(X + x , Y + y);
         }
         /// <summary>
+        /// Move point by specified value
+        /// </summary>
+        /// <param name="x">offset</param>
+        /// <returns></returns>
+        public Point Move(Point x)
+        {
+            return new Point(X + x.X , Y + x.Y);
+        }
+        /// <summary>
         /// Write point
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
             return "{x:" + X + ",y:" + Y + "}";
+        }
+
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator Math.Matrix.Matrix(Point p)
+        {
+            return new Math.Matrix.Matrix(new double[ , ] { { p.X } , { p.Y } , { 1 } });
         }
     }
     /// <summary>
@@ -82,6 +100,15 @@ namespace MoyskleyTech.ImageProcessing.Image
             return new PointF(X + x , Y + y);
         }
         /// <summary>
+        /// Move point by specified value
+        /// </summary>
+        /// <param name="x">offset</param>
+        /// <returns></returns>
+        public PointF Move(PointF x)
+        {
+            return new PointF(X + x.X , Y + x.Y);
+        }
+        /// <summary>
         /// Write point
         /// </summary>
         /// <returns></returns>
@@ -96,6 +123,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static implicit operator PointF(Point p)
         {
             return new PointF(p.X , p.Y);
+        }
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
+        public static explicit operator Point(PointF p)
+        {
+            return new Point((int)p.X , (int)p.Y);
+        }
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator Math.Matrix.Matrix(PointF p)
+        {
+            return new Math.Matrix.Matrix(new double[ , ] { { p.X } , { p.Y } , { 1 } });
         }
     }
 }

@@ -50,9 +50,8 @@ namespace ImageProcessing.PNGCodec
 
         public unsafe void Save(Bitmap bmp , Stream s)
         {
-            PngWriter pngw = new PngWriter(s, new ImageInfo(bmp.Width,bmp.Height,8,true));
+            PngWriter pngw = new PngWriter(s, new ImageInfo(bmp.Width,bmp.Height,8,true,false,false));
             pngw.SetUseUnPackedMode(true);
-            pngw.ShouldCloseStream = false;
             for ( var r = 0; r < bmp.Height; r++ )
             {
                 byte[] rowB = new byte[bmp.Width*4];

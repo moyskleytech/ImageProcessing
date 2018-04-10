@@ -54,6 +54,7 @@
     <Compile Include="Condition\ModuloWhere.cs" />
     <Compile Include="Condition\Where.cs" />
     <Compile Include="Duo.cs" />
+    <Compile Include="Statistics\DescriptiveStatistics.cs" />
     <Compile Include="XMeans.cs" />
     <Compile Include="KMeans.cs" />
     <Compile Include="Linq\LINQ.cs" />

@@ -57,6 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Image\BaseFonts.cs" />
+    <Compile Include="Image\BitmapInvert.cs" />
+    <Compile Include="Image\BitmapAddition.cs" />
+    <Compile Include="Image\BitmapSubstract.cs" />
     <Compile Include="Image\Filters\Filters.cs" />
     <Compile Include="Image\ImageProxy.cs" />
     <Compile Include="Image\ImageStatistics.cs" />

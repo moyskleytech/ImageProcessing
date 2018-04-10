@@ -95,6 +95,56 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new Image.Pixel() { A = a , R = r , G = g , B = b };
         }
+        public static Pixel FromName(string name)
+        {
+            return Pixels.GetPixel(name);
+        }
+
+        public static Pixel FromRGB565(UInt16 rgb565)
+        {
+            var r = rgb565 >> 11;
+            var g = (rgb565 >> 5) & 0b111111;
+            var b = rgb565 & 0b11111;
+
+            r = r * 256 / 0b11111;
+            g = g * 256 / 0b111111;
+            b = b * 256 / 0b11111;
+            return FromArgb(255 , (byte)r , ( byte ) g , ( byte ) b);
+        }
+        public static Pixel FromRGB555(UInt16 rgb555)
+        {
+            var r = (rgb555 >> 10) &0b11111;
+            var g = (rgb555 >> 5) & 0b11111;
+            var b = rgb555 & 0b11111;
+
+            r = r * 256 / 0b11111;
+            g = g * 256 / 0b11111;
+            b = b * 256 / 0b11111;
+            return FromArgb(255 , ( byte ) r , ( byte ) g , ( byte ) b);
+        }
+
+        public ushort ToRGB565()
+        {
+            int r = R;
+            int g = G;
+            int b = B;
+            r=r * 0b11111 / 256;
+            g = g * 0b111111 / 256;
+            b = b * 0b11111 / 256;
+
+            return ( ushort ) ( r << 11 | g << 5 | b );
+        }
+        public ushort ToRGB555()
+        {
+            int r = R;
+            int g = G;
+            int b = B;
+            r = r * 0b11111 / 256;
+            g = g * 0b11111 / 256;
+            b = b * 0b11111 / 256;
+
+            return ( ushort ) ( r << 10 | g << 5 | b );
+        }
         /// <summary>
         /// Merge pixels
         /// </summary>

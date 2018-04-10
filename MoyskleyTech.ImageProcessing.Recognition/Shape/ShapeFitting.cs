@@ -165,11 +165,11 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
            
             // Secondary test is to check that aTPv is zero too, really only neccessary
             // if the above global check fails.
-            var atp = m_design.Transposee* m_qweight;
+            var atp = m_design.Transposed* m_qweight;
             var atpv = atp* m_residuals;
 
             pass = true;
-            for ( int j = 0; j < m_numUnknowns; ++j )
+            for ( int j = 0; j < NumUnknowns; ++j )
                 pass = pass && (atpv[j , 0]==0);
 
         }
@@ -180,9 +180,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
         {
             for ( int i = 0; i < nbObs; ++i )
             {
-                double vxi = 0.0;
-                double vyi = 0.0;
-                EvaluateFinalResiduals(i ,out vxi ,out vyi); // overridden for normal (non-quasi-parametric) BestFitLine
+                EvaluateFinalResiduals(i , out double vxi , out double vyi); // overridden for normal (non-quasi-parametric) BestFitLine
 
                 m_observations[i , 0] += vxi;
                 m_observations[i , 1] += vyi;
@@ -202,7 +200,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
 
         private bool HasConverged()
         {
-            for ( int i = 0; i < m_numUnknowns; ++i )
+            for ( int i = 0; i < NumUnknowns; ++i )
             {
                 if ( System.Math.Abs(m_solution[i , 0]) > CONVERGENCE_CRITERIA )
                     return false;
@@ -220,14 +218,14 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
             try
             {
                 MoyskleyTech.Math.Matrix.Matrix pa = (m_qweight* m_design);
-                MoyskleyTech.Math.Matrix.Matrix atpa = ((m_design).Transposee* pa);
+                MoyskleyTech.Math.Matrix.Matrix atpa = ((m_design).Transposed* pa);
 
-                Math.Matrix.Matrix inverse = new Math.Matrix.Matrix(atpa.Lignes, atpa.Colonnes);
+                Math.Matrix.Matrix inverse = new Math.Matrix.Matrix(atpa.Rows, atpa.Columns);
                 //if (CholeskyInversion(atpa, inverse))
 
-                inverse = atpa.MatriceInverse;
+                inverse = atpa.Inverted;
                 Math.Matrix.Matrix pl = (m_qweight* m_l);
-                Math.Matrix.Matrix atpl = ((m_design.Transposee)* pl);
+                Math.Matrix.Matrix atpl = ((m_design.Transposed)* pl);
 
                 m_solution = ( inverse * atpl );
 
@@ -240,12 +238,12 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
             }
         }
 
-        protected abstract int m_numUnknowns { get; }
+        protected abstract int NumUnknowns { get; }
         private void ResizeMatrices()
         {
-            m_provisionals = new Math.Matrix.Matrix(m_numUnknowns , 1);
+            m_provisionals = new Math.Matrix.Matrix(NumUnknowns , 1);
             m_residuals = new Math.Matrix.Matrix(nbObs , 1);
-            m_design = new Math.Matrix.Matrix(nbObs , m_numUnknowns);
+            m_design = new Math.Matrix.Matrix(nbObs , NumUnknowns);
             m_l = new Math.Matrix.Matrix(nbObs , 1);
             m_qweight = new Math.Matrix.Matrix(nbObs , nbObs);
             m_observations = new Math.Matrix.Matrix(nbObs , 2);
@@ -266,7 +264,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
     {
         public double LineGradient { get; set; }
         public double LineYIntercept { get; set; }
-        protected override int m_numUnknowns => 2;
+        protected override int NumUnknowns => 2;
 
         protected override void EvaluateFinalResiduals(int point , out double vxi , out double vyi)
         {
@@ -319,7 +317,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
         public double CircleCentreX { get; set; }
         public double CircleCentreY { get; set; }
         public double CircleRadius { get; set; }
-        protected override int m_numUnknowns => 3;
+        protected override int NumUnknowns => 3;
 
         protected override void EvaluateFinalResiduals(int point , out double vxi , out double vyi)
         {
@@ -385,7 +383,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
         public double EllipseMinor { get; set; }
         public double EllipseRotation { get; set; }
 
-        protected override int m_numUnknowns => 5;
+        protected override int NumUnknowns => 5;
 
         protected override void EvaluateFinalResiduals(int point , out double vxi , out double vyi)
         {

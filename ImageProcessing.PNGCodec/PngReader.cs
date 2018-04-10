@@ -163,7 +163,7 @@ namespace Hjg.Pngcs
         /// <param name="filename">Optional, can be the filename or a description.</param>
         public PngReader(Stream inputStream , String filename)
         {
-            this.filename = ( filename == null ) ? "" : filename;
+            this.filename = filename ??"";
             this.inputStream = inputStream;
             this.chunksList = new ChunksList(null);
             this.metadata = new PngMetadata(chunksList);
@@ -180,7 +180,7 @@ namespace Hjg.Pngcs
             byte[] pngid = new byte[8];
             PngHelperInternal.ReadBytes(inputStream , pngid , 0 , pngid.Length);
             offset += pngid.Length;
-            if ( !PngCsUtils.arraysEqual(pngid , PngHelperInternal.PNG_ID_SIGNATURE) )
+            if ( !PngCsUtils.ArraysEqual(pngid , PngHelperInternal.PNG_ID_SIGNATURE) )
                 throw new PngjInputException("Bad PNG signature");
             CurrentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
             // reads first chunk IDHR
@@ -190,7 +190,7 @@ namespace Hjg.Pngcs
                 throw new Exception("IDHR chunk len != 13 ?? " + clen);
             byte[] chunkid = new byte[4];
             PngHelperInternal.ReadBytes(inputStream , chunkid , 0 , 4);
-            if ( !PngCsUtils.arraysEqual4(chunkid , ChunkHelper.b_IHDR) )
+            if ( !PngCsUtils.ArraysEqual4(chunkid , ChunkHelper.b_IHDR) )
                 throw new PngjInputException("IHDR not found as first chunk??? ["
                         + ChunkHelper.ToString(chunkid) + "]");
             offset += 4;
@@ -348,7 +348,7 @@ namespace Hjg.Pngcs
                     break;
                 PngHelperInternal.ReadBytes(inputStream , chunkid , 0 , 4);
                 offset += 4;
-                if ( PngCsUtils.arraysEqual4(chunkid , Hjg.Pngcs.Chunks.ChunkHelper.b_IDAT) )
+                if ( PngCsUtils.ArraysEqual4(chunkid , Hjg.Pngcs.Chunks.ChunkHelper.b_IDAT) )
                 {
                     found = true;
                     this.CurrentChunkGroup = ChunksList.CHUNK_GROUP_4_IDAT;
@@ -356,7 +356,7 @@ namespace Hjg.Pngcs
                     chunksList.AppendReadChunk(new PngChunkIDAT(ImgInfo , clen , offset - 8) , CurrentChunkGroup);
                     break;
                 }
-                else if ( PngCsUtils.arraysEqual4(chunkid , Hjg.Pngcs.Chunks.ChunkHelper.b_IEND) )
+                else if ( PngCsUtils.ArraysEqual4(chunkid , Hjg.Pngcs.Chunks.ChunkHelper.b_IEND) )
                 {
                     throw new PngjInputException("END chunk found before image data (IDAT) at offset=" + offset);
                 }
@@ -404,11 +404,11 @@ namespace Hjg.Pngcs
                     offset += 4;
                 }
                 first = false;
-                if ( PngCsUtils.arraysEqual4(chunkid , ChunkHelper.b_IDAT) )
+                if ( PngCsUtils.ArraysEqual4(chunkid , ChunkHelper.b_IDAT) )
                 {
                     skip = true; // extra dummy (empty?) idat chunk, it can happen, ignore it
                 }
-                else if ( PngCsUtils.arraysEqual4(chunkid , ChunkHelper.b_IEND) )
+                else if ( PngCsUtils.ArraysEqual4(chunkid , ChunkHelper.b_IEND) )
                 {
                     CurrentChunkGroup = ChunksList.CHUNK_GROUP_6_END;
                     endfound = true;
@@ -553,7 +553,7 @@ namespace Hjg.Pngcs
                 int bytesread = 0;
                 while ( rowNum < nrow )
                     bytesread = ReadRowRaw(rowNum + 1); // read rows, perhaps skipping if necessary
-                decodeLastReadRowToInt(buffer , bytesread);
+                DecodeLastReadRowToInt(buffer , bytesread);
             }
             else
             { // interlaced
@@ -576,7 +576,7 @@ namespace Hjg.Pngcs
                 int bytesread = 0;
                 while ( rowNum < nrow )
                     bytesread = ReadRowRaw(rowNum + 1); // read rows, perhaps skipping if necessary
-                decodeLastReadRowToByte(buffer , bytesread);
+                DecodeLastReadRowToByte(buffer , bytesread);
             }
             else
             { // interlaced
@@ -599,7 +599,7 @@ namespace Hjg.Pngcs
             return ReadRow(nrow);
         }
 
-        private void decodeLastReadRowToInt(int[ ] buffer , int bytesRead)
+        private void DecodeLastReadRowToInt(int[ ] buffer , int bytesRead)
         {            // see http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
             if ( ImgInfo.BitDepth <= 8 )
             {
@@ -615,7 +615,7 @@ namespace Hjg.Pngcs
                 ImageLine.unpackInplaceInt(ImgInfo , buffer , buffer , false);
         }
 
-        private void decodeLastReadRowToByte(byte[ ] buffer , int bytesRead)
+        private void DecodeLastReadRowToByte(byte[ ] buffer , int bytesRead)
         {            // see http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
             if ( ImgInfo.BitDepth <= 8 )
             {
@@ -645,7 +645,7 @@ namespace Hjg.Pngcs
                     int bytesread = ReadRowRaw(j); // read and perhaps discards
                     int mrow = imlines.ImageRowToMatrixRowStrict(j);
                     if ( mrow >= 0 )
-                        decodeLastReadRowToInt(imlines.Scanlines[mrow] , bytesread);
+                        DecodeLastReadRowToInt(imlines.Scanlines[mrow] , bytesread);
                 }
             }
             else
@@ -661,7 +661,7 @@ namespace Hjg.Pngcs
                         int mrow = imlines.ImageRowToMatrixRowStrict(j);
                         if ( mrow >= 0 )
                         {
-                            decodeLastReadRowToInt(buf , bytesread);
+                            DecodeLastReadRowToInt(buf , bytesread);
                             deinterlacer.deinterlaceInt(buf , imlines.Scanlines[mrow] , !unpackedMode);
                         }
                     }
@@ -690,7 +690,7 @@ namespace Hjg.Pngcs
                     int bytesread = ReadRowRaw(j); // read and perhaps discards
                     int mrow = imlines.ImageRowToMatrixRowStrict(j);
                     if ( mrow >= 0 )
-                        decodeLastReadRowToByte(imlines.ScanlinesB[mrow] , bytesread);
+                        DecodeLastReadRowToByte(imlines.ScanlinesB[mrow] , bytesread);
                 }
             }
             else
@@ -706,7 +706,7 @@ namespace Hjg.Pngcs
                         int mrow = imlines.ImageRowToMatrixRowStrict(j);
                         if ( mrow >= 0 )
                         {
-                            decodeLastReadRowToByte(buf , bytesread);
+                            DecodeLastReadRowToByte(buf , bytesread);
                             deinterlacer.deinterlaceByte(buf , imlines.ScanlinesB[mrow] , !unpackedMode);
                         }
                     }

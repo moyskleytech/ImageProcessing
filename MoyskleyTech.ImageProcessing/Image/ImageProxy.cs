@@ -18,10 +18,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             this.img = bitmap;
             this.rct = rectangle;
         }
+        public ImageProxy(ImageProxy prx , Rectangle rectangle)
+        {
+            this.img = prx.img;
+            this.rct = new Rectangle(rectangle.X + prx.Rectangle.X, rectangle.Y + prx.Rectangle.Y, rectangle.Width,rectangle.Height);
+        }
         public int Left => rct.Left;
         public int Top => rct.Top;
+        public int X => rct.X;
+        public int Y => rct.Y;
+        public int Right => rct.Right;
+        public int Bottom => rct.Bottom;
         public int Width => rct.Width;
         public int Height => rct.Height;
+        public Rectangle Rectangle => rct;
         public Bitmap ToBitmap()
         {
             return img.Crop(rct);

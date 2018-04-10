@@ -44,6 +44,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             width = w;
             height = h;
         }
+        
         /// <summary>
         /// Width of bitmap
         /// </summary>
@@ -142,6 +143,74 @@ namespace MoyskleyTech.ImageProcessing.Image
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                     *optr++ = *iptr++;
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">SOurce</param>
+        public void CopyFromRGB(void* ptr)
+        {
+            var iptr= (byte*)ptr;
+            var optr = data;
+            for ( var i = 0; i < height; i++ )
+                for ( var j = 0; j < width; j++ )
+                {
+                    optr->R = *iptr++;
+                    optr->G = *iptr++;
+                    optr->B = *iptr++;
+                    optr->A = 255;
+                    optr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public void CopyToRGB(void* ptr)
+        {
+            var iptr=data;
+            var optr = (byte*)ptr;
+            for ( var i = 0; i < height; i++ )
+                for ( var j = 0; j < width; j++ )
+                {
+                    *optr++ = iptr->R;
+                    *optr++ = iptr->G;
+                    *optr++ = iptr->B;
+                }
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">SOurce</param>
+        public void CopyFromBGR(void* ptr)
+        {
+            var iptr= (byte*)ptr;
+            var optr = data;
+            for ( var i = 0; i < height; i++ )
+                for ( var j = 0; j < width; j++ )
+                {
+                    optr->B = *iptr++;
+                    optr->G = *iptr++;
+                    optr->R = *iptr++;
+                    optr->A = 255;
+                    optr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public void CopyToBGR(void* ptr)
+        {
+            var iptr=data;
+            var optr = (byte*)ptr;
+            for ( var i = 0; i < height; i++ )
+                for ( var j = 0; j < width; j++ )
+                {
+                    *optr++ = iptr->B;
+                    *optr++ = iptr->G;
+                    *optr++ = iptr->R;
+                }
         }
         /// <summary>
         /// Copy from pointer using BRGA pattern for bytes
@@ -395,6 +464,23 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
+       
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public void CopyToRGB(IntPtr scan0)
+        {
+            CopyToRGB(scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public void CopyToBGR(IntPtr scan0)
+        {
+            CopyToBGR(scan0.ToPointer());
+        }
         /// <summary>
         /// Copy to pointer using ARGB pattern for bytes
         /// </summary>
@@ -426,6 +512,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyToABGR(IntPtr scan0)
         {
             CopyToABGR(scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public void CopyFromRGB(IntPtr scan0)
+        {
+            CopyFromRGB(scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public void CopyFromBGR(IntPtr scan0)
+        {
+            CopyFromBGR(scan0.ToPointer());
         }
         /// <summary>
         /// Copy from pointer using ARGB pattern for bytes
@@ -1011,6 +1113,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         public ImageProxy Proxy(Rectangle rectangle)
         {
             return new ImageProxy(this , rectangle);
+        }
+
+        public static BitmapSubstract operator -(Bitmap bitmapA , Bitmap bitmapB)
+        {
+            return new BitmapSubstract(bitmapA , bitmapB);
+        }
+        public static BitmapInvert operator !(Bitmap bitmapA)
+        {
+            return new BitmapInvert(bitmapA);
+        }
+        public static BitmapAddition operator +(Bitmap bitmapA , Bitmap bitmapB)
+        {
+            return new BitmapAddition(bitmapA , bitmapB);
         }
     }
 
