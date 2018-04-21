@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj" />
-    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Math.csproj" />
+    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Mathematics.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

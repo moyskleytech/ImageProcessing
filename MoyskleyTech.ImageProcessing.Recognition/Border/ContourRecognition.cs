@@ -10,7 +10,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
 {
     public static class ContourRecognition
     {
-        public static List<Contour> Analyse(ImageProxy bmp , Func<Pixel , bool> condition)
+        public static List<Contour> Analyse(ImageProxy bmp , Func<Pixel , bool> condition , bool keepAllPoints = false , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
         {
             HashSet<Point> visited=new HashSet<Point>();
             List<Contour> contours = new List<Contour>();
@@ -25,14 +25,23 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                         var px = work[x,y];
                         if ( condition(px) )
                         {
-                            work.Match8Connex(x , y , condition , (pt , pxl) =>
-                            {
-                                contour.Points.Add(pt);
-                                visited.Add(pt);
-                            });
-                            
+                            if ( mode == ContourRecognitionMode.EightConnex )
+                                work.Match8Connex(x , y , condition , (pt , pxl) =>
+                                {
+                                    contour.Points.Add(pt);
+                                    visited.Add(pt);
+                                });
+                            else if ( mode == ContourRecognitionMode.FourConnex )
+                                work.Match4Connex(x , y , condition , (pt , pxl) =>
+                                {
+                                    contour.Points.Add(pt);
+                                    visited.Add(pt);
+                                });
+
+
                             contour.ImageArea = new ImageProxy(bmp , contour.Area);
-                            contour.CleanPoints();
+                            if ( !keepAllPoints )
+                                contour.CleanPoints();
                             contours.Add(contour);
                         }
                     }
@@ -40,6 +49,49 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
             }
             return contours;
         }
+
+        public static List<Contour> AnalyseFromPoints(ImageProxy bmp , List<Point> pts , Func<Pixel , bool> condition , bool keepAllPoints = false , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
+        {
+            HashSet<Point> visited=new HashSet<Point>();
+            List<Contour> contours = new List<Contour>();
+            var work = bmp.ToBitmap();
+            foreach ( var sp in pts )
+            {
+                var x = sp.X;
+                var y = sp.Y;
+                Contour contour = new Contour();
+                if ( !visited.Contains(sp) )
+                {
+                    var px = work[x,y];
+                    if ( condition(px) )
+                    {
+                        if ( mode == ContourRecognitionMode.EightConnex )
+                            work.Match8Connex(x , y , condition , (pt , pxl) =>
+                            {
+                                contour.Points.Add(pt);
+                                visited.Add(pt);
+                            });
+                        else if ( mode == ContourRecognitionMode.FourConnex )
+                            work.Match4Connex(x , y , condition , (pt , pxl) =>
+                            {
+                                contour.Points.Add(pt);
+                                visited.Add(pt);
+                            });
+
+
+                        contour.ImageArea = new ImageProxy(bmp , contour.Area);
+                        if ( !keepAllPoints )
+                            contour.CleanPoints();
+                        contours.Add(contour);
+                    }
+                }
+            }
+            return contours;
+        }
+    }
+    public enum ContourRecognitionMode
+    {
+        FourConnex, EightConnex
     }
     public class Contour
     {
@@ -53,6 +105,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
         {
             var rct= Area;
             bool[,] tmp = new bool[rct.Width+2,rct.Height+2];
+            bool[,] tmp2 = new bool[rct.Width+2,rct.Height+2];
             foreach ( var pt in Points )
             {
                 tmp[pt.X + 1 - rct.Left , pt.Y + 1 - rct.Top] = true;
@@ -66,11 +119,26 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     var ty=y+1;
                     if ( tmp[tx , ty] )
                     {
-                        if ( !( tmp[tx - 1 , ty] && tmp[tx + 1 , ty] && tmp[tx , ty - 1] && tmp[tx , ty + 1] ) )
-                            Points.Add(new Point(x + rct.Left , y+rct.Top));
+                        tmp2[tx , ty] = ( !( tmp[tx - 1 , ty] && tmp[tx + 1 , ty] && tmp[tx , ty - 1] && tmp[tx , ty + 1] ) );
                     }
                 }
             }
+            bool found=false;
+            for ( var x = 0; x < rct.Width && !found; x++ )
+            {
+                for ( var y = 0; y < rct.Height && !found; y++ )
+                {
+                    var tx=x+1;
+                    var ty=y+1;
+                    if ( tmp2[tx , ty] )
+                    {
+                        found = true;
+                        Points.AddRange(tmp2.Match8ConnexList(tx , ty).Select((pt) => new Point(pt.X+rct.Left,pt.Y+rct.Top)));
+                    }
+                }
+            }
+            //Points.Add(new Point(x + rct.Left , y + rct.Top));
+
         }
         public Rectangle Area
         {

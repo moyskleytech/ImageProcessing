@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MoyskleyTech.Math
+namespace MoyskleyTech.Mathematics
 {
     internal class SizeMismatchException : Exception
     {

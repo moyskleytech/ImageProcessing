@@ -56,14 +56,21 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return "{x:" + X + ",y:" + Y + "}";
         }
-
         /// <summary>
         /// Convert Point to PointF
         /// </summary>
         /// <param name="p"></param>
-        public static implicit operator Math.Matrix.Matrix(Point p)
+        public static explicit operator Mathematics.Coordinate(Point p)
         {
-            return new Math.Matrix.Matrix(new double[ , ] { { p.X } , { p.Y } , { 1 } });
+            return new Mathematics.Coordinate(p.X , p.Y);
+        }
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator Mathematics.Matrix(Point p)
+        {
+            return new Mathematics.Matrix(new double[ , ] { { p.X } , { p.Y } , { 1 } });
         }
     }
     /// <summary>
@@ -128,6 +135,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Convert Point to PointF
         /// </summary>
         /// <param name="p"></param>
+        public static implicit operator PointF(Mathematics.Coordinate p)
+        {
+            return new PointF(p.X , p.Y);
+        }
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
         public static explicit operator Point(PointF p)
         {
             return new Point((int)p.X , (int)p.Y);
@@ -136,9 +151,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Convert Point to PointF
         /// </summary>
         /// <param name="p"></param>
-        public static implicit operator Math.Matrix.Matrix(PointF p)
+        public static explicit operator Mathematics.Coordinate(PointF p)
         {
-            return new Math.Matrix.Matrix(new double[ , ] { { p.X } , { p.Y } , { 1 } });
+            return new Mathematics.Coordinate(p.X , p.Y);
+        }
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator Mathematics.Matrix(PointF p)
+        {
+            return new Mathematics.Matrix(new double[ , ] { { p.X } , { p.Y } , { 1 } });
         }
     }
 }

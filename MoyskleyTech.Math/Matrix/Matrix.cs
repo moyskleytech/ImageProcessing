@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MoyskleyTech.Math.Matrix
+namespace MoyskleyTech.Mathematics
 {
     using System.Globalization;
-    using Number = System.Double;
     public class Matrix
     {
         //private double[,] matrice;
-        private Number[,] matrix;
+        private double[,] matrix;
         //Cree une matrice a partir d'une taille
         public Matrix(int line , int cols)
         {
-            matrix = new Number[line , cols];
+            matrix = new double[line , cols];
         }
         //Copie une matrice
-        public Matrix(Number[ , ] matrix)
+        public Matrix(double[ , ] matrix)
         {
-            this.matrix = ( Number[ , ] ) matrix.Clone();
+            this.matrix = ( double[ , ] ) matrix.Clone();
         }
         /// <summary>
         /// Addition matricielle
@@ -56,7 +55,7 @@ namespace MoyskleyTech.Math.Matrix
                 operation *= 0;
                 for ( var ligne = lignePivot + 1; ligne < res.Rows; ligne++ )
                 {
-                    Number facteur = res.matrix[ligne,positionPivot]/res.matrix[lignePivot,positionPivot];
+                    double facteur = res.matrix[ligne,positionPivot]/res.matrix[lignePivot,positionPivot];
                     operation[ligne , Columns] = facteur;
                     for ( var colonne = 0; colonne < res.Columns; colonne++ )
                     {
@@ -73,7 +72,7 @@ namespace MoyskleyTech.Math.Matrix
                     throw new InvalidOperationException("Impossible de trouver un pivot");
                 operation *= 0;
 
-                Number facteurDiv = res.matrix[lignePivot,positionPivot];
+                double facteurDiv = res.matrix[lignePivot,positionPivot];
                 operation[lignePivot , Columns] = facteurDiv;
                 for ( var j = 0; j < res.Columns; j++ )
                 {
@@ -83,7 +82,7 @@ namespace MoyskleyTech.Math.Matrix
 
                 for ( var ligne = lignePivot - 1; ligne >= 0; ligne-- )
                 {
-                    Number facteur = res.matrix[ligne,positionPivot];
+                    double facteur = res.matrix[ligne,positionPivot];
                     operation[ligne , Columns] = facteur;
                     for ( var colonne = 0; colonne < res.Columns; colonne++ )
                     {
@@ -138,14 +137,14 @@ namespace MoyskleyTech.Math.Matrix
         /// </summary>
         /// <param name="b">Le nombre</param>
         /// <returns>Matrice résultante</returns>
-        public Matrix ScalarProduct(Number b)
+        public Matrix ScalarProduct(double b)
         {
             Matrix c = new Matrix(Rows,Columns);
             for ( var i = 0; i < this.Rows; i++ )
             {
                 for ( var j = 0; j < this.Columns; j++ )
                 {
-                    c[i , j] = this[i , j] * ( Number ) b;
+                    c[i , j] = this[i , j] * ( double ) b;
                 }
             }
             return c;
@@ -234,11 +233,11 @@ namespace MoyskleyTech.Math.Matrix
         /// <summary>
         /// Buffer permettant de ne pas recalculer le détermimant
         /// </summary>
-        private Number? determinant=null;
+        private double? determinant=null;
         /// <summary>
         /// Permet de retourner le détermimant
         /// </summary>
-        public Number Determinant
+        public double Determinant
         {
             get
             {
@@ -248,24 +247,24 @@ namespace MoyskleyTech.Math.Matrix
                 if ( !IsSquare )
                     throw new SizeMismatchException("La matrice doit etre carrée");
                 if ( Rows == 1 )
-                    return ( Number ) matrix[0 , 0];
+                    return ( double ) matrix[0 , 0];
                 if ( Rows == 2 )
                 {
-                    return ( Number ) ( matrix[0 , 0] * matrix[1 , 1] - matrix[1 , 0] * matrix[0 , 1] );
+                    return ( double ) ( matrix[0 , 0] * matrix[1 , 1] - matrix[1 , 0] * matrix[0 , 1] );
                 }
                 else
                 {
-                    Number det=0;
+                    double det=0;
                     for ( var s = 0; s < Rows; s++ )
                     {
                         det += this[0 , s] * AlgebricComplement(0 , s);
                     }
-                    return ( Number ) det;
+                    return ( double ) det;
                 }
             }
         }
 
-        public Number AlgebricComplement(int p1 , int p2)
+        public double AlgebricComplement(int p1 , int p2)
         {
             Matrix m= GetMinor(p1,p2);
             if ( ( p1 + p2 ) % 2 == 0 )
@@ -397,7 +396,7 @@ namespace MoyskleyTech.Math.Matrix
             {
                 if ( IsSquare )
                 {
-                    Number trace=0;
+                    double trace=0;
                     for ( var i = 0; i < Rows; i++ )
                         trace += matrix[i , i];
                     return ( double ) trace;
@@ -466,7 +465,7 @@ namespace MoyskleyTech.Math.Matrix
         /// <param name="a">i</param>
         /// <param name="b">j</param>
         /// <returns>Valeur</returns>
-        public Number this[int a , int b]
+        public double this[int a , int b]
         {
             get { return matrix[a , b]; }
             set { matrix[a , b] = value; determinant = null; }
@@ -479,15 +478,15 @@ namespace MoyskleyTech.Math.Matrix
         {
             return a.Product(b);
         }
-        public static Matrix operator *(Matrix a , Number b)
+        public static Matrix operator *(Matrix a , double b)
         {
             return a.ScalarProduct(b);
         }
-        public static Matrix operator /(Matrix a , Number b)
+        public static Matrix operator /(Matrix a , double b)
         {
             return a.ScalarProduct(1 / b);
         }
-        public static Matrix operator *(Number a , Matrix b)
+        public static Matrix operator *(double a , Matrix b)
         {
             return b.ScalarProduct(a);
         }
@@ -545,13 +544,13 @@ namespace MoyskleyTech.Math.Matrix
                                      .Split(new char[ ] { ' ' } , StringSplitOptions.RemoveEmptyEntries))
                                      .ToArray();
 
-                Number[,] matrice = new Number[lignes.Length,values[0].Length];
+                double[,] matrice = new double[lignes.Length,values[0].Length];
                 for ( var i = 0; i < values.Length; i++ )
                 {
                     for ( var j = 0; j < values[i].Length; j++ )
                     {
                         if ( values[i][j].Contains("/") )
-                            matrice[i , j] = Number.Parse(values[i][j] , CultureInfo.InvariantCulture);
+                            matrice[i , j] = double.Parse(values[i][j] , CultureInfo.InvariantCulture);
                         else
                             matrice[i , j] = double.Parse(values[i][j] , CultureInfo.InvariantCulture);
                     }
@@ -585,11 +584,11 @@ namespace MoyskleyTech.Math.Matrix
             sb[sb.Length - 1] = ']';
             return sb.ToString();
         }
-        public Matrix InsertRow(int rloc , params Number[ ] row)
+        public Matrix InsertRow(int rloc , params double[ ] row)
         {
-            return InsertRow(rloc , ( IEnumerable<Number> ) row);
+            return InsertRow(rloc , ( IEnumerable<double> ) row);
         }
-        public Matrix InsertRow(int rloc , IEnumerable<Number> row)
+        public Matrix InsertRow(int rloc , IEnumerable<double> row)
         {
             var arow = row.ToArray();
             Matrix m = new Matrix(Rows+1,Columns);
@@ -607,11 +606,11 @@ namespace MoyskleyTech.Math.Matrix
             }
             return m;
         }
-        public Matrix InsertColumn(int cloc , params Number[ ] col)
+        public Matrix InsertColumn(int cloc , params double[ ] col)
         {
-            return InsertColumn(cloc , ( IEnumerable<Number> ) col);
+            return InsertColumn(cloc , ( IEnumerable<double> ) col);
         }
-        public Matrix InsertColumn(int cloc , IEnumerable<Number> col)
+        public Matrix InsertColumn(int cloc , IEnumerable<double> col)
         {
             var acol = col.ToArray();
             Matrix m = new Matrix(Rows,Columns+1);
@@ -629,16 +628,16 @@ namespace MoyskleyTech.Math.Matrix
             }
             return m;
         }
-        public IEnumerable<Number> GetColumn(int v)
+        public IEnumerable<double> GetColumn(int v)
         {
             return ( from x in Enumerable.Range(0 , Rows) select matrix[x , v] );
         }
-        public IEnumerable<Number> GetLine(int v)
+        public IEnumerable<double> GetLine(int v)
         {
             return ( from y in Enumerable.Range(0 , Columns) select matrix[v , y] );
         }
 
-        public IEnumerable<Number> AllValuesByRow()
+        public IEnumerable<double> AllValuesByRow()
         {
             for ( var r = 0; r < Rows; r++ )
             {
@@ -648,7 +647,7 @@ namespace MoyskleyTech.Math.Matrix
                 }
             }
         }
-        public IEnumerable<Number> AllValuesByColumn()
+        public IEnumerable<double> AllValuesByColumn()
         {
             for ( var c = 0; c < Columns; c++ )
             {
@@ -658,11 +657,11 @@ namespace MoyskleyTech.Math.Matrix
                 }
             }
         }
-        public Matrix Feed(params Number[] feed)
+        public Matrix Feed(params double[] feed)
         {
-            return Feed(( IEnumerable<Number> ) feed);
+            return Feed(( IEnumerable<double> ) feed);
         }
-        public Matrix Feed(IEnumerable<Number> feed)
+        public Matrix Feed(IEnumerable<double> feed)
         {
             int p=0;
             int l=0;
@@ -673,6 +672,14 @@ namespace MoyskleyTech.Math.Matrix
             }
 
             return this;
+        }
+        /// <summary>
+        /// Convert Point to PointF
+        /// </summary>
+        /// <param name="p"></param>
+        public static implicit operator Matrix<double>(Matrix p)
+        {
+            return new Matrix<double>(p.matrix);
         }
     }
 }

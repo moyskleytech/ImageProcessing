@@ -50,9 +50,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Math.csproj">
+    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Mathematics.csproj">
       <Project>{db1e3f2b-b6fa-425a-a8c2-2a994303f05d}</Project>
-      <Name>MoyskleyTech.Math</Name>
+      <Name>MoyskleyTech.Mathematics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -79,10 +79,9 @@
     <Compile Include="Image\FontSize.cs" />
     <Compile Include="Image\FormattedTextGraphics.cs" />
     <Compile Include="Image\Graphics.cs" />
-    <Compile Include="Image\Helper.cs" />
+    <Compile Include="Image\CircularArray.cs" />
     <Compile Include="Image\HSBImage.cs" />
     <Compile Include="Image\IBitmapDecoder.cs" />
-    <Compile Include="Image\Instruction.cs" />
     <Compile Include="Image\LineMode.cs" />
     <Compile Include="Image\NotSerializedAttribute.cs" />
     <Compile Include="Image\Padding.cs" />

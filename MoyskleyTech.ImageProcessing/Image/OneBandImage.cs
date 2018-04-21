@@ -45,6 +45,17 @@ namespace MoyskleyTech.ImageProcessing.Image
             width = w;
             height = h;
         }
+        public static OneBandImage FilledWith(int w , int h , byte d)
+        {
+            OneBandImage img = new OneBandImage(w,h);
+            int size = img.width*img.height;
+            byte*ptr = img.data;
+            for ( var i = 0; i < size; i++ )
+            {
+                *ptr++=d;
+            }
+            return img;
+        }
         /// <summary>
         /// Width of bitmap
         /// </summary>

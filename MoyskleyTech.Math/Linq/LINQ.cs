@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoyskleyTech.Math.LINQ
+namespace MoyskleyTech.Mathematics.LINQ
 {
     public static class Linq
     {
@@ -48,7 +48,7 @@ namespace MoyskleyTech.Math.LINQ
         public static T OnlyValueOrFallback<T>(this IEnumerable<T> src,T fallback)
         {
             int count=0;
-            T value=default(T);
+            T value=fallback;
             foreach ( T t in src )
             {
                 value = t;

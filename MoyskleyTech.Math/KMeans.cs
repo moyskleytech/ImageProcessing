@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoyskleyTech.Math
+namespace MoyskleyTech.Mathematics
 {
     public class KMeans<T>
     {

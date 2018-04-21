@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoyskleyTech.Math.Number
+namespace MoyskleyTech.Mathematics.Number
 {
     public static class Range
     {

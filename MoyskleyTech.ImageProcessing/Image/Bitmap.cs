@@ -100,6 +100,14 @@ namespace MoyskleyTech.ImageProcessing.Image
                 this[y * width + x] = value;
             }
         }
+
+        public ImageProxy this[Rectangle rec]
+        {
+            get
+            {
+                return this.Proxy(rec);
+            }
+        }
         /// <summary>
         /// Get pixel from coordinate
         /// </summary>
@@ -1051,6 +1059,18 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        public OneBandImage GetGrayBandImage()
+        {
+            OneBandImage img = new OneBandImage(width,height);
+            Pixel* p = data;
+            byte* dest = img.Source;
+            int pt = width*height;
+            for ( var i = 0; i < pt; i++ )
+            {
+                *dest++ = p++->GetGrayTone();
+            }
+            return img;
+        }
 
         public void ReplaceAlphaBand(OneBandImage img)
         {
@@ -1090,6 +1110,19 @@ namespace MoyskleyTech.ImageProcessing.Image
             for ( var i = 0; i < pt; i++ )
             {
                 o++->B = *inp++;
+            }
+        }
+        public void ReplaceGrayBand(OneBandImage img)
+        {
+            Pixel* o = data;
+            byte* inp = img.Source;
+            int pt = width*height;
+            for ( var i = 0; i < pt; i++ )
+            {
+                var d = *inp++;
+                o++->R = d;
+                o++->G = d;
+                o++->B = d;
             }
         }
         public ImageStatistics GetStatistics()

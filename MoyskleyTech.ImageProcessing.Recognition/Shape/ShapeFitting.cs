@@ -9,6 +9,10 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
 {
     public static class ShapeFitting
     {
+        public static BestFit Match(ShapeType type , IEnumerable<Point> array)
+        {
+            return Match(type , array.ToArray());
+        }
         public static BestFit Match(ShapeType type , Point[ ] array)
         {
             switch ( type )
@@ -49,14 +53,14 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
     public abstract class BestFit
     {
         internal int nbObs=0;
-        protected Math.Matrix.Matrix m_residuals;
-        protected Math.Matrix.Matrix m_design;
-        protected Math.Matrix.Matrix m_l;
-        protected Math.Matrix.Matrix m_qweight;
-        protected Math.Matrix.Matrix m_observations;
-        protected Math.Matrix.Matrix m_provisionals;
-        protected Math.Matrix.Matrix m_b;
-        protected Math.Matrix.Matrix m_solution;
+        protected Mathematics.Matrix m_residuals;
+        protected Mathematics.Matrix m_design;
+        protected Mathematics.Matrix m_l;
+        protected Mathematics.Matrix m_qweight;
+        protected Mathematics.Matrix m_observations;
+        protected Mathematics.Matrix m_provisionals;
+        protected Mathematics.Matrix m_b;
+        protected Mathematics.Matrix m_solution;
         protected int m_minx,m_maxx,m_miny,m_maxy;
         protected abstract void GenerateProvisionals();
         protected abstract void FormulateMatrices();
@@ -217,15 +221,15 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
         {
             try
             {
-                MoyskleyTech.Math.Matrix.Matrix pa = (m_qweight* m_design);
-                MoyskleyTech.Math.Matrix.Matrix atpa = ((m_design).Transposed* pa);
+                MoyskleyTech.Mathematics.Matrix pa = (m_qweight* m_design);
+                MoyskleyTech.Mathematics.Matrix atpa = ((m_design).Transposed* pa);
 
-                Math.Matrix.Matrix inverse = new Math.Matrix.Matrix(atpa.Rows, atpa.Columns);
+                Mathematics.Matrix inverse = new Mathematics.Matrix(atpa.Rows, atpa.Columns);
                 //if (CholeskyInversion(atpa, inverse))
 
                 inverse = atpa.Inverted;
-                Math.Matrix.Matrix pl = (m_qweight* m_l);
-                Math.Matrix.Matrix atpl = ((m_design.Transposed)* pl);
+                Mathematics.Matrix pl = (m_qweight* m_l);
+                Mathematics.Matrix atpl = ((m_design.Transposed)* pl);
 
                 m_solution = ( inverse * atpl );
 
@@ -241,13 +245,13 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Shape
         protected abstract int NumUnknowns { get; }
         private void ResizeMatrices()
         {
-            m_provisionals = new Math.Matrix.Matrix(NumUnknowns , 1);
-            m_residuals = new Math.Matrix.Matrix(nbObs , 1);
-            m_design = new Math.Matrix.Matrix(nbObs , NumUnknowns);
-            m_l = new Math.Matrix.Matrix(nbObs , 1);
-            m_qweight = new Math.Matrix.Matrix(nbObs , nbObs);
-            m_observations = new Math.Matrix.Matrix(nbObs , 2);
-            m_b = new Math.Matrix.Matrix(nbObs , nbObs * 2);
+            m_provisionals = new Mathematics.Matrix(NumUnknowns , 1);
+            m_residuals = new Mathematics.Matrix(nbObs , 1);
+            m_design = new Mathematics.Matrix(nbObs , NumUnknowns);
+            m_l = new Mathematics.Matrix(nbObs , 1);
+            m_qweight = new Mathematics.Matrix(nbObs , nbObs);
+            m_observations = new Mathematics.Matrix(nbObs , 2);
+            m_b = new Mathematics.Matrix(nbObs , nbObs * 2);
         }
         private void ClearMatrices()
         {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoyskleyTech.Math.Condition
+namespace MoyskleyTech.Mathematics.Condition
 {
     public class Where<T> : IEnumerable<T>
     {
