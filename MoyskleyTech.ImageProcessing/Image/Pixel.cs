@@ -325,4 +325,278 @@ namespace MoyskleyTech.ImageProcessing.Image
             return ToArgb().GetHashCode();
         }
     }
+    /// <summary>
+    /// Struct to store HSV
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct HSB
+    {
+        /// <summary>
+        /// Hue
+        /// </summary>
+        public byte H;
+        /// <summary>
+        /// Saturation
+        /// </summary>
+        public byte S;
+        /// <summary>
+        /// Value
+        /// </summary>
+        public byte B;
+
+        /// <summary>
+        /// Convert HSB to RGB
+        /// </summary>
+        /// <returns></returns>
+        //public Pixel ToRGB()
+        //{
+        //    float saturation = S/255f;
+        //    float brightness = B/255f;
+        //    float hue = S/255f;
+        //    int r = 0, g = 0, b = 0;
+        //    if ( saturation == 0 )
+        //    {
+        //        r = g = b = ( int ) ( brightness * 255.0f + 0.5f );
+        //    }
+        //    else
+        //    {
+        //        float h = (hue - (float)System.Math.Floor(hue)) * 6.0f;
+        //        float f = h - (float)System.Math.Floor(h);
+        //        float p = brightness * (1.0f - saturation);
+        //        float q = brightness * (1.0f - saturation * f);
+        //        float t = brightness * (1.0f - (saturation * (1.0f - f)));
+        //        switch ( ( int ) h )
+        //        {
+        //            case 0:
+        //                r = ( int ) ( brightness * 255.0f + 0.5f );
+        //                g = ( int ) ( t * 255.0f + 0.5f );
+        //                b = ( int ) ( p * 255.0f + 0.5f );
+        //                break;
+        //            case 1:
+        //                r = ( int ) ( q * 255.0f + 0.5f );
+        //                g = ( int ) ( brightness * 255.0f + 0.5f );
+        //                b = ( int ) ( p * 255.0f + 0.5f );
+        //                break;
+        //            case 2:
+        //                r = ( int ) ( p * 255.0f + 0.5f );
+        //                g = ( int ) ( brightness * 255.0f + 0.5f );
+        //                b = ( int ) ( t * 255.0f + 0.5f );
+        //                break;
+        //            case 3:
+        //                r = ( int ) ( p * 255.0f + 0.5f );
+        //                g = ( int ) ( q * 255.0f + 0.5f );
+        //                b = ( int ) ( brightness * 255.0f + 0.5f );
+        //                break;
+        //            case 4:
+        //                r = ( int ) ( t * 255.0f + 0.5f );
+        //                g = ( int ) ( p * 255.0f + 0.5f );
+        //                b = ( int ) ( brightness * 255.0f + 0.5f );
+        //                break;
+        //            case 5:
+        //                r = ( int ) ( brightness * 255.0f + 0.5f );
+        //                g = ( int ) ( p * 255.0f + 0.5f );
+        //                b = ( int ) ( q * 255.0f + 0.5f );
+        //                break;
+        //        }
+        //    }
+        //    return Pixel.FromArgb(255 , ( byte ) r , ( byte ) g , ( byte ) b);
+        //}
+        public Pixel ToRGB()
+        {
+            double hue=H/255d , saturation=S/255d , brightness=B/255d;
+
+            byte r = 0, g = 0, b = 0;
+            if ( saturation == 0 )
+            {
+                r = g = b = ( byte ) ( brightness * 255.0f + 0.5f );
+            }
+            else
+            {
+                var q = brightness < 0.5 ? brightness * (1 + saturation) : brightness + saturation - brightness * saturation;
+                var p = 2 * brightness - q;
+                r = ( byte ) ( 255 * HueToRgb(p , q , hue + ( 1d / 3 )) );
+                g = ( byte ) ( 255 * HueToRgb(p , q , hue) );
+                b = ( byte ) ( 255 * HueToRgb(p , q , hue - ( 1d / 3 )) );
+            }
+            return Pixel.FromArgb(255 , r , g , b);
+        }
+        private static double HueToRgb(double p , double q , double t)
+        {
+            if ( t < 0 )
+                t += 1;
+            if ( t > 1 )
+                t -= 1;
+            if ( t < ( 1d / 6 ) )
+                return ( p + ( q - p ) * 6 * t );
+            if ( t < ( 1d / 2 ) )
+                return ( q );
+            if ( t < ( 2d / 3 ) )
+                return ( p + ( q - p ) * ( 2d / 3 - t ) * 6 );
+            return ( p );
+        }
+        public override string ToString()
+        {
+            return "HSB[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%]";
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v1">0-360</param>
+        /// <param name="v2">0-1</param>
+        /// <param name="v3">0-1</param>
+        /// <returns></returns>
+        public static HSB FromHSB(float v1 , float v2 , float v3)
+        {
+            HSB hsb = new HSB();
+            var h = v1*255/360;
+            var s = v2*255;
+            var b = v3*255;
+            hsb.H = ( byte ) h;
+            hsb.S = ( byte ) s;
+            hsb.B = ( byte ) b;
+            return hsb;
+        }
+        public static HSB FromHSB(int v1 , int v2 , int v3)
+        {
+            HSB hsb = new HSB();
+            var h = v1;
+            var s = v2;
+            var b = v3;
+            hsb.H = ( byte ) h;
+            hsb.S = ( byte ) s;
+            hsb.B = ( byte ) b;
+            return hsb;
+        }
+
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct HSBA
+    {
+        /// <summary>
+        /// Hue
+        /// </summary>
+        public byte H;
+        /// <summary>
+        /// Saturation
+        /// </summary>
+        public byte S;
+        /// <summary>
+        /// Value
+        /// </summary>
+        public byte B;
+        public byte A;
+      
+        public Pixel ToRGB()
+        {
+            double hue=H/255d , saturation=S/255d , brightness=B/255d;
+
+            byte r = 0, g = 0, b = 0;
+            if ( saturation == 0 )
+            {
+                r = g = b = ( byte ) ( brightness * 255.0f + 0.5f );
+            }
+            else
+            {
+                var q = brightness < 0.5 ? brightness * (1 + saturation) : brightness + saturation - brightness * saturation;
+                var p = 2 * brightness - q;
+                r = ( byte ) ( 255 * HueToRgb(p , q , hue + ( 1d / 3 )) );
+                g = ( byte ) ( 255 * HueToRgb(p , q , hue) );
+                b = ( byte ) ( 255 * HueToRgb(p , q , hue - ( 1d / 3 )) );
+            }
+            return Pixel.FromArgb(A , r , g , b);
+        }
+        private static double HueToRgb(double p , double q , double t)
+        {
+            if ( t < 0 )
+                t += 1;
+            if ( t > 1 )
+                t -= 1;
+            if ( t < ( 1d / 6 ) )
+                return ( p + ( q - p ) * 6 * t );
+            if ( t < ( 1d / 2 ) )
+                return ( q );
+            if ( t < ( 2d / 3 ) )
+                return ( p + ( q - p ) * ( 2d / 3 - t ) * 6 );
+            return ( p );
+        }
+        public override string ToString()
+        {
+            return "HSBA[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%,"+A+"/255]";
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v1">0-360</param>
+        /// <param name="v2">0-1</param>
+        /// <param name="v3">0-1</param>
+        /// <returns></returns>
+        public static HSBA FromHSB(float v1 , float v2 , float v3,byte a)
+        {
+            HSBA hsb = new HSBA();
+            var h = v1*255/360;
+            var s = v2*255;
+            var b = v3*255;
+            hsb.H = ( byte ) h;
+            hsb.S = ( byte ) s;
+            hsb.B = ( byte ) b;
+            hsb.A = a;
+            return hsb;
+        }
+        public static HSBA FromHSB(int v1 , int v2 , int v3,byte a)
+        {
+            HSBA hsb = new HSBA();
+            var h = v1;
+            var s = v2;
+            var b = v3;
+            hsb.H = ( byte ) h;
+            hsb.S = ( byte ) s;
+            hsb.B = ( byte ) b;
+            hsb.A = a;
+            return hsb;
+        }
+
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CYMK
+    {
+        public float C,Y,M,K;
+    }
+    public struct HSL
+    {
+        public float H,S,L;
+    }
+    public struct HSB_Float
+    {
+        public float H,S,B;
+    }
+    public struct _565
+    {
+        public ushort _565_;
+        public byte R { get { return (byte)(_565_ >> 11); } set { _565_ &= 0b0000011111111111; _565_ |= unchecked(( ushort ) (value << 11)); }  }
+        public byte G { get { return ( byte ) ( (_565_ >> 5)&0b111111 ); } set { _565_ &= 0b1111100000011111; _565_ |= unchecked(( ushort ) ( (value & 0b111111) << 6 )); } }
+        public byte B { get { return ( byte ) ( _565_ &0b11111 ); } set { _565_ &= 0b1111111111100000; _565_ |= unchecked(( ushort ) ( value &0b11111 )); } }
+        public static implicit operator ushort(_565 v)=> v._565_;
+        public static implicit operator _565(ushort v) => new _565 { _565_ = v };
+    }
+    public struct _555
+    {
+        public ushort _555_;
+        public byte R { get { return ( byte ) ( ( _555_ & 0b11111 ) >> 10 ); } set { _555_ &= 0b0000001111111111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
+        public byte G { get { return ( byte ) ( ( _555_ &0b11111) >> 5 ); } set { _555_ &= 0b1111110000011111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
+        public byte B { get { return ( byte ) ( _555_ & 0b11111 ); } set { _555_ &= 0b1111111111100000; _555_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
+        public static implicit operator ushort(_555 v) => v._555_;
+        public static implicit operator _555(ushort v) => new _555 { _555_ = v };
+        public static implicit operator _555(_1555 v) => new _555 { _555_ = v };
+    }
+    public struct _1555
+    {
+        public ushort _1555_;
+        public byte R { get { return ( byte ) ( ( _1555_ & 0b11111 ) >> 10 ); } set { _1555_ &= 0b0000001111111111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
+        public byte G { get { return ( byte ) ( ( _1555_ & 0b11111 ) >> 5 ); } set { _1555_ &= 0b1111110000011111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
+        public byte B { get { return ( byte ) ( _1555_ & 0b11111 ); } set { _1555_ &= 0b1111111111100000; _1555_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
+        public bool A { get => _1555_ >= 1 << 15; set { _1555_ &= 0b0111111111111111; _1555_ |= unchecked(( ushort ) ( value?1:0 )); } }
+        public static implicit operator ushort(_1555 v) => v._1555_;
+        public static implicit operator _1555(ushort v) => new _1555 { _1555_ = v };
+        public static implicit operator _1555(_555 v) => new _1555 { _1555_ = v._555_, A=true };
+    }
 }

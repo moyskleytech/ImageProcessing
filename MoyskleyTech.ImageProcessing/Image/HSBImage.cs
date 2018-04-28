@@ -217,150 +217,39 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        public static explicit operator Image<HSB>(HSBImage img)
+        {
+            Image<HSB> image = new Image<HSB>(img.Width,img.Height);
+            
+            img.CopyTo(image.Source);
+
+            return image;
+        }
+        public static explicit operator HSBImage(Image<HSB> img)
+        {
+            HSBImage image = new HSBImage(img.Width,img.Height);
+
+            image.CopyFrom(img.Source);
+
+            return image;
+        }
+
+        private void CopyTo(IntPtr dst)
+        {
+            HSB* src = data;
+            HSB* dest = (HSB*)dst.ToPointer();
+            for ( var i = 0; i < width * height; i++ )
+                *dest++ = *src++;
+        }
+        private void CopyFrom(IntPtr dst)
+        {
+            HSB* src = (HSB*)dst.ToPointer();
+            HSB* dest = data;
+            for ( var i = 0; i < width * height; i++ )
+                *dest++ = *src++;
+        }
     }
-    /// <summary>
-    /// Struct to store HSV
-    /// </summary>
-    public struct HSB
-    {
-        /// <summary>
-        /// Hue
-        /// </summary>
-        public byte H;
-        /// <summary>
-        /// Saturation
-        /// </summary>
-        public byte S;
-        /// <summary>
-        /// Value
-        /// </summary>
-        public byte B;
-
-        /// <summary>
-        /// Convert HSB to RGB
-        /// </summary>
-        /// <returns></returns>
-        //public Pixel ToRGB()
-        //{
-        //    float saturation = S/255f;
-        //    float brightness = B/255f;
-        //    float hue = S/255f;
-        //    int r = 0, g = 0, b = 0;
-        //    if ( saturation == 0 )
-        //    {
-        //        r = g = b = ( int ) ( brightness * 255.0f + 0.5f );
-        //    }
-        //    else
-        //    {
-        //        float h = (hue - (float)System.Math.Floor(hue)) * 6.0f;
-        //        float f = h - (float)System.Math.Floor(h);
-        //        float p = brightness * (1.0f - saturation);
-        //        float q = brightness * (1.0f - saturation * f);
-        //        float t = brightness * (1.0f - (saturation * (1.0f - f)));
-        //        switch ( ( int ) h )
-        //        {
-        //            case 0:
-        //                r = ( int ) ( brightness * 255.0f + 0.5f );
-        //                g = ( int ) ( t * 255.0f + 0.5f );
-        //                b = ( int ) ( p * 255.0f + 0.5f );
-        //                break;
-        //            case 1:
-        //                r = ( int ) ( q * 255.0f + 0.5f );
-        //                g = ( int ) ( brightness * 255.0f + 0.5f );
-        //                b = ( int ) ( p * 255.0f + 0.5f );
-        //                break;
-        //            case 2:
-        //                r = ( int ) ( p * 255.0f + 0.5f );
-        //                g = ( int ) ( brightness * 255.0f + 0.5f );
-        //                b = ( int ) ( t * 255.0f + 0.5f );
-        //                break;
-        //            case 3:
-        //                r = ( int ) ( p * 255.0f + 0.5f );
-        //                g = ( int ) ( q * 255.0f + 0.5f );
-        //                b = ( int ) ( brightness * 255.0f + 0.5f );
-        //                break;
-        //            case 4:
-        //                r = ( int ) ( t * 255.0f + 0.5f );
-        //                g = ( int ) ( p * 255.0f + 0.5f );
-        //                b = ( int ) ( brightness * 255.0f + 0.5f );
-        //                break;
-        //            case 5:
-        //                r = ( int ) ( brightness * 255.0f + 0.5f );
-        //                g = ( int ) ( p * 255.0f + 0.5f );
-        //                b = ( int ) ( q * 255.0f + 0.5f );
-        //                break;
-        //        }
-        //    }
-        //    return Pixel.FromArgb(255 , ( byte ) r , ( byte ) g , ( byte ) b);
-        //}
-        public Pixel ToRGB()
-        {
-            double hue=H/255d , saturation=S/255d , brightness=B/255d;
-
-            byte r = 0, g = 0, b = 0;
-            if ( saturation == 0 )
-            {
-                r = g = b = ( byte ) ( brightness * 255.0f + 0.5f );
-            }
-            else
-            {
-                var q = brightness < 0.5 ? brightness * (1 + saturation) : brightness + saturation - brightness * saturation;
-                var p = 2 * brightness - q;
-                r = ( byte ) ( 255 * HueToRgb(p , q , hue + ( 1d / 3 )) );
-                g = ( byte ) ( 255 * HueToRgb(p , q , hue) );
-                b = ( byte ) ( 255 * HueToRgb(p , q , hue - ( 1d / 3 )) );
-            }
-            return Pixel.FromArgb(255 , r , g , b);
-        }
-        private static double HueToRgb(double p , double q , double t)
-        {
-            if ( t < 0 )
-                t += 1;
-            if ( t > 1 )
-                t -= 1;
-            if ( t < ( 1d / 6 ) )
-                return ( p + ( q - p ) * 6 * t );
-            if ( t < ( 1d / 2 ) )
-                return ( q );
-            if ( t < ( 2d / 3 ) )
-                return ( p + ( q - p ) * ( 2d / 3 - t ) * 6 );
-            return ( p );
-        }
-        public override string ToString()
-        {
-            return "HSB[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%]";
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="v1">0-360</param>
-        /// <param name="v2">0-1</param>
-        /// <param name="v3">0-1</param>
-        /// <returns></returns>
-        public static HSB FromHSB(float v1 , float v2 , float v3)
-        {
-            HSB hsb = new HSB();
-            var h = v1*255/360;
-            var s = v2*255;
-            var b = v3*255;
-            hsb.H = ( byte ) h;
-            hsb.S = ( byte ) s;
-            hsb.B = ( byte ) b;
-            return hsb;
-        }
-        public static HSB FromHSB(int v1 , int v2 , int v3)
-        {
-            HSB hsb = new HSB();
-            var h = v1;
-            var s = v2;
-            var b = v3;
-            hsb.H = ( byte ) h;
-            hsb.S = ( byte ) s;
-            hsb.B = ( byte ) b;
-            return hsb;
-        }
-
-    }
+   
     /// <summary>
     /// 
     /// </summary>

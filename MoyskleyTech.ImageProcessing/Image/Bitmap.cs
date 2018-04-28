@@ -218,6 +218,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     *optr++ = iptr->B;
                     *optr++ = iptr->G;
                     *optr++ = iptr->R;
+                    iptr++;
                 }
         }
         /// <summary>
@@ -1159,6 +1160,23 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static BitmapAddition operator +(Bitmap bitmapA , Bitmap bitmapB)
         {
             return new BitmapAddition(bitmapA , bitmapB);
+        }
+
+        public static explicit operator Image<Pixel>(Bitmap img)
+        {
+            Image<Pixel> image = new Image<Pixel>(img.Width,img.Height);
+            
+            img.CopyToRGBA(image.Source);
+
+            return image;
+        }
+        public static explicit operator Bitmap(Image<Pixel> img)
+        {
+            Bitmap image = new Bitmap(img.Width,img.Height);
+
+            image.CopyFromRGBA(img.Source);
+
+            return image;
         }
     }
 

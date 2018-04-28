@@ -60,7 +60,10 @@
     <Compile Include="Image\BitmapInvert.cs" />
     <Compile Include="Image\BitmapAddition.cs" />
     <Compile Include="Image\BitmapSubstract.cs" />
+    <Compile Include="Image\ColorConvert.cs" />
     <Compile Include="Image\Filters\Filters.cs" />
+    <Compile Include="Image\GraphicsOf.cs" />
+    <Compile Include="Image\Image.cs" />
     <Compile Include="Image\ImageProxy.cs" />
     <Compile Include="Image\ImageStatistics.cs" />
     <Compile Include="Image\OneBandImageScaling.cs" />

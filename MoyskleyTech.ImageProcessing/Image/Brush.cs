@@ -19,6 +19,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns></returns>
         public abstract Pixel GetColor(int x , int y);
     }
+    public abstract class Brush<Representation>
+        where Representation:struct
+    {
+        /// <summary>
+        /// Get the color from the specified position in the pattern
+        /// </summary>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
+        /// <returns></returns>
+        public abstract Representation GetColor(int x , int y);
+    }
     /// <summary>
     /// Represent a brush using an image
     /// </summary>
@@ -237,6 +248,19 @@ namespace MoyskleyTech.ImageProcessing.Image
             this.p = p;
         }
         public override Pixel GetColor(int x , int y)
+        {
+            return p;
+        }
+    }
+    public class SolidBrush<Representation> : Brush<Representation>
+        where Representation:struct
+    {
+        private Representation p;
+        public SolidBrush(Representation p)
+        {
+            this.p = p;
+        }
+        public override Representation GetColor(int x , int y)
         {
             return p;
         }

@@ -78,4 +78,80 @@ namespace MoyskleyTech.ImageProcessing.Image
                     this[x , y] = func(this[x , y] , new Point(x , y));
         }
     }
+
+    /// <summary>
+    /// Main use is ROI
+    /// </summary>
+    public class ImageProxy<Representation>
+        where Representation:struct
+    {
+        private Image<Representation> img;
+        private Rectangle rct;
+        public ImageProxy(Image<Representation> bitmap , Rectangle rectangle)
+        {
+            this.img = bitmap;
+            this.rct = rectangle;
+        }
+        public ImageProxy(ImageProxy<Representation> prx , Rectangle rectangle)
+        {
+            this.img = prx.img;
+            this.rct = new Rectangle(rectangle.X + prx.Rectangle.X , rectangle.Y + prx.Rectangle.Y , rectangle.Width , rectangle.Height);
+        }
+        public int Left => rct.Left;
+        public int Top => rct.Top;
+        public int X => rct.X;
+        public int Y => rct.Y;
+        public int Right => rct.Right;
+        public int Bottom => rct.Bottom;
+        public int Width => rct.Width;
+        public int Height => rct.Height;
+        public Rectangle Rectangle => rct;
+        public Image<Representation> ToImage()
+        {
+            return img.Crop(rct);
+        }
+        public Representation this[int t]
+        {
+            get
+            {
+                int y = t/Width;
+                int x = t-y*Width;
+                return this[x , y];
+            }
+            set
+            {
+                int y = t/Width;
+                int x = t-y*Width;
+                this[x , y] = value;
+            }
+        }
+        public Representation this[int x , int y]
+        {
+            get
+            {
+                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
+                    return img[x + rct.X , y + rct.Y];
+                return default(Representation);
+            }
+            set
+            {
+                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
+                    img[x + rct.X , y + rct.Y] = value;
+            }
+        }
+        public static implicit operator Image<Representation>(ImageProxy<Representation> ip)
+        {
+            return ip.ToImage();
+        }
+        public static implicit operator ImageProxy<Representation>(Image<Representation> ip)
+        {
+            return new ImageProxy<Representation>(ip , new Rectangle(0 , 0 , ip.Width , ip.Height));
+        }
+        public void ApplyFilter(Func<Representation , Point , Representation> func)
+        {
+            for ( var y = 0; y < Height; y++ )
+                for ( var x = 0; x < Width; x++ )
+                    this[x , y] = func(this[x , y] , new Point(x , y));
+        }
+    }
 }
