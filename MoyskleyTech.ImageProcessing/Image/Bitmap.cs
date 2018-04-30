@@ -24,7 +24,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap(int w , int h)
         {
             //Allocate
-            raw = Marshal.AllocHGlobal(w * h * sizeof(Pixel));
+            this.raw = Marshal.AllocHGlobal(w * h * sizeof(Pixel));
             data = ( Pixel* ) raw.ToPointer();
             width = w;
             height = h;
@@ -1153,6 +1153,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new BitmapSubstract(bitmapA , bitmapB);
         }
+        public static BitmapSubstract operator -(Image<Pixel> bitmapA , Bitmap bitmapB)
+        {
+            return new BitmapSubstract(bitmapA , bitmapB);
+        }
+        public static BitmapSubstract operator -(Bitmap bitmapA , Image<Pixel> bitmapB)
+        {
+            return new BitmapSubstract(bitmapA , bitmapB);
+        }
         public static BitmapInvert operator !(Bitmap bitmapA)
         {
             return new BitmapInvert(bitmapA);
@@ -1161,20 +1169,40 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new BitmapAddition(bitmapA , bitmapB);
         }
+        public static BitmapAddition operator +(Image<Pixel> bitmapA , Bitmap bitmapB)
+        {
+            return new BitmapAddition(bitmapA , bitmapB);
+        }
+        public static BitmapAddition operator +(Bitmap bitmapA , Image<Pixel> bitmapB)
+        {
+            return new BitmapAddition(bitmapA , bitmapB);
+        }
 
         public static explicit operator Image<Pixel>(Bitmap img)
         {
-            Image<Pixel> image = new Image<Pixel>(img.Width,img.Height);
-            
-            img.CopyToRGBA(image.Source);
-
-            return image;
+            return ( PixelImage ) img;
         }
         public static explicit operator Bitmap(Image<Pixel> img)
         {
             Bitmap image = new Bitmap(img.Width,img.Height);
 
-            image.CopyFromRGBA(img.Source);
+            image.CopyFromRGBA(img.DataPointer);
+
+            return image;
+        }
+        public static explicit operator PixelImage(Bitmap img)
+        {
+            PixelImage image = new PixelImage(img.Width,img.Height);
+
+            img.CopyToRGBA(image.DataPointer);
+
+            return image;
+        }
+        public static explicit operator Bitmap(PixelImage img)
+        {
+            Bitmap image = new Bitmap(img.Width,img.Height);
+
+            image.CopyFromRGBA(img.DataPointer);
 
             return image;
         }

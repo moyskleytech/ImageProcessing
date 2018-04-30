@@ -20,7 +20,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bilinear;
             ctx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighSpeed;
         }
-        public override void Clear(Brush p)
+        public override void Clear(Brush<Pixel> p)
         {
             var c=ConvertToColor(p);
             ctx.Clear(c);
@@ -32,7 +32,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             ctx.Clear(ConvertToColor(p));
         }
-        public override void DrawCircle(Brush p , int x0 , int y0 , double r)
+        public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
             DrawCircle(p , x0 , y0 , r , 1);
         }
@@ -40,7 +40,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             DrawCircle(p , x0 , y0 , r , 1);
         }
-        public override void DrawCircle(Brush p , int x0 , int y0 , double r , int thickness)
+        public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r , int thickness)
         {
             var pen = ConvertToPen(p , thickness);
             ctx.DrawEllipse(pen , ( float ) ( x0 - r ) , ( float ) ( y0 - r ) , ( float ) ( r * 2 ) , ( float ) ( r * 2 ));
@@ -62,17 +62,17 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.DrawEllipse(pen , x , y , w , h);
             pen.Dispose();
         }
-        public override void DrawEllipse(Brush p , int x , int y , int w , int h)
+        public override void DrawEllipse(Brush<Pixel> p , int x , int y , int w , int h)
         {
             DrawEllipse(p , x , y , w , h , 1);
         }
-        public override void DrawEllipse(Brush p , int x , int y , int w , int h , int t)
+        public override void DrawEllipse(Brush<Pixel> p , int x , int y , int w , int h , int t)
         {
             var pen = ConvertToPen(p , t);
             ctx.DrawEllipse(pen , x , y , w , h);
             pen.Dispose();
         }
-        public override void FillCircle(Brush p , int x0 , int y0 , double r)
+        public override void FillCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
             var brush = ConvertToBrush(p);
             ctx.FillEllipse(brush , ( float ) ( x0 - r ) , ( float ) ( y0 - r ) , ( float ) ( r * 2 ) , ( float ) ( r * 2 ));
@@ -90,7 +90,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.FillEllipse(brush , x , y , w , h);
             brush.Dispose();
         }
-        public override void FillEllipse(Brush p , int x , int y , int w , int h)
+        public override void FillEllipse(Brush<Pixel> p , int x , int y , int w , int h)
         {
             var brush = ConvertToBrush(p);
             ctx.FillEllipse(brush , x , y , w , h);
@@ -106,7 +106,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             DrawLine(p , x , y , x2 , y2 , 1);
         }
-        public override void DrawLine(Brush p , double x , double y , double x2 , double y2)
+        public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2)
         {
             DrawLine(p , x , y , x2 , y2 , 1);
         }
@@ -116,7 +116,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.DrawLine(pen , ( float ) x , ( float ) y , ( float ) x2 , ( float ) y2);
             pen.Dispose();
         }
-        public override void DrawLine(Brush p , double x , double y , double x2 , double y2 , int thickness)
+        public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2 , int thickness)
         {
             var pen=ConvertToPen(p,thickness);
             ctx.DrawLine(pen , ( float ) x , ( float ) y , ( float ) x2 , ( float ) y2);
@@ -130,15 +130,15 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
-        public override void DrawLine(Brush p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
+        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
         }
-        public override void DrawLine(Brush p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
+        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
-        public override void FillPolygon(Brush p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             var brush = ConvertToBrush(p);
             ctx.FillPolygon(brush , ( from x in points select new System.Drawing.PointF(( float ) x.X , ( float ) x.Y) ).ToArray());
@@ -150,13 +150,13 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.FillPolygon(brush , ( from x in points select new System.Drawing.PointF(( float ) x.X , ( float ) x.Y) ).ToArray());
             brush.Dispose();
         }
-        public override void DrawPolygon(Brush p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void DrawPolygon(Brush<Pixel> p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             var pen =ConvertToPen(p,thickness);
             ctx.DrawPolygon(pen , ( from x in points select new System.Drawing.PointF(( float ) x.X , ( float ) x.Y) ).ToArray());
             pen.Dispose();
         }
-        public override void DrawPolygon(Brush p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void DrawPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             var pen=ConvertToPen(p , 1);
             ctx.DrawPolygon(pen , ( from x in points select new System.Drawing.PointF(( float ) x.X , ( float ) x.Y) ).ToArray());
@@ -181,7 +181,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             font.Dispose();
             brush.Dispose();
         }
-        public override void DrawString(string str , Brush p , int x , int y , Font f , int size , StringFormat sf = null)
+        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
         {
             var brush = ConvertToBrush(p);
             var font=new System.Drawing.Font(f.Name , size*FONT_FACTOR);
@@ -197,7 +197,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             font.Dispose();
             brush.Dispose();
         }
-        public override void DrawString(string str , Brush p , int x , int y , Font f , float size , StringFormat sf = null)
+        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , float size , StringFormat sf = null)
         {
             var brush = ConvertToBrush(p);
             var font=new System.Drawing.Font(f.Name , size*FONT_FACTOR);
@@ -207,7 +207,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
 
 
-        public override void SetPixel(Brush p , double x , double y)
+        public override void SetPixel(Brush<Pixel> p , double x , double y)
         {
             FillRectangle(p , x , y , 1 , 1);
         }
@@ -229,7 +229,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             ctx.DrawImage(src , x , y);
         }
-        private System.Drawing.Color ConvertToColor(Image.Brush p)
+        private System.Drawing.Color ConvertToColor(Image.Brush<Pixel> p)
         {
             var clr = p.GetColor(0,0);
             return System.Drawing.Color.FromArgb(clr.A , clr.R , clr.G , clr.B);
@@ -243,13 +243,13 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             return new System.Drawing.Pen(ConvertToColor(p) , width);
         }
-        private System.Drawing.Pen ConvertToPen(Image.Brush p , float width)
+        private System.Drawing.Pen ConvertToPen(Image.Brush<Pixel> p , float width)
         {
             var brush = ConvertToBrush(p);
             return new System.Drawing.Pen(brush , width);
         }
 
-        private System.Drawing.Brush ConvertToBrush(Image.Brush myBrush)
+        private System.Drawing.Brush ConvertToBrush(Image.Brush<Pixel> myBrush)
         {
             if ( myBrush is ImageBrush )
             {

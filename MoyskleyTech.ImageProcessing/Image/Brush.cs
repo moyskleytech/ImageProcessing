@@ -9,15 +9,8 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <summary>
     /// Represent a pattern
     /// </summary>
-    public abstract class Brush
+    public abstract class Brush : Brush<Pixel>
     {
-        /// <summary>
-        /// Get the color from the specified position in the pattern
-        /// </summary>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        /// <returns></returns>
-        public abstract Pixel GetColor(int x , int y);
     }
     public abstract class Brush<Representation>
         where Representation:struct

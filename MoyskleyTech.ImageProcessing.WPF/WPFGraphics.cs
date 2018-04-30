@@ -19,7 +19,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             ctx = context;
         }
-        public override void Clear(Brush p)
+        public override void Clear(Brush<Pixel> p)
         {
             ctx.Children.Clear();
             ctx.Background = Convert(p);
@@ -29,7 +29,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             ctx.Children.Clear();
             ctx.Background = new System.Windows.Media.SolidColorBrush(Convert(p));
         }
-        public override void DrawCircle(Brush p , int x0 , int y0 , double r)
+        public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
             DrawCircle(p , x0 , y0 , r , 1);
         }
@@ -37,7 +37,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             DrawCircle(p , x0 , y0 , r , 1);
         }
-        public override void DrawCircle(Brush p , int x0 , int y0 , double r , int thickness)
+        public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r , int thickness)
         {
             System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
             circle.Stroke = Convert(p,(int)(x0-r),(int)(y0-r));
@@ -74,11 +74,11 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
-        public override void DrawEllipse(Brush p , int x , int y , int w , int h)
+        public override void DrawEllipse(Brush<Pixel> p , int x , int y , int w , int h)
         {
             DrawEllipse(p , x , y , w , h , 1);
         }
-        public override void DrawEllipse(Brush p , int x , int y , int w , int h , int t)
+        public override void DrawEllipse(Brush<Pixel> p , int x , int y , int w , int h , int t)
         {
             System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
             circle.Stroke = Convert(p,x,y);
@@ -89,7 +89,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
-        public override void FillCircle(Brush p , int x0 , int y0 , double r)
+        public override void FillCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
             System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
             circle.Fill = Convert(p,(int)(x0-r),(int)(y0-r));
@@ -119,7 +119,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
-        public override void FillEllipse(Brush p , int x , int y , int w , int h)
+        public override void FillEllipse(Brush<Pixel> p , int x , int y , int w , int h)
         {
             System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
             circle.Fill = Convert(p,x,y);
@@ -151,7 +151,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             DrawLine(p , x , y , x2 , y2 , 1);
         }
-        public override void DrawLine(Brush p , double x , double y , double x2 , double y2)
+        public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2)
         {
             DrawLine(p , x , y , x2 , y2 , 1);
         }
@@ -166,7 +166,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             line.StrokeThickness = thickness;
             ctx.Children.Add(line);
         }
-        public override void DrawLine(Brush p , double x , double y , double x2 , double y2 , int thickness)
+        public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2 , int thickness)
         {
             System.Windows.Shapes.Line line = new System.Windows.Shapes.Line();
             line.X1 = x;
@@ -185,15 +185,15 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
-        public override void DrawLine(Brush p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
+        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
         }
-        public override void DrawLine(Brush p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
+        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
-        public override void FillPolygon(Brush p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             System.Windows.Shapes.Path path = ParsePath(points);
 
@@ -239,7 +239,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
 
       
 
-        public override void DrawPolygon(Brush p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void DrawPolygon(Brush<Pixel> p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             System.Windows.Shapes.Path path = ParsePath(points);
 
@@ -247,7 +247,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             path.StrokeThickness = thickness;
             ctx.Children.Add(path);
         }
-        public override void DrawPolygon(Brush p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void DrawPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             System.Windows.Shapes.Path path = ParsePath(points);
 
@@ -280,7 +280,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             ctx.Children.Add(tb);
 
         }
-        public override void DrawString(string str , Brush p , int x , int y , Font f , int size , StringFormat sf = null)
+        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
         {
             TextBlock tb = new TextBlock();
             tb.Text = str;
@@ -291,7 +291,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetTop(tb , y);
             ctx.Children.Add(tb);
         }
-        public override void SetPixel(Brush p , double x , double y)
+        public override void SetPixel(Brush<Pixel> p , double x , double y)
         {
             DrawLine(p ,new PointF(x , y), new PointF(x+1 , y),1);
         }
@@ -335,7 +335,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
                 B = myBrush.B
             };
         }
-        private System.Windows.Media.Brush Convert(Brush myBrush,int x=0,int y=0)
+        private System.Windows.Media.Brush Convert(Brush<Pixel> myBrush ,int x=0,int y=0)
         {
             if ( myBrush is ImageBrush )
             {

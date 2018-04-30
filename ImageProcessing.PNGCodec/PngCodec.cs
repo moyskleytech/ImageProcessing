@@ -9,8 +9,9 @@ using Hjg.Pngcs;
 
 namespace ImageProcessing.PNGCodec
 {
-    internal struct COMP3 { public byte A,B,C; };
-    internal struct COMP4 { public byte A,B,C,D; };
+#pragma warning disable CS0649
+    public struct COMP3 { public byte A,B,C; };
+    public struct COMP4 { public byte A,B,C,D; };
     public class PngCodec : IBitmapCodec
     {
         private byte[] signature = new byte[] { 137, 80, 78, 71, 13, 10, 26, 10};

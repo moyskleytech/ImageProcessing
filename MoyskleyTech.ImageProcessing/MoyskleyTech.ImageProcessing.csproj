@@ -59,9 +59,11 @@
     <Compile Include="Image\BaseFonts.cs" />
     <Compile Include="Image\BitmapInvert.cs" />
     <Compile Include="Image\BitmapAddition.cs" />
+    <Compile Include="Image\BitmapScalingHighRange.cs" />
     <Compile Include="Image\BitmapSubstract.cs" />
     <Compile Include="Image\ColorConvert.cs" />
     <Compile Include="Image\Filters\Filters.cs" />
+    <Compile Include="Image\FormattedTextGraphicsOf.cs" />
     <Compile Include="Image\GraphicsOf.cs" />
     <Compile Include="Image\Image.cs" />
     <Compile Include="Image\ImageProxy.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Image\Point.cs" />
     <Compile Include="Image\Rectangle.cs" />
     <Compile Include="Image\ScalingModes.cs" />
+    <Compile Include="Image\Size.cs" />
     <Compile Include="Image\SpecializedBrushes\LightenBrush.cs" />
     <Compile Include="Image\SpecializedBrushes\DarkenBrush.cs" />
     <Compile Include="Image\SpecializedBrushes\AlphaBrush.cs" />

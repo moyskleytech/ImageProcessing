@@ -12,7 +12,7 @@ namespace MoyskleyTech.ImageProcessing.Text
     {
         protected struct FormattedTextStateF
         {
-            public Brush color;
+            public Brush<Pixel> color;
             public float size;
             public bool bold;
             public bool italic;
@@ -20,14 +20,14 @@ namespace MoyskleyTech.ImageProcessing.Text
         private string raw;
         private string processed;
         private List<FormattedChar> chars=new List<FormattedChar>();
-        public FormattedTextAnalyser(string formatted , Brush defaultBrush = null , float defaultSize = 1)
+        public FormattedTextAnalyser(string formatted , Brush<Pixel> defaultBrush = null , float defaultSize = 1)
         {
             raw = formatted;
             if ( defaultBrush == null )
                 defaultBrush = new SolidBrush(Pixels.Black);
 
             Stack<FormattedTextStateF> stateStack = new Stack<FormattedTextStateF>();
-            FormattedTextStateF currentState = new FormattedTextStateF() { bold=false,italic=false, color=(Brush)defaultBrush,size=defaultSize };
+            FormattedTextStateF currentState = new FormattedTextStateF() { bold=false,italic=false, color=(Brush<Pixel>)defaultBrush,size=defaultSize };
             StringBuilder sbToken = new StringBuilder();
 
             Dictionary<string,Action<string>> methods = new Dictionary<string, Action<string>>(StringComparer.CurrentCultureIgnoreCase)
@@ -41,7 +41,7 @@ namespace MoyskleyTech.ImageProcessing.Text
                     r=Convert.ToByte(splitted[index++]);
                     g=Convert.ToByte(splitted[index++]);
                     b=Convert.ToByte(splitted[index++]);
-                    currentState.color = (Brush)Pixel.FromArgb(a,r,g,b);
+                    currentState.color = (Brush<Pixel>)Pixel.FromArgb(a,r,g,b);
                 } },
                 {"i",(s)=> { currentState.italic=true; }},
                 {"emph",(s)=> { currentState.italic=true; }},
@@ -153,7 +153,7 @@ namespace MoyskleyTech.ImageProcessing.Text
         public char Char { get; set; }
         public bool Bold { get; set; }
         public bool Italic { get; set; }
-        public Brush Color { get; set; }
+        public Brush<Pixel> Color { get; set; }
         public float Size { get; set; }
     }
 }

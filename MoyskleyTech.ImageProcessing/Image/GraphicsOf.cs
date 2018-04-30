@@ -19,6 +19,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// The bitmap where to draw
         /// </summary>
         private Image<Representation> bmp;
+        private ImageProxy<Representation> proxy;
+        private Graphics<Representation> gProxy;
 
         private Matrix transformationMatrix;
 
@@ -29,6 +31,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         public LineMode LineMode = LineMode.ForLoop;
         public Func<PointF , PointF> PreTransformFunction { get; set; }
         public Func<PointF , PointF> PostTransformFunction { get; set; }
+        public Func<Representation,Representation,Representation> CompositionFunction;
+        private Func<Representation,Pixel> ToPixel;
         /// <summary>
         /// Only for subclassing
         /// </summary>
@@ -48,7 +52,21 @@ namespace MoyskleyTech.ImageProcessing.Image
             instance.ResetClip();
             return instance;
         }
-
+        /// <summary>
+        /// Create a Graphics object from image
+        /// </summary>
+        /// <param name="bmp">The bitmap where to Draw</param>
+        /// <returns>Return null if not applicable</returns>
+        public static Graphics<Representation> FromProxy(ImageProxy<Representation> bmp)
+        {
+            Graphics<Representation> instance;
+            instance = new Graphics<Representation>(1)
+            {
+                proxy = bmp
+            };
+            instance.ResetClip();
+            return instance;
+        }
         /// <summary>
         /// Private constructor to things not related to bitmap
         /// </summary>
@@ -57,10 +75,35 @@ namespace MoyskleyTech.ImageProcessing.Image
             transformationMatrix = Matrix.Identity(3);
             PreTransformFunction = null;
             PostTransformFunction = null;
-        }
-        public virtual int Width { get => bmp.Width; }
-        public virtual int Height { get => bmp.Height; }
+            CompositionFunction = (x , y) => x;
 
+            if ( typeof(Representation) == typeof(Pixel) )
+                CompositionFunction = (x , y) => (Representation)(object)ComposingFunctionPixel(( Pixel ) (object)x , ( Pixel ) ( object ) y);
+            if ( typeof(Representation) == typeof(ARGB_16bit) )
+                CompositionFunction = (x , y) => ( Representation ) ( object ) ComposingFunctionARGB_16bit(( ARGB_16bit ) ( object ) x , ( ARGB_16bit ) ( object ) y);
+            if ( typeof(Representation) == typeof(ARGB_Float) )
+                CompositionFunction = (x , y) => ( Representation ) ( object ) ComposingFunctionARGB_Float(( ARGB_Float ) ( object ) x , ( ARGB_Float ) ( object ) y);
+
+            ToPixel = ColorConvert.GetConversionFrom<Representation , Pixel>();
+        }
+        protected int? width,height,x,y;
+        public virtual int Width { get => width ?? bmp?.Width ?? proxy?.Width ?? gProxy?.Width ?? 0; set { width = value; } }
+        public virtual int Height { get => height ?? bmp?.Height ?? proxy?.Height ?? gProxy?.Height ?? 0; set { height = value; } }
+
+        public virtual Graphics<Representation> Proxy(Rectangle r)
+        {
+            Graphics<Representation> instance;
+            instance = new Graphics<Representation>(1)
+            {
+                gProxy = this ,
+                x = r.X ,
+                y = r.Y ,
+                width = r.Width ,
+                height = r.Height
+            };
+            instance.ResetClip();
+            return instance;
+        }
 
         /// <summary>
         /// Set the clipping for SetPixel
@@ -706,7 +749,16 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             if ( IsInClipRange(x , y) )
             {
-                this[x , y] = p;
+                if ( gProxy != null )
+                {
+                    gProxy.SetPixelInternal(p , px + this.x.Value , py + this.y.Value , alpha);
+                }
+                else
+                {
+                    Representation fromImage = this[x,y];
+                    Representation that = p;
+                    this[x , y] = CompositionFunction(that , fromImage);
+                }
             }
         }
         private bool IsInClipRange(int x , int y)
@@ -740,10 +792,45 @@ namespace MoyskleyTech.ImageProcessing.Image
                 if ( y >= clip.Y && y < clip.Y + clip.Height )
                 {
 
+                    if ( gProxy != null )
+                    {
+                        gProxy.SetPixelInternal(b.GetColor(x , y) , px + this.x.Value , py + this.y.Value , alpha);
+                    }
                     Representation p = b.GetColor(x,y);
-                    this[x , y] = p;
+                    {
+                        Representation fromImage = this[x,y];
+                        Representation that = p;
+                        this[x , y] = CompositionFunction(that , fromImage);
+                    }
 
                 }
+        }
+        public static Pixel ComposingFunctionPixel(Pixel current , Pixel fromImage)
+        {
+            byte[] result = new byte[4];
+            result[0] = ( byte ) System.Math.Max(current.A , fromImage.A);
+            result[1] = ( byte ) ( ( current.A * current.R + fromImage.R * ( 255 - current.A ) ) / 255 );
+            result[2] = ( byte ) ( ( current.A * current.G + fromImage.G * ( 255 - current.A ) ) / 255 );
+            result[3] = ( byte ) ( ( current.A * current.B + fromImage.B * ( 255 - current.A ) ) / 255 );
+            return Pixel.FromArgb(result[0] , result[1] , result[2] , result[3]);
+        }
+        public static ARGB_Float ComposingFunctionARGB_Float(ARGB_Float current , ARGB_Float fromImage)
+        {
+            float[] result = new float[4];
+            result[0] = ( float ) System.Math.Max(current.A , fromImage.A);
+            result[1] = ( float ) ( ( current.A * current.R + fromImage.R * (1- current.A ) ) );
+            result[2] = ( float ) ( ( current.A * current.G + fromImage.G * (1- current.A ) ) );
+            result[3] = ( float ) ( ( current.A * current.B + fromImage.B * (1- current.A ) ) );
+            return new ARGB_Float { A = result[0] , R = result[1] , G = result[2] , B = result[3] };
+        }
+        public static ARGB_16bit ComposingFunctionARGB_16bit(ARGB_16bit current , ARGB_16bit fromImage)
+        {
+            ushort[] result = new ushort[4];
+            result[0] = ( ushort ) System.Math.Max(current.A , fromImage.A);
+            result[1] = ( ushort ) ( ( current.A * current.R + fromImage.R * ( 1 - current.A ) )/ushort.MaxValue );
+            result[2] = ( ushort ) ( ( current.A * current.G + fromImage.G * ( 1 - current.A ) ) / ushort.MaxValue );
+            result[3] = ( ushort ) ( ( current.A * current.B + fromImage.B * ( 1 - current.A ) ) / ushort.MaxValue );
+            return new ARGB_16bit { A = result[0] , R = result[1] , G = result[2] , B = result[3] };
         }
         /// <summary>
         /// Helper to draw line
@@ -1542,10 +1629,25 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
-
         public virtual void DrawString(string str , Representation p , int ox , int oy , Font f , int size , StringFormat sf = null)
         {
-            int x=ox,y=oy;
+            DrawString(str , p , ox , oy , f , ( float ) size , sf);
+        }
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="p">The color</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        /// <param name="f">The Font</param>
+        /// <param name="size">The Font Size</param>
+        /// <param name="sf">[optional]String format(top left if missing)</param>
+
+        public virtual void DrawString(string str , Representation p , int ox , int oy , Font f , float size , StringFormat sf = null)
+        {
+            var PixelColor = ColorConvert.Convert<Representation,Pixel>(p);
+            float x=ox,y=oy;
             if ( sf == null || sf.Alignment == StringAlignment.Near && sf.LineAlignment == StringAlignment.Near )
             {
                 int mh = 0;
@@ -1561,7 +1663,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                         mh = 0;
                     }
                     else
-                        x += DrawCharInternal(character ,p, x , y , size);
+                        x += DrawFormattedCharInternalF(character , x , y , new Text.FormattedChar() { Color = new SolidBrush(PixelColor) , Size = size });
                 }
             }
             else
@@ -1569,19 +1671,18 @@ namespace MoyskleyTech.ImageProcessing.Image
                 var measure = MeasureString(str,f,size);
 
                 if ( sf.Alignment == StringAlignment.Center )
-                    x -= (int)measure.Width / 2;
+                    x -= measure.Width / 2;
                 else if ( sf.Alignment == StringAlignment.Far )
-                    x -= ( int ) measure.Width;
+                    x -= measure.Width;
 
                 if ( sf.LineAlignment == StringAlignment.Center )
-                    y -= ( int ) measure.Height / 2;
+                    y -= measure.Height / 2;
                 else if ( sf.LineAlignment == StringAlignment.Far )
-                    y -= ( int ) measure.Height;
+                    y -= measure.Height;
 
                 DrawString(str , p , ( int ) x , ( int ) y , f , size);
             }
         }
-        
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1594,7 +1695,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="sf">[optional]String format(top left if missing)</param>
         public virtual void DrawString(string str , Brush<Representation> p , int ox , int oy , Font f , int size , StringFormat sf = null)
         {
-            int x=ox,y=oy;
+            DrawString(str , p , ox , oy , f , ( float ) size , sf);
+        }
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="p">The color</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        /// <param name="f">The Font</param>
+        /// <param name="size">The Font Size</param>
+        /// <param name="sf">[optional]String format(top left if missing)</param>
+        public virtual void DrawString(string str , Brush<Representation> p , int ox , int oy , Font f , float size , StringFormat sf = null)
+        {
+            var PixelColor = ColorConvert.Convert<Representation,Pixel>(p);
+            float x=ox,y=oy;
             if ( sf == null || sf.Alignment == StringAlignment.Near && sf.LineAlignment == StringAlignment.Near )
             {
                 int mh = 0;
@@ -1610,7 +1726,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                         mh = 0;
                     }
                     else
-                        x += DrawCharInternal(character ,p, x , y ,size);
+                        x += DrawFormattedCharInternalF(character , x , y , new Text.FormattedChar() { Color = (PixelColor) , Size = size });
                 }
             }
             else
@@ -1618,14 +1734,14 @@ namespace MoyskleyTech.ImageProcessing.Image
                 var measure = MeasureString(str,f,size);
 
                 if ( sf.Alignment == StringAlignment.Center )
-                    x -= ( int ) measure.Width / 2;
+                    x -= measure.Width / 2;
                 else if ( sf.Alignment == StringAlignment.Far )
-                    x -= ( int ) measure.Width;
+                    x -= measure.Width;
 
                 if ( sf.LineAlignment == StringAlignment.Center )
-                    y -= ( int ) measure.Height / 2;
+                    y -= measure.Height / 2;
                 else if ( sf.LineAlignment == StringAlignment.Far )
-                    y -= ( int ) measure.Height;
+                    y -= measure.Height;
 
                 DrawString(str , p , ( int ) x , ( int ) y , f , size);
             }
@@ -1644,7 +1760,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             var size=fs.Size;
             DrawString(str , p , x , y , f , size);
         }
-      
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="fs">Font and size</param>
+        /// <param name="p">The color</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public virtual void DrawString(string str , FontSizeF fs , Representation p , int x , int y)
+        {
+            Font f = fs.Font;
+            var size=fs.Size;
+            DrawString(str , p , x , y , f , size);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1659,7 +1788,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             var size=fs.Size;
             DrawString(str , p , x , y , f , size);
         }
-      
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="fs">Font and size</param>
+        /// <param name="p">The color</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public virtual void DrawString(string str , FontSizeF fs , Brush<Representation> p , int x , int y)
+        {
+            Font f = fs.Font;
+            var size=fs.Size;
+            DrawString(str , p , x , y , f , size);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1673,7 +1815,19 @@ namespace MoyskleyTech.ImageProcessing.Image
             var size=fs.Size;
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
-       
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="fs">Font and size</param>
+        /// <param name="p">The color</param>
+        /// <param name="pt">Origin</param>
+        public virtual void DrawString(string str , FontSizeF fs , Representation p , PointF pt)
+        {
+            Font f = fs.Font;
+            var size=fs.Size;
+            DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1687,7 +1841,19 @@ namespace MoyskleyTech.ImageProcessing.Image
             var size=fs.Size;
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
-      
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="fs">Font and size</param>
+        /// <param name="p">The color</param>
+        /// <param name="pt">Origin</param>
+        public virtual void DrawString(string str , FontSizeF fs , Brush<Representation> p , PointF pt)
+        {
+            Font f = fs.Font;
+            var size=fs.Size;
+            DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1702,7 +1868,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             var size=fs.Size;
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size , sf);
         }
-     
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="fs">Font and size</param>
+        /// <param name="p">The color</param>
+        /// <param name="pt">Origin</param>
+        /// <param name="sf">Stringformat specifing position</param>
+        public virtual void DrawString(string str , FontSizeF fs , Representation p , PointF pt , StringFormat sf)
+        {
+            Font f = fs.Font;
+            var size=fs.Size;
+            DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size , sf);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1717,7 +1896,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             var size=fs.Size;
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size , sf);
         }
-        
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="fs">Font and size</param>
+        /// <param name="p">The color</param>
+        /// <param name="pt">Origin</param>
+        /// <param name="sf">Stringformat specifing position</param>
+        public virtual void DrawString(string str , FontSizeF fs , Brush<Representation> p , PointF pt , StringFormat sf)
+        {
+            Font f = fs.Font;
+            var size=fs.Size;
+            DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size , sf);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1730,7 +1922,18 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
-      
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="f">Font</param>
+        /// <param name="size">Font size</param>
+        /// <param name="p">The color</param>
+        /// <param name="pt">Origin</param>
+        public virtual void DrawString(string str , Representation p , PointF pt , Font f , float size)
+        {
+            DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1743,7 +1946,18 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
-       
+        /// <summary>
+        /// Write specifie text in bitmap
+        /// </summary>
+        /// <param name="str">Text to write</param>
+        /// <param name="f">Font</param>
+        /// <param name="size">Font size</param>
+        /// <param name="p">The color</param>
+        /// <param name="pt">Origin</param>
+        public virtual void DrawString(string str , Brush<Representation> p , PointF pt , Font f , float size)
+        {
+            DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
+        }
         /// <summary>
         /// Helper to draw char
         /// </summary>
@@ -2049,22 +2263,36 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             get
             {
-                return bmp[m];
+                if ( bmp != null )
+                    return bmp[m];
+                else
+                    return proxy[m];
             }
             set
             {
-                bmp[m] = value;
+                if ( bmp != null )
+                    bmp[m] = value;
+                else
+                    proxy[m] = value;
             }
         }
         protected Representation this[int x , int y]
         {
             get
             {
-                return bmp[x , y];
+                if ( bmp != null )
+                    return bmp[x , y];
+                else
+                    return proxy[x , y];
             }
             set
             {
-                bmp[x , y] = value;
+                if ( bmp != null )
+                    bmp[x , y] = value;
+                else if ( proxy != null )
+                    proxy[x , y] = value;
+                else
+                    gProxy.SetPixelInternal(value , x + this.x.Value , y + this.y.Value , false);
             }
         }
     }

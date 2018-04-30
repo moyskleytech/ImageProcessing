@@ -10,15 +10,15 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class Graphics
     {
-        protected struct FormattedTextState
+        public struct FormattedTextState
         {
-            public Brush color;
+            public Brush<Pixel> color;
             public int size;
             public bool bold;
             public bool italic;
         }
 
-        protected virtual int DrawFormattedCharInternal(bool[ , ] character , int x , int y , FormattedTextState currentState)
+        public virtual int DrawFormattedCharInternal(bool[ , ] character , int x , int y , FormattedTextState currentState)
         {
             var size = currentState.size;
 
@@ -55,10 +55,10 @@ namespace MoyskleyTech.ImageProcessing.Image
 
         public virtual void DrawFormattedString(string str , Pixel p , float x , float y , Font f , float size)
         {
-            DrawFormattedString(str , ( Brush ) p , x , y , f , size);
+            DrawFormattedString(str , ( Brush<Pixel> ) p , x , y , f , size);
         }
 
-        public virtual void DrawFormattedString(string str , Brush p , float x , float y , Font f , float size)
+        public virtual void DrawFormattedString(string str , Brush<Pixel> p , float x , float y , Font f , float size)
         {
             //bmp.instructions.AddLast(new Instruction("text" , str , x , y , p , size));
             float ox=x,oy=y;

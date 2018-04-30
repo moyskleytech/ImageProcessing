@@ -26,5 +26,10 @@ namespace WinFormDemo_Multiple_Test_
         {
             ( new Form1() ).ShowDialog();
         }
+
+        private void button3_Click(object sender , EventArgs e)
+        {
+            ( new SpeedTest() ).ShowDialog();
+        }
     }
 }

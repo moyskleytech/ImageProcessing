@@ -18,13 +18,13 @@ namespace MoyskleyTech.ImageProcessing.SVG
             root.Attributes["xmlns"] = "http://www.w3.org/2000/svg";
             root.Attributes["version"] = "1.1";
         }
-        private string Convert(Brush p)
+        private string Convert(Brush<Pixel> p)
         {
             Pixel color=p.GetColor(0,0);
             return "rgba(" + color.R + "," + color.G + "," + color.B + "," + ((double)color.A/255) + ")";
         }
 
-        public override void Clear(Brush p)
+        public override void Clear(Brush<Pixel> p)
         {
             root.Children.Clear();
             XMLNode rectangle = new XMLNode() { Name="rect" };
@@ -39,7 +39,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             Clear(new SolidBrush(p));
         }
-        public override void DrawCircle(Brush p , int x0 , int y0 , double r)
+        public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
             DrawCircle(p , x0 , y0 , r , 1);
         }
@@ -47,7 +47,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawCircle(p , x0 , y0 , r , 1);
         }
-        public override void DrawCircle(Brush p , int x0 , int y0 , double r , int thickness)
+        public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r , int thickness)
         {
             XMLNode circle = new XMLNode() { Name="circle" };
             circle.Attributes["cx"] = x0;
@@ -67,7 +67,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
             DrawEllipse(p , x , y , w , h , 1);
         }
         
-        public override void FillCircle(Brush p , int x0 , int y0 , double r)
+        public override void FillCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
             XMLNode circle = new XMLNode() { Name="circle" };
             circle.Attributes["cx"] = x0;
@@ -97,7 +97,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawLine(p , x , y , x2 , y2 , 1);
         }
-        public override void DrawLine(Brush p , double x , double y , double x2 , double y2)
+        public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2)
         {
             DrawLine(p , x , y , x2 , y2 , 1);
         }
@@ -105,7 +105,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawLine(new SolidBrush(p) , x , y , x2 , y2 , thickness);
         }
-        public override void DrawLine(Brush p , double x , double y , double x2 , double y2 , int thickness)
+        public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2 , int thickness)
         {
             //<line x1="20" y1="100" x2="100" y2="20" stroke - width = "2" stroke = "black" />
             XMLNode line = new XMLNode() { Name="line" };
@@ -125,15 +125,15 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
-        public override void DrawLine(Brush p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
+        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
         }
-        public override void DrawLine(Brush p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
+        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
-        public override void FillPolygon(Brush p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             XMLNode polygon = new XMLNode() { Name="polygon" };
             polygon.Attributes["fill"] = Convert(p);
@@ -183,7 +183,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
 
 
 
-        public override void DrawPolygon(Brush p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void DrawPolygon(Brush<Pixel> p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             XMLNode path = new XMLNode() { Name="path" };
             path.Attributes["stroke"] = Convert(p);
@@ -191,7 +191,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
             path.Attributes["points"] = CreatePath(points);
             root.Children.Add(path);
         }
-        public override void DrawPolygon(Brush p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
+        public override void DrawPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             XMLNode path = new XMLNode() { Name="path" };
             path.Attributes["stroke"] = Convert(p);
@@ -211,7 +211,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawString(str , new SolidBrush(p) , x , y , f , size , sf);
         }
-        public override void DrawString(string str , Brush p , int x , int y , Font f , int size , StringFormat sf = null)
+        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
         {
             if ( sf == null )
                 sf = new StringFormat() { Alignment = StringAlignment.Near , LineAlignment = StringAlignment.Near };
@@ -254,7 +254,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
             }
         }
 
-        public override void SetPixel(Brush p , double x , double y)
+        public override void SetPixel(Brush<Pixel> p , double x , double y)
         {
             DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }

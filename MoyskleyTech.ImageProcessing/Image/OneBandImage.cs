@@ -12,23 +12,16 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// Represent a Bitmap (Array of Pixel)
     /// </summary>
     [NotSerialized]
-    public unsafe partial class OneBandImage : IDisposable
+    public unsafe partial class OneBandImage : Image<byte>, IDisposable
     {
-        private readonly int width,height;
-        private readonly byte* data;
-        private readonly IntPtr raw;
+        public byte* Source { get => data; }
         /// <summary>
         /// Create a bitmap using Width and Height
         /// </summary>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
-        public OneBandImage(int w , int h)
+        public OneBandImage(int w , int h):base(w,h)
         {
-            //Allocate
-            raw = Marshal.AllocHGlobal(w * h * sizeof(byte));
-            data = ( byte* ) raw.ToPointer();
-            width = w;
-            height = h;
         }
         /// <summary>
         /// Create a bitmap using Width and Height and source from RGBA format
@@ -36,35 +29,12 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <param name="raw">Source to copy</param>
-        public OneBandImage(int w , int h , byte[ ] raw)
+        public OneBandImage(int w , int h , byte[ ] raw):base(w,h)
         {
             //Allocate
-            this.raw = Marshal.AllocHGlobal(w * h * sizeof(byte));
-            data = ( byte* ) this.raw.ToPointer();
             Marshal.Copy(raw , 0 , this.raw , w * h * sizeof(byte));
-            width = w;
-            height = h;
         }
-        public static OneBandImage FilledWith(int w , int h , byte d)
-        {
-            OneBandImage img = new OneBandImage(w,h);
-            int size = img.width*img.height;
-            byte*ptr = img.data;
-            for ( var i = 0; i < size; i++ )
-            {
-                *ptr++=d;
-            }
-            return img;
-        }
-        /// <summary>
-        /// Width of bitmap
-        /// </summary>
-        public int Width { get { return width; } }
-        /// <summary>
-        /// Height of bitmap
-        /// </summary>
-        public int Height { get { return height; } }
-
+               
         /// <summary>
         /// Destrop bitmap
         /// </summary>
@@ -72,51 +42,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Dispose();
         }
-        /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        /// <returns>Pixel</returns>
-        public byte Get(int x , int y)
-        {
-            return this[x , y];
-        }
-        /// <summary>
-        /// Dispose the bitmap and release memory
-        /// </summary>
-        public void Dispose()
-        {
-            Marshal.FreeHGlobal(raw);
-            GC.SuppressFinalize(this);
-        }
-        /// <summary>
-        /// Source to edit or copy
-        /// </summary>
-        public byte* Source { get { return data; } }
-        /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        /// <returns>Pixel</returns>
-        public byte this[int x , int y]
-        {
-            get
-            {
-                return this[y * width + x];
-            }
-            set
-            {
-                this[y * width + x] = value;
-            }
-        }
+       
         /// <summary>
         /// Get pixel from coordinate
         /// </summary>
         /// <param name="pos">As 1 dim array</param>
         /// <returns>Pixel</returns>
-        public byte this[int pos]
+        public override byte this[int pos]
         {
             get
             {
@@ -287,69 +219,6 @@ namespace MoyskleyTech.ImageProcessing.Image
             });
         }
      
-
-        public OneBandImage RotateFlip(RotateFlipType rotateFlipType)
-        {
-            OneBandImage output=null;
-            var rotation = (RotateFlipType)((int)rotateFlipType&3);
-
-            if ( rotation == RotateFlipType.Rotate90 )
-            {
-                output = new OneBandImage(height , width);
-                for ( var x = 0; x < width; x++ )
-                    for ( var y = 0; y < height; y++ )
-                        output[height - y - 1 , x] = this[x , y];
-            }
-            else if ( rotation == RotateFlipType.Rotate180 )
-            {
-                output = Clone();
-                for ( int x = 0, x2 = output.width - 1; x < x2; x++, x2-- )
-                    for ( var y = 0; y < output.height; y++ )
-                    {
-                        var tmp = output[x2,y];
-                        output[x2 , y] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-                for ( int x = 0; x < output.width; x++ )
-                    for ( int y = 0, y2 = output.height - 1; y < y2; y++, y2-- )
-                    {
-                        var tmp = output[x,y2];
-                        output[x , y2] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-            }
-            else if ( rotation == RotateFlipType.Rotate270 )
-            {
-                output = new OneBandImage(height , width);
-                for ( var x = 0; x < width; x++ )
-                    for ( var y = 0; y < height; y++ )
-                        output[y , width - x - 1] = this[x , y];
-            }
-            else if ( rotation == RotateFlipType.RotateNone )
-                output = Clone();
-
-
-            if ( ( rotateFlipType & RotateFlipType.FlipX ) == RotateFlipType.FlipX )
-                for ( int x = 0, x2 = output.width - 1; x < x2; x++, x2-- )
-                    for ( var y = 0; y < output.height; y++ )
-                    {
-                        var tmp = output[x2,y];
-                        output[x2 , y] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-
-            if ( ( rotateFlipType & RotateFlipType.FlipY ) == RotateFlipType.FlipY )
-                for ( int x = 0; x < output.width; x++ )
-                    for ( int y = 0, y2 = output.height - 1; y < y2; y++, y2-- )
-                    {
-                        var tmp = output[x,y2];
-                        output[x , y2] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-
-            return output;
-        }
-
         private void BlurLine(byte*[ ] lines , int line , int blurSize)
         {
             var debVertical =System.Math.Max(line-blurSize,0);
@@ -383,15 +252,15 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
-        public static Bitmap MixBands(OneBandImage A, OneBandImage R, OneBandImage G, OneBandImage B)
+        public static Bitmap MixBands(Image<byte> A , Image<byte> R , Image<byte> G , Image<byte> B)
         {
-            Bitmap bmp = new Bitmap(A.width,A.height);
-            byte* a=A.Source;
-            byte* r=R.Source;
-            byte* g=G.Source;
-            byte* b=B.Source;
+            Bitmap bmp = new Bitmap(A.Width,A.Height);
+            byte* a=(byte*)A.DataPointer.ToPointer();
+            byte* r=(byte*)R.DataPointer.ToPointer();
+            byte* g=(byte*)G.DataPointer.ToPointer();
+            byte* b=(byte*)B.DataPointer.ToPointer();
             Pixel* dest = bmp.Source;
-            var pt = A.width*A.height;
+            var pt = A.Width*A.Height;
             for ( var i = 0; i < pt; i++ )
             {
                 dest->A = *a++;
@@ -402,14 +271,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return bmp;
         }
-        public static Bitmap MixBands(OneBandImage R , OneBandImage G , OneBandImage B)
+        public static Bitmap MixBands(Image<byte> R , Image<byte> G , Image<byte> B)
         {
-            Bitmap bmp = new Bitmap(R.width,R.height);
-            byte* r=R.Source;
-            byte* g=G.Source;
-            byte* b=B.Source;
+            Bitmap bmp = new Bitmap(R.Width,R.Height);
+            byte* r=(byte*)R.DataPointer.ToPointer();
+            byte* g=(byte*)G.DataPointer.ToPointer();
+            byte* b=(byte*)B.DataPointer.ToPointer();
             Pixel* dest = bmp.Source;
-            var pt = R.width*R.height;
+            var pt = R.Width*R.Height;
             for ( var i = 0; i < pt; i++ )
             {
                 dest->A = 255;

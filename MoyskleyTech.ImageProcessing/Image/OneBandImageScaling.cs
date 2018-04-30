@@ -8,16 +8,6 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class OneBandImage
     {
-        /// <summary>
-        /// Creates a copy of the current OneBandImage
-        /// </summary>
-        /// <returns></returns>
-        public OneBandImage Clone()
-        {
-            OneBandImage bmp = new OneBandImage(width,height);
-            bmp.CopyFromRawGrayscale(this.CreateRaw8bppArray());
-            return bmp;
-        }
         public OneBandImage Rescale(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             if ( width <= 0 )

@@ -58,7 +58,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">Color</param>
         /// <param name="a">Alpha</param>
         /// <returns></returns>
-        public static Pixel FromArgb(Pixel p, byte a)
+        public static Pixel FromArgb(Pixel p , byte a)
         {
             return new Pixel()
             {
@@ -109,7 +109,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             r = r * 256 / 0b11111;
             g = g * 256 / 0b111111;
             b = b * 256 / 0b11111;
-            return FromArgb(255 , (byte)r , ( byte ) g , ( byte ) b);
+            return FromArgb(255 , ( byte ) r , ( byte ) g , ( byte ) b);
         }
         public static Pixel FromRGB555(UInt16 rgb555)
         {
@@ -128,7 +128,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             int r = R;
             int g = G;
             int b = B;
-            r=r * 0b11111 / 256;
+            r = r * 0b11111 / 256;
             g = g * 0b111111 / 256;
             b = b * 0b11111 / 256;
 
@@ -153,7 +153,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Pixel Over(Pixel fromImage)
         {
             byte[] result = new byte[4];
-            result[0] = ( byte ) System.Math.Max(A , fromImage.A) ;
+            result[0] = ( byte ) System.Math.Max(A , fromImage.A);
             result[1] = ( byte ) ( ( A * R + fromImage.R * ( 255 - A ) ) / 255 );
             result[2] = ( byte ) ( ( A * G + fromImage.G * ( 255 - A ) ) / 255 );
             result[3] = ( byte ) ( ( A * B + fromImage.B * ( 255 - A ) ) / 255 );
@@ -165,7 +165,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns></returns>
         public byte GetGrayTone()
         {
-            if ( R == G && G== B )
+            if ( R == G && G == B )
                 return R;
             return ( byte ) ( 0.21 * R + 0.72 * G + 0.07 * B );
         }
@@ -294,15 +294,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public HSB ToHSB()
         {
-            return HSB.FromHSB(GetHue(), GetSaturation() , GetBrightness());
+            return HSB.FromHSB(GetHue() , GetSaturation() , GetBrightness());
         }
         public static explicit operator Brush(Pixel p)
         {
             return new SolidBrush(p);
         }
+        public static explicit operator Brush<Pixel>(Pixel p)
+        {
+            return new SolidBrush(p);
+        }
         public override string ToString()
         {
-            return "Pixel["+R+","+G+","+B+"]";
+            return "Pixel[" + R + "," + G + "," + B + "]";
         }
 
 
@@ -485,7 +489,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         public byte B;
         public byte A;
-      
+
         public Pixel ToRGB()
         {
             double hue=H/255d , saturation=S/255d , brightness=B/255d;
@@ -521,7 +525,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public override string ToString()
         {
-            return "HSBA[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%,"+A+"/255]";
+            return "HSBA[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%," + A + "/255]";
         }
         /// <summary>
         /// 
@@ -530,7 +534,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="v2">0-1</param>
         /// <param name="v3">0-1</param>
         /// <returns></returns>
-        public static HSBA FromHSB(float v1 , float v2 , float v3,byte a)
+        public static HSBA FromHSBA(float v1 , float v2 , float v3 , byte a)
         {
             HSBA hsb = new HSBA();
             var h = v1*255/360;
@@ -542,7 +546,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             hsb.A = a;
             return hsb;
         }
-        public static HSBA FromHSB(int v1 , int v2 , int v3,byte a)
+        public static HSBA FromHSBA(int v1 , int v2 , int v3 , byte a)
         {
             HSBA hsb = new HSBA();
             var h = v1;
@@ -561,42 +565,110 @@ namespace MoyskleyTech.ImageProcessing.Image
     {
         public float C,Y,M,K;
     }
+    [StructLayout(LayoutKind.Sequential)]
     public struct HSL
     {
         public float H,S,L;
     }
+    [StructLayout(LayoutKind.Sequential)]
     public struct HSB_Float
     {
         public float H,S,B;
     }
+    [StructLayout(LayoutKind.Sequential)]
     public struct _565
     {
         public ushort _565_;
-        public byte R { get { return (byte)(_565_ >> 11); } set { _565_ &= 0b0000011111111111; _565_ |= unchecked(( ushort ) (value << 11)); }  }
-        public byte G { get { return ( byte ) ( (_565_ >> 5)&0b111111 ); } set { _565_ &= 0b1111100000011111; _565_ |= unchecked(( ushort ) ( (value & 0b111111) << 6 )); } }
-        public byte B { get { return ( byte ) ( _565_ &0b11111 ); } set { _565_ &= 0b1111111111100000; _565_ |= unchecked(( ushort ) ( value &0b11111 )); } }
-        public static implicit operator ushort(_565 v)=> v._565_;
+        public byte R { get { return ( byte ) ( _565_ >> 11 ); } set { _565_ &= 0b0000011111111111; _565_ |= unchecked(( ushort ) ( value << 11 )); } }
+        public byte G { get { return ( byte ) ( ( _565_ >> 5 ) & 0b111111 ); } set { _565_ &= 0b1111100000011111; _565_ |= unchecked(( ushort ) ( ( value & 0b111111 ) << 6 )); } }
+        public byte B { get { return ( byte ) ( _565_ & 0b11111 ); } set { _565_ &= 0b1111111111100000; _565_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
+        public static implicit operator ushort(_565 v) => v._565_;
         public static implicit operator _565(ushort v) => new _565 { _565_ = v };
     }
+    [StructLayout(LayoutKind.Sequential)]
     public struct _555
     {
         public ushort _555_;
-        public byte R { get { return ( byte ) ( ( _555_ & 0b11111 ) >> 10 ); } set { _555_ &= 0b0000001111111111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
-        public byte G { get { return ( byte ) ( ( _555_ &0b11111) >> 5 ); } set { _555_ &= 0b1111110000011111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
+        public byte R { get { return ( byte ) ( ( _555_ & 0b0111110000000000 ) >> 10 ); } set { _555_ &= 0b0000001111111111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
+        public byte G { get { return ( byte ) ( ( _555_ & 0b0000001111100000 ) >> 5 ); } set { _555_ &= 0b1111110000011111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
         public byte B { get { return ( byte ) ( _555_ & 0b11111 ); } set { _555_ &= 0b1111111111100000; _555_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
         public static implicit operator ushort(_555 v) => v._555_;
         public static implicit operator _555(ushort v) => new _555 { _555_ = v };
         public static implicit operator _555(_1555 v) => new _555 { _555_ = v };
     }
+    [StructLayout(LayoutKind.Sequential)]
     public struct _1555
     {
         public ushort _1555_;
-        public byte R { get { return ( byte ) ( ( _1555_ & 0b11111 ) >> 10 ); } set { _1555_ &= 0b0000001111111111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
-        public byte G { get { return ( byte ) ( ( _1555_ & 0b11111 ) >> 5 ); } set { _1555_ &= 0b1111110000011111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
+        public byte R { get { return ( byte ) ( ( _1555_ & 0b0111110000000000 ) >> 10 ); } set { _1555_ &= 0b0000001111111111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
+        public byte G { get { return ( byte ) ( ( _1555_ & 0b0000001111100000 ) >> 5 ); } set { _1555_ &= 0b1111110000011111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
         public byte B { get { return ( byte ) ( _1555_ & 0b11111 ); } set { _1555_ &= 0b1111111111100000; _1555_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
-        public bool A { get => _1555_ >= 1 << 15; set { _1555_ &= 0b0111111111111111; _1555_ |= unchecked(( ushort ) ( value?1:0 )); } }
+        public bool A { get => _1555_ >= 1 << 15; set { _1555_ &= 0b0111111111111111; _1555_ |= unchecked(( ushort ) ( value ? 1 : 0 )); } }
         public static implicit operator ushort(_1555 v) => v._1555_;
         public static implicit operator _1555(ushort v) => new _1555 { _1555_ = v };
-        public static implicit operator _1555(_555 v) => new _1555 { _1555_ = v._555_, A=true };
+        public static implicit operator _1555(_555 v) => new _1555 { _1555_ = v._555_ , A = true };
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BGR
+    {
+        public byte B,G,R;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RGB
+    {
+        public byte R,G,B;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct _332
+    {
+        public byte _332_;
+        public byte R
+        {
+            get
+            {
+                return ( byte ) ( ( _332_ & 0b11100000 ) >> 5 );
+            }
+            set
+            {
+                _332_ &= 0b00011111;
+                _332_ |= unchecked(( byte ) ( ( value & 0b111 ) << 5 ));
+            }
+        }
+        public byte G
+        {
+            get
+            {
+                return ( byte ) ( ( _332_ & 0b00011100 ) >> 2 );
+            }
+            set
+            {
+                _332_ &= 0b11100011;
+                _332_ |= unchecked(( byte ) ( ( value & 0b111 ) << 2 ));
+            }
+        }
+        public byte B
+        {
+            get
+            {
+                return ( byte ) ( _332_ & 0b11 );
+            }
+            set
+            {
+                _332_ &= 0b11111100;
+                _332_ |= unchecked(( byte ) ( value & 0b11 ));
+            }
+        }
+        public static implicit operator byte(_332 v) => v._332_;
+        public static implicit operator _332(byte v) => new _332 { _332_ = v };
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ARGB_Float
+    {
+        public float A,R,G,B;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ARGB_16bit
+    {
+        public ushort A,R,G,B;
     }
 }

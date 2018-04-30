@@ -43,6 +43,14 @@ namespace WinFormDemo_Multiple_Test_
             rpgFont = FontLibrary.WindowsFonts.Get(FONT_NAME);
             CreateFrame();
             DisplayFrame();
+
+            /*test*/
+            var _z= new _332() { R = 3 , G = 3 , B = 2 };
+            var conversion = ColorConvert.GetConversionFrom<_332 , HSL>();
+            var hsl = conversion(_z);
+            var conversion2 = ColorConvert.GetConversionFrom<HSL , BGR>();
+            var px = conversion2(hsl);
+            int i=5;
         }
 
         private void InitGraphics()
