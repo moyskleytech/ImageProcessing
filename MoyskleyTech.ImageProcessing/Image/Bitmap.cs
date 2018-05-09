@@ -11,20 +11,17 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <summary>
     /// Represent a Bitmap (Array of Pixel)
     /// </summary>
-    public unsafe partial class Bitmap : IDisposable
+    public unsafe partial class Bitmap : Image<Pixel>, IDisposable
     {
-        private readonly int width,height;
-        private readonly Pixel* data;
-        private readonly IntPtr raw;
+        private Pixel* data;
         /// <summary>
         /// Create a bitmap using Width and Height
         /// </summary>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
-        public Bitmap(int w , int h)
+        public Bitmap(int w , int h):base(w,h)
         {
             //Allocate
-            this.raw = Marshal.AllocHGlobal(w * h * sizeof(Pixel));
             data = ( Pixel* ) raw.ToPointer();
             width = w;
             height = h;
@@ -35,25 +32,15 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <param name="raw">Source to copy</param>
-        public Bitmap(int w , int h , byte[ ] raw)
+        public Bitmap(int w , int h , byte[ ] raw):base(w,h)
         {
             //Allocate
-            this.raw = Marshal.AllocHGlobal(w * h * sizeof(Pixel));
             data = ( Pixel* ) this.raw.ToPointer();
             Marshal.Copy(raw , 0 , this.raw , w * h * sizeof(Pixel));
             width = w;
             height = h;
         }
         
-        /// <summary>
-        /// Width of bitmap
-        /// </summary>
-        public int Width { get { return width; } }
-        /// <summary>
-        /// Height of bitmap
-        /// </summary>
-        public int Height { get { return height; } }
-
         /// <summary>
         /// Destrop bitmap
         /// </summary>
@@ -62,45 +49,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             Dispose();
         }
         /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        /// <returns>Pixel</returns>
-        public Pixel Get(int x , int y)
-        {
-            return this[x , y];
-        }
-        /// <summary>
-        /// Dispose the bitmap and release memory
-        /// </summary>
-        public void Dispose()
-        {
-            Marshal.FreeHGlobal(raw);
-            GC.SuppressFinalize(this);
-        }
-        /// <summary>
         /// Source to edit or copy
         /// </summary>
         public Pixel* Source { get { return data; } }
-        /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="x">X position</param>
-        /// <param name="y">Y position</param>
-        /// <returns>Pixel</returns>
-        public Pixel this[int x , int y]
-        {
-            get
-            {
-                return this[y * width + x];
-            }
-            set
-            {
-                this[y * width + x] = value;
-            }
-        }
-
+       
         public ImageProxy this[Rectangle rec]
         {
             get
@@ -113,7 +65,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="pos">As 1 dim array</param>
         /// <returns>Pixel</returns>
-        public Pixel this[int pos]
+        public override Pixel this[int pos]
         {
             get
             {
@@ -578,7 +530,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap Colorize(Pixel dest)
         {
             Bitmap bmpdest = new Bitmap(width,height);
-            bmpdest.CopyFromARGB(this.data);
+            bmpdest.CopyFromARGB(this.dataPointer);
 
             int count = 0;
             Pixel* ptr = bmpdest.data;
@@ -677,7 +629,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap GenerateBlurred(byte blurSize)
         {
             Bitmap blurred = new Bitmap(width , height);
-            blurred.CopyFromARGB(this.data);
+            blurred.CopyFromARGB(this.dataPointer);
 
             return blurred.Blur(blurSize);
         }
@@ -691,7 +643,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             return Task.Run(() =>
             {
                 Bitmap blurred = new Bitmap(width , height);
-                blurred.CopyFromARGB(this.data);
+                blurred.CopyFromARGB(this.dataPointer);
                 return blurred.Blur(blurSize);
             });
         }
@@ -750,7 +702,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap GenerateMonoscale(BitmapPalette8bpp palette)
         {
             Bitmap blurred = new Bitmap(width , height);
-            blurred.CopyFromARGB(this.data);
+            blurred.CopyFromARGB(this.dataPointer);
             blurred.SetMonoscale(palette);
             return blurred;
         }
@@ -761,7 +713,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap GenerateGrayscale()
         {
             Bitmap blurred = new Bitmap(width , height);
-            blurred.CopyFromARGB(this.data);
+            blurred.CopyFromARGB(this.dataPointer);
             blurred.SetGrayscale();
             return blurred;
         }
@@ -774,74 +726,12 @@ namespace MoyskleyTech.ImageProcessing.Image
             return Task.Run(() =>
             {
                 Bitmap blurred = new Bitmap(width , height);
-                blurred.CopyFromARGB(this.data);
+                blurred.CopyFromARGB(this.dataPointer);
                 blurred.SetGrayscale();
                 return blurred;
             });
         }
-
-        public Bitmap RotateFlip(RotateFlipType rotateFlipType)
-        {
-            Bitmap output=null;
-            var rotation = (RotateFlipType)((int)rotateFlipType&3);
-
-            if ( rotation == RotateFlipType.Rotate90 )
-            {
-                output = new Bitmap(height , width);
-                for ( var x = 0; x < width; x++ )
-                    for ( var y = 0; y < height; y++ )
-                        output[height - y - 1 , x] = this[x , y];
-            }
-            else if ( rotation == RotateFlipType.Rotate180 )
-            {
-                output = Clone();
-                for ( int x = 0, x2 = output.width - 1; x < x2; x++, x2-- )
-                    for ( var y = 0; y < output.height; y++ )
-                    {
-                        var tmp = output[x2,y];
-                        output[x2 , y] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-                for ( int x = 0; x < output.width; x++ )
-                    for ( int y = 0, y2 = output.height - 1; y < y2; y++, y2-- )
-                    {
-                        var tmp = output[x,y2];
-                        output[x , y2] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-            }
-            else if ( rotation == RotateFlipType.Rotate270 )
-            {
-                output = new Bitmap(height , width);
-                for ( var x = 0; x < width; x++ )
-                    for ( var y = 0; y < height; y++ )
-                        output[y , width - x - 1] = this[x , y];
-            }
-            else if ( rotation == RotateFlipType.RotateNone )
-                output = Clone();
-
-
-            if ( ( rotateFlipType & RotateFlipType.FlipX ) == RotateFlipType.FlipX )
-                for ( int x = 0, x2 = output.width - 1; x < x2; x++, x2-- )
-                    for ( var y = 0; y < output.height; y++ )
-                    {
-                        var tmp = output[x2,y];
-                        output[x2 , y] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-
-            if ( ( rotateFlipType & RotateFlipType.FlipY ) == RotateFlipType.FlipY )
-                for ( int x = 0; x < output.width; x++ )
-                    for ( int y = 0, y2 = output.height - 1; y < y2; y++, y2-- )
-                    {
-                        var tmp = output[x,y2];
-                        output[x , y2] = output[x , y];
-                        output[x , y] = tmp;
-                    }
-
-            return output;
-        }
-
+        
         /// <summary>
         /// Create a monoscale copy async
         /// </summary>
@@ -851,7 +741,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             return Task.Run(() =>
             {
                 Bitmap blurred = new Bitmap(width , height);
-                blurred.CopyFromARGB(this.data);
+                blurred.CopyFromARGB(this.dataPointer);
                 blurred.SetMonoscale(palette);
                 return blurred;
             });
@@ -1138,13 +1028,8 @@ namespace MoyskleyTech.ImageProcessing.Image
             return stats;
         }
 
-        public void ApplyFilter(Func<Pixel , Point , Pixel> func)
-        {
-            for ( var y = 0; y < height; y++ )
-                for ( var x = 0; x < width; x++ )
-                    this[x , y] = func(this[x , y] , new Point(x , y));
-        }
-        public ImageProxy Proxy(Rectangle rectangle)
+        
+        public new ImageProxy Proxy(Rectangle rectangle)
         {
             return new ImageProxy(this , rectangle);
         }
@@ -1176,35 +1061,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static BitmapAddition operator +(Bitmap bitmapA , Image<Pixel> bitmapB)
         {
             return new BitmapAddition(bitmapA , bitmapB);
-        }
-
-        public static explicit operator Image<Pixel>(Bitmap img)
-        {
-            return ( PixelImage ) img;
-        }
-        public static explicit operator Bitmap(Image<Pixel> img)
-        {
-            Bitmap image = new Bitmap(img.Width,img.Height);
-
-            image.CopyFromRGBA(img.DataPointer);
-
-            return image;
-        }
-        public static explicit operator PixelImage(Bitmap img)
-        {
-            PixelImage image = new PixelImage(img.Width,img.Height);
-
-            img.CopyToRGBA(image.DataPointer);
-
-            return image;
-        }
-        public static explicit operator Bitmap(PixelImage img)
-        {
-            Bitmap image = new Bitmap(img.Width,img.Height);
-
-            image.CopyFromRGBA(img.DataPointer);
-
-            return image;
         }
     }
 

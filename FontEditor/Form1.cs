@@ -19,7 +19,7 @@ namespace FontEditor
     {
         Font current= new MoyskleyTech.ImageProcessing.Image.Font("");
         //Bitmap bmp;
-        Graphics g,gu;
+        Graphics<Pixel> g,gu;
         
         System.Drawing.Bitmap img;
         int currentCharIndex=0;

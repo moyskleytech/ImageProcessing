@@ -665,10 +665,22 @@ namespace MoyskleyTech.ImageProcessing.Image
     public struct ARGB_Float
     {
         public float A,R,G,B;
+        public float GetGrayTone()
+        {
+            if ( R == G && G == B )
+                return R;
+            return ( float ) ( 0.21 * R + 0.72 * G + 0.07 * B );
+        }
     }
     [StructLayout(LayoutKind.Sequential)]
     public struct ARGB_16bit
     {
         public ushort A,R,G,B;
+        public ushort GetGrayTone()
+        {
+            if ( R == G && G == B )
+                return R;
+            return ( ushort ) ( 0.21 * R + 0.72 * G + 0.07 * B );
+        }
     }
 }

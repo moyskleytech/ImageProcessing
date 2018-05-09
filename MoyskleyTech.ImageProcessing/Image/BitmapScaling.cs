@@ -8,16 +8,6 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class Bitmap
     {
-        /// <summary>
-        /// Creates a copy of the current Bitmap
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap Clone()
-        {
-            Bitmap bmp = new Bitmap(width,height);
-            bmp.CopyFromARGB(this.data);
-            return bmp;
-        }
         public Bitmap Resize(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             return Rescale(width , height , mode);
@@ -247,7 +237,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return GetSubBitmap(new Rectangle(x , y , w , h));
         }
-        public Bitmap Crop(Rectangle rectangle)
+        public new Bitmap Crop(Rectangle rectangle)
         { return GetSubBitmap(rectangle); }
         public Bitmap Clone(Rectangle rectangle)
         { return GetSubBitmap(rectangle); }

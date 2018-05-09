@@ -74,6 +74,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormDemo(Multiple Test)"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDFCodecTest", "PDFCodecTest\PDFCodecTest.csproj", "{CBF773FB-4AD3-44F6-A85E-AA6DBE8F060D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.Android", "MoyskleyTech.ImageProcessing.Android\MoyskleyTech.ImageProcessing.Android.csproj", "{FD31D697-FAE2-437D-92D0-4A674A464ED9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.iOS", "MoyskleyTech.ImageProcessing.iOS\MoyskleyTech.ImageProcessing.iOS.csproj", "{4A579453-6F61-47B3-83A2-2A8D0C974998}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -454,6 +458,38 @@ Global
 		{CBF773FB-4AD3-44F6-A85E-AA6DBE8F060D}.Release|x64.Build.0 = Release|Any CPU
 		{CBF773FB-4AD3-44F6-A85E-AA6DBE8F060D}.Release|x86.ActiveCfg = Release|Any CPU
 		{CBF773FB-4AD3-44F6-A85E-AA6DBE8F060D}.Release|x86.Build.0 = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|x64.Build.0 = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD31D697-FAE2-437D-92D0-4A674A464ED9}.Release|x86.Build.0 = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|x64.Build.0 = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|x64.ActiveCfg = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|x64.Build.0 = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A579453-6F61-47B3-83A2-2A8D0C974998}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

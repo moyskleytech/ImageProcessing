@@ -23,7 +23,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public HSBImage(int w , int h) : base(w , h)
         {
-            pxls = ( HSB* ) data;
+            pxls = ( HSB* ) dataPointer;
             width = w;
             height = h;
         }

@@ -402,11 +402,11 @@ namespace ImageProcessing.TGACodec
           
             int imgOrientation = (imgFlags >> 4) & 0x3;
             if ( imgOrientation == 1 )
-                theBitmap = theBitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                theBitmap = ( Bitmap ) theBitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
             else if ( imgOrientation == 2 )
-                theBitmap = theBitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                theBitmap = ( Bitmap ) theBitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
             else if ( imgOrientation == 3 )
-                theBitmap = theBitmap.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+                theBitmap = (Bitmap)theBitmap.RotateFlip(RotateFlipType.RotateNoneFlipXY);
 
             return theBitmap;
         }

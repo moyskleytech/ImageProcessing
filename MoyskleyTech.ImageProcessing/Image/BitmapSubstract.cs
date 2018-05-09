@@ -11,7 +11,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         public int Tolerance { get; set; }
         public BitmapSubstractMode Mode { get; set; }
         public Func<Pixel,Pixel,int> DistanceFunction { get; set; }
-        private Bitmap A,B;
         private Image<Pixel> Aa,Bb;
         private int GetDistancePixel(Pixel a , Pixel b)
         {
@@ -23,21 +22,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             DistanceFunction = GetDistancePixel;
             Tolerance = 4;
         }
-        public BitmapSubstract(Bitmap bitmapA , Bitmap bitmapB):this()
-        {
-            this.A = bitmapA;
-            this.B = bitmapB;
-        }
-        public BitmapSubstract(Image<Pixel> bitmapA , Bitmap bitmapB) : this()
-        {
-            this.Aa = bitmapA;
-            this.B = bitmapB;
-        }
-        public BitmapSubstract(Bitmap bitmapA , Image<Pixel> bitmapB) : this()
-        {
-            this.A = bitmapA;
-            this.Bb = bitmapB;
-        }
+      
         public BitmapSubstract(Image<Pixel> bitmapA , Image<Pixel> bitmapB) : this()
         {
             this.Aa = bitmapA;
@@ -45,31 +30,31 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         private Pixel GetAtA(int i)
         {
-            return A?[i] ?? Aa[i];
+            return Aa[i];
         }
         private Pixel GetAtB(int i)
         {
-            return B?[i] ?? Bb[i];
+            return Bb[i];
         }
 
         public BitmapSubstract this[int t]
         {
             get {
-                return new BitmapSubstract() {A = A , B = B, Aa=Aa,Bb=Bb , Mode = Mode , DistanceFunction = DistanceFunction , Tolerance = t };
+                return new BitmapSubstract() { Aa=Aa,Bb=Bb , Mode = Mode , DistanceFunction = DistanceFunction , Tolerance = t };
             }
         }
         public BitmapSubstract this[Func<Pixel,Pixel,int> f]
         {
             get
             {
-                return new BitmapSubstract() { A = A , B = B , Aa = Aa , Bb = Bb , Mode = Mode , DistanceFunction = f , Tolerance = Tolerance };
+                return new BitmapSubstract() { Aa = Aa , Bb = Bb , Mode = Mode , DistanceFunction = f , Tolerance = Tolerance };
             }
         }
         public BitmapSubstract this[BitmapSubstractMode m]
         {
             get
             {
-                return new BitmapSubstract() { A = A , B = B , Aa = Aa , Bb = Bb , Mode = m , DistanceFunction = DistanceFunction , Tolerance = Tolerance };
+                return new BitmapSubstract() { Aa = Aa , Bb = Bb , Mode = m , DistanceFunction = DistanceFunction , Tolerance = Tolerance };
             }
         }
 
@@ -89,21 +74,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public Bitmap ToBitmap()
         {
-            Bitmap result = new Bitmap(A.Width,A.Height);
+            Bitmap result = new Bitmap(Aa.Width,Aa.Height);
             Do((i , x) => result[i] = x);
             return result;
         }
         public Image<Pixel> ToImage()
         {
-            Image<Pixel> result = new PixelImage(A.Width,A.Height);
-            Do((i , x) => result[i] = x);
-            return result;
+            return ToBitmap();
         }
         private void Do(Action<int , Pixel> setter)
         {
             if ( Mode == BitmapSubstractMode.BandDifference )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);
@@ -112,7 +95,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapSubstractMode.KeepSame )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);
@@ -125,7 +108,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapSubstractMode.Mask )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);

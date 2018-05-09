@@ -66,7 +66,7 @@ namespace WinFormDemo_Multiple_Test_
             messageArea = messageArea = new Rectangle(0 , MESSAGE_TOP , WIDTH , MESSAGE_HEIGHT);
             graphics = Graphics.FromImage(bmp);
             graphicsTampon = new NativeGraphicsWrapper(Graphics.FromImage(bmpTampon));
-            messagePane = graphicsTampon.Proxy(messageArea);
+            messagePane = (Braphics)graphicsTampon.Proxy(messageArea);
         }
 
         private void ShowMessage(string message)

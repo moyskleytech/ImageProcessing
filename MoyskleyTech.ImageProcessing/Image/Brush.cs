@@ -257,5 +257,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return p;
         }
+        public SolidBrush<T> As<T>()
+            where T:struct
+        {
+            return new SolidBrush<T>(ColorConvert.Convert<Representation , T>(p));
+        }
     }
 }

@@ -12,11 +12,12 @@ namespace MoyskleyTech.ImageProcessing.Image
         public BandStatistics Green { get; set; }
         public BandStatistics Blue { get; set; }
         public BandStatistics Alpha { get; set; }
+        public BandStatistics GrayTone { get; set; }
         public BandStatistics Hue { get; set; }
         public BandStatistics Saturation { get; set; }
         public BandStatistics Brightness { get; set; }
         public ColorStatistics ColorStatistics { get; set; }
-        public ImageStatistics(ImageProxy bmp)
+        public ImageStatistics(ImageProxy<Pixel> bmp)
         {
             int ct = bmp.Width*bmp.Height;
             var numberSelector = from x in Enumerable.Range(0 , ct) select x;
@@ -24,11 +25,12 @@ namespace MoyskleyTech.ImageProcessing.Image
             Red = new BandStatistics(from x in numberSelector select bmp[x].R , Band.Red);
             Green = new BandStatistics(from x in numberSelector select bmp[x].G , Band.Green);
             Blue = new BandStatistics(from x in numberSelector select bmp[x].B , Band.Blue);
+            GrayTone = new BandStatistics(from x in numberSelector select bmp[x].GetGrayTone() , Band.Gray);
 
             ColorStatistics = new ColorStatistics(from x in numberSelector select bmp[x]);
 
-            var tbmp = bmp.ToBitmap();
-            var hsb = tbmp.ToHSB();
+            var tbmp = bmp.ToImage();
+            var hsb = tbmp.ConvertTo<HSB>();
             tbmp.Dispose();
             Hue = new BandStatistics(from x in numberSelector select hsb[x].H , Band.Hue);
             Saturation = new BandStatistics(from x in numberSelector select hsb[x].S , Band.Saturation);
@@ -101,7 +103,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             get
             {
                 int i=0;
-                return ( from x in vals select new { val = x , pos = i } ).ToArray().OrderByDescending((x) => x.val).First().pos;
+                return ( from x in vals select new { val = x , pos = i++ } ).ToArray().OrderByDescending((x) => x.val).First().pos;
             }
         }
         public void Render(Graphics g , int x = 0 , int y = 0 , int w = 256 , int h = 256 , Pixel? background = null)
@@ -167,6 +169,6 @@ namespace MoyskleyTech.ImageProcessing.Image
     }
     public enum Band
     {
-        Red, Green, Blue, Hue, Saturation, Brightness, Alpha
+        Red, Green, Blue, Hue, Saturation, Brightness, Alpha,Gray
     }
 }

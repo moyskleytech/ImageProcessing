@@ -47,6 +47,15 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Point Location
         {
             get { return new Point() { X = X , Y = Y }; }
+            set { X = value.X;Y = value.Y; }
+        }
+        /// <summary>
+        /// Get position of Rectangle
+        /// </summary>
+        public Size Size
+        {
+            get { return new Size() {  Height=Height, Width=Width }; }
+            set { Height = value.Height; Width = value.Width; }
         }
         /// <summary>
         /// Left of rectangle

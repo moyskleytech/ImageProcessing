@@ -9,26 +9,11 @@ namespace MoyskleyTech.ImageProcessing.Image
     public class BitmapAddition
     {
         public BitmapAdditionMode Mode { get; set; }
-        private Bitmap A,B;
         private Image<Pixel> Aa,Bb;
         private BitmapAddition()
         {
         }
-        public BitmapAddition(Bitmap bitmapA , Bitmap bitmapB) : this()
-        {
-            this.A = bitmapA;
-            this.B = bitmapB;
-        }
-        public BitmapAddition(Image<Pixel> bitmapA , Bitmap bitmapB) : this()
-        {
-            this.Aa = bitmapA;
-            this.B = bitmapB;
-        }
-        public BitmapAddition(Bitmap bitmapA , Image<Pixel> bitmapB) : this()
-        {
-            this.A = bitmapA;
-            this.Bb = bitmapB;
-        }
+       
         public BitmapAddition(Image<Pixel> bitmapA , Image<Pixel> bitmapB) : this()
         {
             this.Aa = bitmapA;
@@ -39,7 +24,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             get
             {
-                return new BitmapAddition() { A = A , B = B , Aa = Aa , Bb = Bb , Mode = m };
+                return new BitmapAddition() { Aa = Aa , Bb = Bb , Mode = m };
             }
         }
 
@@ -59,17 +44,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         private Pixel GetAtA(int i)
         {
-            return A?[i] ?? Aa[i];
+            return Aa[i];
         }
         private Pixel GetAtB(int i)
         {
-            return B?[i] ?? Bb[i];
+            return Bb[i];
         }
         private void Do(Action<Pixel , int> setter)
         {
             if ( Mode == BitmapAdditionMode.BandAdd )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);
@@ -78,7 +63,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapAdditionMode.Max )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);
@@ -88,7 +73,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapAdditionMode.Min )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);
@@ -98,7 +83,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapAdditionMode.Mask )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     var b= GetAtB(i);
@@ -108,15 +93,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public Bitmap ToBitmap()
         {
-            Bitmap result = new Bitmap(A.Width,A.Height);
+            Bitmap result = new Bitmap(Aa.Width,Aa.Height);
             Do((x , i) => result[i] = x);
             return result;
         }
         public Image<Pixel> ToImage()
         {
-            Image<Pixel> result = new PixelImage(A.Width,A.Height);
-            Do((x , i) => result[i] = x);
-            return result;
+            return ToBitmap();
         }
 
     }

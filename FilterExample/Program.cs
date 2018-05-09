@@ -25,7 +25,7 @@ namespace FilterExample
             {
                 var fs = ofd.OpenFile();
                 Bitmap bmp = new BitmapFactory().Decode(fs);
-                Bitmap ori = bmp.Clone();
+                Bitmap ori = (Bitmap)bmp.Clone();
                 fs.Dispose();
 
                 ShowImage(bmp , "original");
@@ -47,7 +47,7 @@ namespace FilterExample
                 //ColorReducer.FromKMeans(bmp , 128);
 
                 //ShowImage(bmp , "color reduced to 128");
-                bmp = ori.Clone();
+                bmp = ( Bitmap ) ori.Clone();
                 ColorReducer.FromKMeans(bmp , 512);
 
                 ShowImage(bmp , "color reduced to 512");

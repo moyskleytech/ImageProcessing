@@ -21,7 +21,7 @@ namespace WinFormDemo_Multiple_Test_
         {
             label1.Text = "";
             Bitmap bitmap = new Bitmap(100,100);
-            PixelImage pxlImage = (PixelImage)bitmap;
+            Image<Pixel> pxlImage = (Image<Pixel>)bitmap;
 
             DateTime begin=DateTime.Now;
             HSBImage hsbImage = bitmap.ToHSB();

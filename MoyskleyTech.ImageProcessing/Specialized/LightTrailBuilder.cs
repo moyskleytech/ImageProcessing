@@ -25,7 +25,7 @@ namespace MoyskleyTech.ImageProcessing.Specialized
             width = workingObject.Width;
             height = workingObject.Height;
             max = width * height;
-            workingObject = firstFrame.Clone();
+            workingObject = (Bitmap)firstFrame.Clone();
         }
 
         public void AddFrame(Bitmap frame)
@@ -49,7 +49,7 @@ namespace MoyskleyTech.ImageProcessing.Specialized
         }
         public Bitmap Build()
         {
-            return workingObject.Clone();
+            return ( Bitmap ) workingObject.Clone();
         }
     }
 }

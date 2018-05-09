@@ -9,59 +9,33 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <summary>
     /// Main use is ROI
     /// </summary>
-    public class ImageProxy
+    public class ImageProxy:ImageProxy<Pixel>
     {
-        private Bitmap img;
-        private Rectangle rct;
-        public ImageProxy(Bitmap bitmap , Rectangle rectangle)
+        public ImageProxy(Bitmap bitmap , Rectangle rectangle):base((Image<Pixel>)bitmap,rectangle)
         {
-            this.img = bitmap;
-            this.rct = rectangle;
+          
         }
-        public ImageProxy(ImageProxy prx , Rectangle rectangle)
+        public ImageProxy(ImageProxy prx , Rectangle rectangle) : base((ImageProxy<Pixel>)prx , rectangle)
         {
-            this.img = prx.img;
-            this.rct = new Rectangle(rectangle.X + prx.Rectangle.X, rectangle.Y + prx.Rectangle.Y, rectangle.Width,rectangle.Height);
         }
-        public int Left => rct.Left;
-        public int Top => rct.Top;
-        public int X => rct.X;
-        public int Y => rct.Y;
-        public int Right => rct.Right;
-        public int Bottom => rct.Bottom;
-        public int Width => rct.Width;
-        public int Height => rct.Height;
-        public Rectangle Rectangle => rct;
+        
         public Bitmap ToBitmap()
         {
-            return img.Crop(rct);
+            Bitmap image = new Bitmap(rct.Width,rct.Height);
+            for ( var x = 0; x < Width; x++ )
+                for ( var y = 0; y < Width; y++ )
+                    image[x , y] = (this[x , y]);
+            return image;
         }
-        public Pixel this[int t]
+        public Image<T> ToImage<T>()
+           where T : struct
         {
-            get {
-                int y = t/Width;
-                int x = t-y*Width;
-                return this[x , y];
-            }
-            set {
-                int y = t/Width;
-                int x = t-y*Width;
-                this[x , y]=value;
-            }
-        }
-        public Pixel this[int x , int y]
-        {
-            get
-            {
-                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
-                    return img[x + rct.X , y + rct.Y];
-                return Pixels.Transparent;
-            }
-            set
-            {
-                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
-                    img[x + rct.X , y + rct.Y] = value;
-            }
+            var converter = ColorConvert.GetConversionFrom<Pixel,T>();
+            Image<T> image = Image<T>.Create(rct.Width,rct.Height);
+            for ( var x = 0; x < Width; x++ )
+                for ( var y = 0; y < Width; y++ )
+                    image[x , y] = converter(this[x , y]);
+            return image;
         }
         public static implicit operator Bitmap(ImageProxy ip)
         {
@@ -71,12 +45,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new ImageProxy(ip,new Rectangle(0,0,ip.Width,ip.Height));
         }
-        public void ApplyFilter(Func<Pixel , Point , Pixel> func)
-        {
-            for ( var y = 0; y < Height; y++ )
-                for ( var x = 0; x < Width; x++ )
-                    this[x , y] = func(this[x , y] , new Point(x , y));
-        }
     }
 
     /// <summary>
@@ -85,8 +53,12 @@ namespace MoyskleyTech.ImageProcessing.Image
     public class ImageProxy<Representation>
         where Representation:struct
     {
-        private Image<Representation> img;
-        private Rectangle rct;
+        protected Image<Representation> img;
+        protected Rectangle rct;
+        protected ImageProxy()
+        {
+
+        }
         public ImageProxy(Image<Representation> bitmap , Rectangle rectangle)
         {
             this.img = bitmap;
@@ -106,9 +78,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         public int Width => rct.Width;
         public int Height => rct.Height;
         public Rectangle Rectangle => rct;
-        public Image<Representation> ToImage()
+        public virtual Image<Representation> ToImage()
         {
-            return img.Crop(rct);
+            Image<Representation> image = Image<Representation>.Create(rct.Width,rct.Height);
+            for ( var x = 0; x < Width; x++ )
+                for ( var y = 0; y < Width; y++ )
+                    image[x , y] = (this[x , y]);
+            return image;
+        }
+        public virtual Image<T> ToImage<T>(Func<Representation,T> converter)
+            where T:struct
+        {
+            Image<T> image = Image<T>.Create(rct.Width,rct.Height);
+            for ( var x = 0; x < Width; x++ )
+                for ( var y = 0; y < Width; y++ )
+                    image[x , y] = converter(this[x , y]);
+            return image;
         }
         public Representation this[int t]
         {
@@ -125,7 +110,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 this[x , y] = value;
             }
         }
-        public Representation this[int x , int y]
+        public virtual Representation this[int x , int y]
         {
             get
             {

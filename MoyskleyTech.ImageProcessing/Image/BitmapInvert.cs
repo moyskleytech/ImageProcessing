@@ -10,16 +10,11 @@ namespace MoyskleyTech.ImageProcessing.Image
     {
         public BitmapInvertMode Mode { get; set; }
       
-        private Bitmap A;
         private Image<Pixel> Aa;
     
         private BitmapInvert()
         {
             
-        }
-        public BitmapInvert(Bitmap bitmapA):this()
-        {
-            this.A = bitmapA;
         }
         public BitmapInvert(Image<Pixel> bitmapA) : this()
         {
@@ -31,7 +26,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             get
             {
-                return new BitmapInvert() { A = A ,Mode = m };
+                return new BitmapInvert() { Aa = Aa ,Mode = m };
             }
         }
 
@@ -49,25 +44,23 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         private Pixel GetAtA(int i)
         {
-            return A?[i] ?? Aa[i];
+            return Aa[i];
         }
         public Bitmap ToBitmap()
         {
-            Bitmap result = new Bitmap(A.Width,A.Height);
+            Bitmap result = new Bitmap(Aa.Width,Aa.Height);
             Do((i , x) => result[i] = x);
             return result;
         }
         public Image<Pixel> ToImage()
         {
-            Image<Pixel> result = new PixelImage(A.Width,A.Height);
-            Do((i , x) => result[i] = x);
-            return result;
+            return ToBitmap();
         }
         private void Do(Action<int , Pixel> setter)
         {
             if ( Mode == BitmapInvertMode.Color )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     setter(i,Pixel.FromArgb(a.A , B(255 - a.R) , B(255 - a.G) , B(255 - a.B)));
@@ -75,7 +68,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapInvertMode.AllBand )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     setter(i , Pixel.FromArgb(B(255 - a.A) , B(255 - a.R) , B(255 - a.G) , B(255 - a.B)));
@@ -83,7 +76,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             else if ( Mode == BitmapInvertMode.Alpha )
             {
-                for ( var i = 0; i < A.Width * A.Height; i++ )
+                for ( var i = 0; i < Aa.Width * Aa.Height; i++ )
                 {
                     var a = GetAtA(i);
                     setter(i , Pixel.FromArgb(B(255 - a.A) , a.R , a.G , a.B));

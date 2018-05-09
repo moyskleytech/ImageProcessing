@@ -14,7 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         where Representation:struct
     {
         protected int width,height;
-        protected readonly byte* data;
+        protected readonly byte* dataPointer;
         private readonly int lengthOfItem;
         protected IntPtr raw;
         /// <summary>
@@ -27,7 +27,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             //Allocate
             lengthOfItem = Marshal.SizeOf(default(Representation));
             raw = Marshal.AllocHGlobal(w * h * lengthOfItem);
-            data = ( byte* ) raw.ToPointer();
+            dataPointer = ( byte* ) raw.ToPointer();
             width = w;
             height = h;
         }
@@ -111,7 +111,7 @@ namespace MoyskleyTech.ImageProcessing.Image
 
         public void CopyTo(IntPtr dst)
         {
-            byte* src = data;
+            byte* src = dataPointer;
             byte* dest = (byte*)dst.ToPointer();
             for ( var i = 0; i < width * height*lengthOfItem; i++ )
                 *dest++ = *src++;
@@ -119,13 +119,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFrom(IntPtr dst)
         {
             byte* src = (byte*)dst.ToPointer();
-            byte* dest = data;
+            byte* dest = dataPointer;
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
         }
         public void CopyTo(byte* dst)
         {
-            byte* src = data;
+            byte* src = dataPointer;
             byte* dest = (byte*)dst;
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
@@ -133,7 +133,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFrom(byte* dst)
         {
             byte* src = (byte*)dst;
-            byte* dest = data;
+            byte* dest = dataPointer;
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
         }
@@ -147,6 +147,17 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( converter == null )
                 throw new NotImplementedException("Specified conversion from "+ typeof(Representation).Name +" to "+ typeof(NewRepresentation).Name +" is not implemented");
 
+            for ( var i = 0; i < width * height; i++ )
+            {
+                image[i] = converter(this[i]);
+            }
+            return image;
+        }
+        public Image<NewRepresentation> ConvertUsing<NewRepresentation>(Func<Representation , NewRepresentation> converter)
+          where NewRepresentation : struct
+        {
+            Image<NewRepresentation> image = Image<NewRepresentation>.Create(width,height);
+            
             for ( var i = 0; i < width * height; i++ )
             {
                 image[i] = converter(this[i]);
@@ -172,7 +183,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Image<byte> GetByteBand(int no)
         {
             Image<byte> img = Image<byte>.Create(width,height);
-            byte* src = data;
+            byte* src = dataPointer;
             byte* dest = (byte*)img.DataPointer.ToPointer();
             for ( var i = 0; i < width * height; i++ )
             {
@@ -184,7 +195,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void SetByteBand(Image<byte> band ,int no)
         {
             byte* src = (byte*)band.DataPointer.ToPointer();
-            byte* dest = data;
+            byte* dest = dataPointer;
             for ( var i = 0; i < width * height; i++ )
             {
                 *dest = *src;
@@ -198,7 +209,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( no < lengthOfItem )
             {
                 Image<float> img = Image<float>.Create(width,height);
-                byte* src = data+no;
+                byte* src = dataPointer+no;
                 float* dest = (float*)img.DataPointer.ToPointer();
                 for ( var i = 0; i < width * height; i++ )
                 {
@@ -214,7 +225,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( ( no + 1 ) * sizeof(float) <= lengthOfItem )
             {
                 float* src = (float*)band.DataPointer.ToPointer();
-                byte* dest = data+no*sizeof(float);
+                byte* dest = dataPointer+no*sizeof(float);
                 for ( var i = 0; i < width * height; i++ )
                 {
                     *((float*)dest) = *src;
@@ -225,6 +236,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public Image<Representation> GetSubImage(Rectangle location)
         {
+            if ( location.Bottom > this.height )
+                location.Height = this.height - location.Top;
+            if ( location.Right > this.width )
+                location.Width = this.width - location.Left;
+
             Image<Representation> bmp = Create(location.Width , location.Height);
             for ( int x1 = 0, x = location.Left; x <= location.Right && x < width; x++, x1++ )
             {
@@ -239,11 +255,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static Image<Representation> Create(int width,int height)
         {
             if ( typeof(Representation) == typeof(Pixel) )
-                return ( Image<Representation> ) ( object ) new PixelImage(width , height);
+                return ( Image<Representation> ) ( object ) new Bitmap(width , height);
             if ( typeof(Representation) == typeof(ARGB_Float) )
                 return ( Image <Representation> )(object)new SuperHighRangeImage(width , height);
             if ( typeof(Representation) == typeof(ARGB_16bit) )
                 return ( Image<Representation> ) ( object ) new HighRangeImage(width , height);
+            if ( typeof(Representation) == typeof(bool) )
+                return ( Image<Representation> ) ( object ) new BoolImage(width , height);
             if ( typeof(Representation) == typeof(byte) )
                 return ( Image<Representation> ) ( object ) new OneBandImage(width , height);
             if ( typeof(Representation) == typeof(float) )
@@ -350,7 +368,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Image<Representation> Clone()
         {
             Image<Representation> dest = Create(width,height);
-            dest.CopyFrom(data);
+            dest.CopyFrom(dataPointer);
             return dest;
         }
     }
@@ -360,7 +378,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         ARGB_16bit* ptr;
         public HighRangeImage(int w , int h) : base(w , h)
         {
-            ptr = ( ARGB_16bit * )base.data;
+            ptr = ( ARGB_16bit * )base.dataPointer;
         }
         public override ARGB_16bit this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -370,7 +388,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         ARGB_Float* ptr;
         public SuperHighRangeImage(int w , int h) : base(w , h)
         {
-            ptr = ( ARGB_Float* ) base.data;
+            ptr = ( ARGB_Float* ) base.dataPointer;
         }
         public override ARGB_Float this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -380,19 +398,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         float* ptr;
         public OneBandFloatImage(int w , int h) : base(w , h)
         {
-            ptr = ( float* ) base.data;
+            ptr = ( float* ) base.dataPointer;
         }
         public override float this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    [NotSerialized]
-    public unsafe partial class PixelImage : Image<Pixel>
-    {
-        Pixel* ptr;
-        public PixelImage(int w , int h) : base(w , h)
-        {
-            ptr = ( Pixel* ) base.data;
-        }
-        public override Pixel this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
     [NotSerialized]
     public unsafe partial class _1555Image : Image<_1555>
@@ -400,7 +408,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         _1555* ptr;
         public _1555Image(int w , int h) : base(w , h)
         {
-            ptr = ( _1555* ) base.data;
+            ptr = ( _1555* ) base.dataPointer;
         }
         public override _1555 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -410,7 +418,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         _555* ptr;
         public _555Image(int w , int h) : base(w , h)
         {
-            ptr = ( _555* ) base.data;
+            ptr = ( _555* ) base.dataPointer;
         }
         public override _555 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -420,7 +428,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         _565* ptr;
         public _565Image(int w , int h) : base(w , h)
         {
-            ptr = ( _565* ) base.data;
+            ptr = ( _565* ) base.dataPointer;
         }
         public override _565 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -430,7 +438,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         HSBA* ptr;
         public HSBAImage(int w , int h) : base(w , h)
         {
-            ptr = ( HSBA* ) base.data;
+            ptr = ( HSBA* ) base.dataPointer;
         }
         public override HSBA this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -440,7 +448,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         CYMK* ptr;
         public CYMKImage(int w , int h) : base(w , h)
         {
-            ptr = ( CYMK* ) base.data;
+            ptr = ( CYMK* ) base.dataPointer;
         }
         public override CYMK this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -450,7 +458,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         HSL* ptr;
         public HSLImage(int w , int h) : base(w , h)
         {
-            ptr = ( HSL* ) base.data;
+            ptr = ( HSL* ) base.dataPointer;
         }
         public override HSL this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -460,7 +468,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         HSB_Float* ptr;
         public HSB_FloatImage(int w , int h) : base(w , h)
         {
-            ptr = ( HSB_Float* ) base.data;
+            ptr = ( HSB_Float* ) base.dataPointer;
         }
         public override HSB_Float this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -470,7 +478,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         BGR* ptr;
         public BGRImage(int w , int h) : base(w , h)
         {
-            ptr = ( BGR* ) base.data;
+            ptr = ( BGR* ) base.dataPointer;
         }
         public override BGR this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -480,7 +488,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         RGB* ptr;
         public RGBImage(int w , int h) : base(w , h)
         {
-            ptr = ( RGB* ) base.data;
+            ptr = ( RGB* ) base.dataPointer;
         }
         public override RGB this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
@@ -490,8 +498,18 @@ namespace MoyskleyTech.ImageProcessing.Image
         _332* ptr;
         public _332Image(int w , int h) : base(w , h)
         {
-            ptr = ( _332* ) base.data;
+            ptr = ( _332* ) base.dataPointer;
         }
         public override _332 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
+    }
+    [NotSerialized]
+    public unsafe partial class BoolImage : Image<bool>
+    {
+        bool* ptr;
+        public BoolImage(int w , int h) : base(w , h)
+        {
+            ptr = ( bool* ) base.dataPointer;
+        }
+        public override bool this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
     }
 }

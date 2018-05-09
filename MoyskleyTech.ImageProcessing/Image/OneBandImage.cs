@@ -14,7 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Image
     [NotSerialized]
     public unsafe partial class OneBandImage : Image<byte>, IDisposable
     {
-        public byte* Source { get => data; }
+        public byte* Source { get => dataPointer; }
         /// <summary>
         /// Create a bitmap using Width and Height
         /// </summary>
@@ -53,14 +53,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             get
             {
                 if ( pos >= 0 && pos < width * height )
-                    return data[pos];
+                    return dataPointer[pos];
                 else
                     return new byte();
             }
             set
             {
                 if ( pos >= 0 && pos < width * height )
-                    data[pos] = value;
+                    dataPointer[pos] = value;
             }
         }
        
@@ -124,7 +124,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             s.Flush();
             for ( var i = height - 1; i >= 0; i-- )
             {
-                byte* ptr = data + i * width;
+                byte* ptr = dataPointer + i * width;
 
                 for ( var j = 0; j < width; j++ )
                 {
@@ -146,7 +146,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromRawGrayscale(byte[ ] raw)
         {
             int size = width*height;
-            byte*ptr = data;
+            byte*ptr = dataPointer;
             for ( var i = 0; i < size; i++ )
             {
                 *ptr++ = raw[i];
@@ -160,7 +160,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             MemoryStream ms = new MemoryStream();
             int size = width*height;
-            byte*ptr = data;
+            byte*ptr = dataPointer;
             for ( var i = 0; i < size; i++ )
             {
                 ms.WriteByte(*ptr);
@@ -179,7 +179,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             ValidateBlurSize(blurSize);
 
-            byte* debut = data;
+            byte* debut = dataPointer;
             byte* ptr=debut;
             byte*[] lines  = new byte*[height];
 
@@ -295,7 +295,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public void Clear(byte b)
         {
-            byte* r=data;
+            byte* r=dataPointer;
             var pt = width*height;
             for ( var i = 0; i < pt; i++ )
                 *r++ = b;

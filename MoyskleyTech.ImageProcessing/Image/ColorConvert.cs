@@ -125,6 +125,8 @@ namespace MoyskleyTech.ImageProcessing.Image
             where T:struct
             where V:struct
         {
+            if ( b is SolidBrush<T> a )
+                return a.As<V>();
             return new ConvertedBrush<T,V>() { brush = b , converter = GetConversionFrom<T , V>() };
         }
         public static Image<V> Convert<T, V>(Image<T> b)
@@ -143,13 +145,16 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             RegisterTransition<HSBA , HSB>(ToHSB , 0.95);
             RegisterTransition<HSB_Float , HSB>(ToHSB , 0.8);
-            RegisterTransition<Pixel , HSB>(ToHSB , 0.8);
+            RegisterTransition<Pixel , HSB>(ToHSB , 0.75);
             RegisterTransition<HSL , HSB>(ToHSB , 0.8);
-            RegisterTransition<Pixel , HSBA>(ToHSBA , 0.85);
+
+            RegisterTransition<Pixel , HSBA>(ToHSBA , 0.8);
             RegisterTransition<HSB , HSBA>(ToHSBA , 1);
+
             RegisterTransition<Pixel , CYMK>(ToCYMK , 1);
             RegisterTransition<ARGB_Float , CYMK>(ToCYMK , 1);
             RegisterTransition<ARGB_16bit , CYMK>(ToCYMK , 1);
+
             RegisterTransition<CYMK , Pixel>(ToPixel , 0.5);
             RegisterTransition<HSBA , Pixel>(ToPixel , 1);
             RegisterTransition<HSB , Pixel>(ToPixel , 1);
@@ -161,31 +166,48 @@ namespace MoyskleyTech.ImageProcessing.Image
             RegisterTransition<_332 , Pixel>(ToPixel , 1);
             RegisterTransition<ARGB_16bit , Pixel>(ToPixel, 0.5);
             RegisterTransition<ARGB_Float , Pixel>(ToPixel, 0.5);
+
             RegisterTransition<HSB_Float , HSL>(ToHSL , 1);
+
             RegisterTransition<HSB , HSB_Float>(ToHSB_Float , 1);
             RegisterTransition<HSL , HSB_Float>(ToHSB_Float , 1);
+            RegisterTransition<ARGB_16bit , HSB_Float>(ToHSB_Float , 1);
+            RegisterTransition<ARGB_Float , HSB_Float>(ToHSB_Float , 1);
+
             RegisterTransition<Pixel , _565>(To_565 , 0.5);
             RegisterTransition<Pixel , _555>(To_555 , 0.4);
-            RegisterTransition<Pixel , _1555>(To_1555 , 0.47);
             RegisterTransition<_1555 , _555>(To_555 , 0.9);
+            RegisterTransition<Pixel , _1555>(To_1555 , 0.47);
             RegisterTransition<_555 , _1555>(To_1555 , 1);
+
             RegisterTransition<byte , bool>(ToBool , 0.5);
             RegisterTransition<bool , byte>(ToByte , 1);
             RegisterTransition<ushort , byte>(ToByte , 0.5);
             RegisterTransition<byte , ushort>(ToUShort , 1);
+            RegisterTransition<ARGB_16bit , ushort>(ToUShort , 0.25);
             RegisterTransition<uint , ushort>(ToUShort , 0.5);
             RegisterTransition<ushort , uint>(ToUInt , 1);
             RegisterTransition<ulong , uint>(ToUInt , 0.5);
             RegisterTransition<uint , ulong>(ToULong , 1);
+            RegisterTransition<ARGB_Float , float>(ToFloat , 0.25);
+
+            RegisterTransition<BGR , RGB>(ToRGB , 1);
             RegisterTransition<Pixel , RGB>(ToRGB , 0.75);
+
+            RegisterTransition<RGB , BGR>(ToBGR , 1);
             RegisterTransition<Pixel , BGR>(ToBGR , 0.75);
             RegisterTransition<bool , BGR>(ToBGR , 1);
             RegisterTransition<byte , BGR>(ToBGR , 1);
+
             RegisterTransition<Pixel , _332>(To_332 , 0.1);
+
             RegisterTransition<Pixel , ARGB_16bit>(ToARGB_16bit , 1);
             RegisterTransition<ARGB_Float , ARGB_16bit>(ToARGB_16bit , 0.75);
             RegisterTransition<CYMK , ARGB_16bit>(ToARGB_16bit , 0.75);
+            RegisterTransition<ushort , ARGB_16bit>(ToARGB_16bit , 1);
+
             RegisterTransition<Pixel , ARGB_Float>(ToARGB_Float , 1);
+            RegisterTransition<float , ARGB_Float>(ToARGB_Float , 1);
             RegisterTransition<ARGB_16bit , ARGB_Float>(ToARGB_Float , 1);
             RegisterTransition<CYMK , ARGB_Float>(ToARGB_Float , 1);
             RegisterTransition<HSB_Float , ARGB_Float>(ToARGB_Float , 1);
@@ -733,7 +755,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return src.ToPixel().ToRGB();
         }
-        public static RGB ToRGB(this RGB src)
+        public static RGB ToRGB(this BGR src)
         {
             return src.ToPixel().ToRGB();
         }
@@ -760,6 +782,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static ARGB_16bit ToARGB_16bit(this ARGB_Float p)
         {
             return new ARGB_16bit() { A = ( ushort ) ( p.A*ushort.MaxValue ) , R = ( ushort ) ( p.R * ushort.MaxValue ) , G = ( ushort ) ( p.G * ushort.MaxValue ) , B = ( ushort ) ( p.B * ushort.MaxValue ) };
+        }
+        public static ARGB_16bit ToARGB_16bit(this ushort src)
+        {
+            return new ARGB_16bit { A = 255 , R = ( ushort ) src , G = ( ushort ) src , B = ( ushort ) src };
         }
         #endregion
         #region ARGB_Float
@@ -798,9 +824,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new ARGB_Float() { A = p.A / (float)ushort.MaxValue , R = p.R / ( float ) ushort.MaxValue , G = p.G / ( float ) ushort.MaxValue , B = p.B / ( float ) ushort.MaxValue };
         }
+        public static ARGB_Float ToARGB_Float(this float src)
+        {
+            return new ARGB_Float { A = 255 , R = src , G = src , B = src };
+        }
         #endregion
-
         #region helper
+        public static float ToFloat(this ARGB_Float src)
+        {
+            return src.GetGrayTone();
+        }
         public static bool ToBool(this byte src)
         {
             return src>128;
@@ -813,6 +846,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return ( byte ) ( src>>8 );
         }
+        public static byte ToByte(this Pixel src)
+        {
+            return src.GetGrayTone() ;
+        }
         public static ushort ToUShort(this byte src)
         {
             return (ushort)(src<<8);
@@ -820,6 +857,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static ushort ToUShort(this uint src)
         {
             return ( ushort ) ( src >>16 );
+        }
+        public static ushort ToUShort(this ARGB_16bit src)
+        {
+            return src.GetGrayTone();
         }
         public static uint ToUInt(this ushort src)
         {

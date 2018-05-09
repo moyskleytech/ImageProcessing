@@ -16,7 +16,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                 xkernel = xSobel;
             if ( ykernel == null )
                 ykernel = ySobel;
-            Bitmap result = sourceImage.Clone();
+            Bitmap result = (Bitmap)sourceImage.Clone();
             //Image dimensions stored in variables for convenience
             int width = sourceImage.Width;
             int height = sourceImage.Height;

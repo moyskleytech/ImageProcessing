@@ -18,9 +18,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// The bitmap where to draw
         /// </summary>
-        private Image<Representation> bmp;
-        private ImageProxy<Representation> proxy;
-        private Graphics<Representation> gProxy;
+        protected Image<Representation> bmp;
+        protected ImageProxy<Representation> proxy;
+        protected Graphics<Representation> gProxy;
 
         private Matrix transformationMatrix;
 
@@ -70,11 +70,12 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Private constructor to things not related to bitmap
         /// </summary>
-        private Graphics(int u)
+        protected Graphics(int u)
         {
             transformationMatrix = Matrix.Identity(3);
             PreTransformFunction = null;
             PostTransformFunction = null;
+
             CompositionFunction = (x , y) => x;
 
             if ( typeof(Representation) == typeof(Pixel) )
