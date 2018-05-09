@@ -8,15 +8,29 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Video
 {
+    /// <summary>
+    /// Video reader for multiband 
+    /// </summary>
     public class MultiBandVideoReader
     {
         private Stream s;
         private OneBandImage[] bands;
+        /// <summary>
+        /// Current frame
+        /// </summary>
         public OneBandImage[] Frame { get; set; }
+        /// <summary>
+        /// Create a reader using a stream
+        /// </summary>
+        /// <param name="s"></param>
         public MultiBandVideoReader(Stream s)
         {
             this.s = s;
         }
+        /// <summary>
+        /// Read a frame of the video
+        /// </summary>
+        /// <returns></returns>
         public bool ReadFrame()
         {
             if ( bands == null )

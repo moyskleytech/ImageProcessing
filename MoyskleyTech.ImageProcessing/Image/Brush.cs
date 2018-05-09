@@ -12,8 +12,11 @@ namespace MoyskleyTech.ImageProcessing.Image
     public abstract class Brush : Brush<Pixel>
     {
     }
+    /// <summary>
+    /// Represent a pattern
+    /// </summary>
     public abstract class Brush<Representation>
-        where Representation:struct
+    where Representation : struct
     {
         /// <summary>
         /// Get the color from the specified position in the pattern
@@ -42,7 +45,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Return the image
         /// </summary>
-        public Bitmap Image { get { return src; }  }
+        public Bitmap Image { get { return src; } }
 
         /// <summary>
         /// Get the color from the specified position in the pattern
@@ -63,9 +66,21 @@ namespace MoyskleyTech.ImageProcessing.Image
         Point sourcePt,finalPt;
         Pixel source,final;
 
+        /// <summary>
+        /// Source location of gradient
+        /// </summary>
         public Point SourceLocation { get { return sourcePt; } }
+        /// <summary>
+        /// Color at begenning
+        /// </summary>
         public Pixel SourceColor { get { return source; } }
+        /// <summary>
+        /// Location of end
+        /// </summary>
         public Point FinalLocation { get { return finalPt; } }
+        /// <summary>
+        /// Color at end
+        /// </summary>
         public Pixel FinalColor { get { return final; } }
         /// <summary>
         /// Create a pattern
@@ -113,23 +128,41 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// </summary>
     public class LinearMultiGradientBrush : Brush
     {
-        public class GradientStop {
+        /// <summary>
+        /// Represent a stop
+        /// </summary>
+        public class GradientStop
+        {
+            /// <summary>
+            /// Color at position
+            /// </summary>
             public Pixel Color { get; set; }
+            /// <summary>
+            /// Weight of the color(max 1 min 0)
+            /// </summary>
             public double Weigth { get; set; }
         }
         Point sourcePt,finalPt;
+        /// <summary>
+        /// All colors
+        /// </summary>
         public List<GradientStop> Stops { get; set; } = new List<GradientStop>();
-
+        /// <summary>
+        /// Source of gradient
+        /// </summary>
         public Point SourceLocation { get { return sourcePt; } }
+
+        /// <summary>
+        /// End of gradient
+        /// </summary>
         public Point FinalLocation { get { return finalPt; } }
         /// <summary>
         /// Create a pattern
         /// </summary>
         /// <param name="srcp">Source point</param>
-        /// <param name="src">Source color</param>
         /// <param name="destp">End point</param>
-        /// <param name="dest">End color</param>
-        public LinearMultiGradientBrush(Point srcp , Point destp ,IEnumerable<GradientStop> stops)
+        /// <param name="stops">End color</param>
+        public LinearMultiGradientBrush(Point srcp , Point destp , IEnumerable<GradientStop> stops)
         {
             this.sourcePt = srcp;
             this.finalPt = destp;
@@ -166,10 +199,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             var epx = sourcePt.X + dx*after.Weigth;
             var epy = sourcePt.Y + dy*after.Weigth;
 
-            dx = ( int ) ( epx - bpx);
-            dy = ( int ) ( epy - bpy);
-            C1 = (int)(dx * bpx + dy * bpy);
-            C2 = ( int ) ( dx * epx + dy * epy);
+            dx = ( int ) ( epx - bpx );
+            dy = ( int ) ( epy - bpy );
+            C1 = ( int ) ( dx * bpx + dy * bpy );
+            C2 = ( int ) ( dx * epx + dy * epy );
             C = dx * x + dy * y;
 
             var a = (byte)((before.Color.A*(C2-C)+after.Color.A*(C-C1))/(C2-C1));
@@ -189,10 +222,21 @@ namespace MoyskleyTech.ImageProcessing.Image
         Pixel source, final;
         double radius;
         double da,dr,dg,db;
-
+        /// <summary>
+        /// Center of radialbrush
+        /// </summary>
         public Point SourceLocation { get { return sourcePt; } }
+        /// <summary>
+        /// Color at center
+        /// </summary>
         public Pixel SourceColor { get { return source; } }
+        /// <summary>
+        /// Radius of brush
+        /// </summary>
         public double Radius { get { return radius; } }
+        /// <summary>
+        /// Color at the outside of radial
+        /// </summary>
         public Pixel FinalColor { get { return final; } }
         /// <summary>
         /// Create a pattern
@@ -225,7 +269,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             var r = System.Math.Sqrt(System.Math.Pow(x - sourcePt.X , 2) + System.Math.Pow(y - sourcePt.Y , 2));
             if ( r > radius )
                 return final;
-           
+
             return Pixel.FromArgb(
                 ( byte ) ( source.A + da * r ) ,
                 ( byte ) ( source.R + dr * r ) ,
@@ -233,34 +277,64 @@ namespace MoyskleyTech.ImageProcessing.Image
                 ( byte ) ( source.B + db * r ));
         }
     }
+    /// <summary>
+    /// Create a solidbrush to use a color on a method that uses a brush
+    /// </summary>
     public class SolidBrush : Brush
     {
         private Pixel p;
+        /// <summary>
+        /// Create a solidbrush to use a color on a method that uses a brush
+        /// </summary>
         public SolidBrush(Pixel p)
         {
             this.p = p;
         }
+        /// <summary>
+        /// Get color at specified location
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public override Pixel GetColor(int x , int y)
         {
             return p;
         }
     }
+    /// <summary>
+    /// Create a solidbrush to use a color on a method that uses a brush
+    /// </summary>
     public class SolidBrush<Representation> : Brush<Representation>
-        where Representation:struct
+        where Representation : struct
     {
         private Representation p;
+        /// <summary>
+        /// Create a solidbrush to use a color on a method that uses a brush
+        /// </summary>
+        /// <param name="p">The color</param>
         public SolidBrush(Representation p)
         {
             this.p = p;
         }
+        /// <summary>
+        /// Get Color at specified location
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public override Representation GetColor(int x , int y)
         {
             return p;
         }
-        public SolidBrush<T> As<T>()
-            where T:struct
+        /// <summary>
+        /// Cast the brush to another colorspace
+        /// </summary>
+        /// <typeparam name="NewColorspace">New colorspace</typeparam>
+        /// <returns></returns>
+        public SolidBrush<NewColorspace> As<NewColorspace>()
+            where NewColorspace : struct
         {
-            return new SolidBrush<T>(ColorConvert.Convert<Representation , T>(p));
+            return new SolidBrush<NewColorspace>(ColorConvert.Convert<Representation , NewColorspace>(p));
         }
     }
 }

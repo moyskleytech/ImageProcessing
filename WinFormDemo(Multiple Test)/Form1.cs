@@ -21,7 +21,7 @@ namespace WinFormDemo_Multiple_Test_
             InitializeComponent();
         }
 
-        private void imgSrc_Click(object sender , EventArgs e)
+        private void ImgSrc_Click(object sender , EventArgs e)
         {
             OpenFileDialog ofd=new OpenFileDialog();
             if ( ofd.ShowDialog() ==  DialogResult.OK )
@@ -33,7 +33,7 @@ namespace WinFormDemo_Multiple_Test_
             }
         }
 
-        private void imgDest_MouseUp(object sender , MouseEventArgs e)
+        private void ImgDest_MouseUp(object sender , MouseEventArgs e)
         {
             var pos = e.Location;
             pts[pointIdx++] = pos;

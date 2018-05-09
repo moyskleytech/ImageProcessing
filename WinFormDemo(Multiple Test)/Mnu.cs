@@ -17,17 +17,17 @@ namespace WinFormDemo_Multiple_Test_
             InitializeComponent();
         }
 
-        private void button1_Click(object sender , EventArgs e)
+        private void Button1_Click(object sender , EventArgs e)
         {
             ( new RPG() ).ShowDialog();
         }
 
-        private void button2_Click(object sender , EventArgs e)
+        private void Button2_Click(object sender , EventArgs e)
         {
             ( new Form1() ).ShowDialog();
         }
 
-        private void button3_Click(object sender , EventArgs e)
+        private void Button3_Click(object sender , EventArgs e)
         {
             ( new SpeedTest() ).ShowDialog();
         }

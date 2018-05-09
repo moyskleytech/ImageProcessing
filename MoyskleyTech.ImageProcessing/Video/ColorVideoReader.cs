@@ -8,20 +8,29 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Video
 {
+    /// <summary>
+    /// Video reader for color video
+    /// </summary>
     public class ColorVideoReader
     {
         private Stream s;
         private OneBandImage r,g,b;
+        /// <summary>
+        /// Current frame
+        /// </summary>
         public Bitmap Frame { get; set; }
+        /// <summary>
+        /// Create a reader on stream
+        /// </summary>
+        /// <param name="s"></param>
         public ColorVideoReader(Stream s)
         {
             this.s = s;
         }
-
-        public ColorVideoReader()
-        {
-        }
-
+        /// <summary>
+        /// Read a frame from stream
+        /// </summary>
+        /// <returns></returns>
         public bool ReadFrame()
         {
             if ( r == null )

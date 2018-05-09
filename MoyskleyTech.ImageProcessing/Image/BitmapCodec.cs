@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// Represent the codec for bitmap
+    /// </summary>
     public class BitmapCodec : IBitmapCodec
     {
+        /// <summary>
+        /// Return the lenght of bitmap codec(2)
+        /// </summary>
         public int SignatureLength
         {
             get
@@ -17,7 +23,12 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return 2;
             }
         }
-
+        /// <summary>
+        /// Check if signature is bitmap
+        /// </summary>
+        /// <param name="signature"></param>
+        /// <param name="f"></param>
+        /// <returns>Decoder if bitmap signature or null</returns>
         public IBitmapDecoder CheckSignature(string signature , Stream f)
         {
             if ( signature.Substring(0 , SignatureLength) == "BM" )
@@ -31,6 +42,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return null;
         }
+        /// <summary>
+        /// Load bitmap from stream
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public Bitmap DecodeStream(Stream s)
         {
             BitmapDecoder decoder = new BitmapDecoder();
@@ -38,26 +54,64 @@ namespace MoyskleyTech.ImageProcessing.Image
             decoder.ReadHeader();
             return decoder.ReadBitmap();
         }
+        /// <summary>
+        /// Save bitmap to stream
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
         public void Save(Bitmap bmp , Stream s)
         {
             bmp.Save(s);
         }
+        /// <summary>
+        /// Save bitmap to stream
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
+        /// /// <param name="palette"></param>
         public void Save(Bitmap bmp , Stream s , BitmapPalette8bpp palette)
         {
             SaveStream(bmp , s , palette);
         }
+        /// <summary>
+        /// Save bitmap to stream
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
+        /// /// <param name="palette"></param>
         public void Save(Bitmap bmp , Stream s , BitmapPalette4bpp palette)
         {
             SaveStream(bmp , s , palette);
         }
+        /// <summary>
+        /// Save bitmap to stream
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
+        /// /// <param name="palette"></param>
         public void Save(Bitmap bmp , Stream s , BitmapPalette2bpp palette)
         {
             SaveStream(bmp , s , palette);
         }
+        /// <summary>
+        /// Save bitmap to stream
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
+        /// /// <param name="palette"></param>
         public void Save(Bitmap bmp , Stream s , BitmapPalette1bpp palette)
         {
             SaveStream(bmp,s , palette);
         }
+        /// <summary>
+        /// Save the bitmap as optimized size
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
+        /// <param name="allow1bpp">Allow 1bpp bitmap</param>
+        /// <param name="allow2bpp">Allow 2bpp bitmap</param>
+        /// <param name="allow4bpp">Allow 4bpp bitmap</param>
+        /// <param name="allow8bpp">Allow 8bpp bitmap</param>
         public void SaveOptimized(Bitmap bmp , Stream s,bool allow1bpp=true, bool allow2bpp = false ,bool allow4bpp = true , bool allow8bpp = true)
         {
             var stats = new ImageStatistics(bmp);
@@ -74,7 +128,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 bmp.Save(s);
             
         }
-
+        /// <summary>
+        /// Create palette of 8bpp
+        /// </summary>
+        /// <param name="dom"></param>
+        /// <returns></returns>
         private BitmapPalette8bpp CreatePalette8(Dictionary<Pixel , int> dom)
         {
             BitmapPalette8bpp palette = new BitmapPalette8bpp();
@@ -83,6 +141,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 palette[i] = keys[i];
             return palette;
         }
+        /// <summary>
+        /// Create palette of 4bpp
+        /// </summary>
+        /// <param name="dom"></param>
+        /// <returns></returns>
         private BitmapPalette4bpp CreatePalette4(Dictionary<Pixel , int> dom)
         {
             BitmapPalette4bpp palette = new BitmapPalette4bpp();
@@ -91,6 +154,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 palette[i] = keys[i];
             return palette;
         }
+        /// <summary>
+        /// Create palette of 2bpp
+        /// </summary>
+        /// <param name="dom"></param>
+        /// <returns></returns>
         private BitmapPalette2bpp CreatePalette2(Dictionary<Pixel , int> dom)
         {
             BitmapPalette2bpp palette = new BitmapPalette2bpp();
@@ -99,6 +167,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 palette[i] = keys[i];
             return palette;
         }
+        /// <summary>
+        /// Create monochrome palette
+        /// </summary>
+        /// <param name="dom"></param>
+        /// <returns></returns>
         private BitmapPalette1bpp CreatePalette1(Dictionary<Pixel , int> dom)
         {
             BitmapPalette1bpp palette = new BitmapPalette1bpp();

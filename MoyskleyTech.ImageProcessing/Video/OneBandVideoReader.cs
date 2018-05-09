@@ -8,15 +8,29 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Video
 {
+    /// <summary>
+    /// Video reader for gray video
+    /// </summary>
     public class OneBandVideoReader
     {
         private Stream s;
         private OneBandImage f;
+        /// <summary>
+        /// Current frame
+        /// </summary>
         public OneBandImage Frame { get; set; }
+        /// <summary>
+        /// Create a reader on the stream
+        /// </summary>
+        /// <param name="s"></param>
         public OneBandVideoReader(Stream s)
         {
             this.s = s;
         }
+        /// <summary>
+        /// Read a frame from the video
+        /// </summary>
+        /// <returns></returns>
         public bool ReadFrame()
         {
             if ( f == null )
@@ -49,7 +63,12 @@ namespace MoyskleyTech.ImageProcessing.Video
             }
             return false;
         }
-
+        /// <summary>
+        /// Method to read one band in the stream
+        /// </summary>
+        /// <param name="f">Band to read</param>
+        /// <param name="s">SourceStream</param>
+        /// <returns>Complete frame(false = error)</returns>
         public static bool ReadBand(OneBandImage f , Stream s)
         {
             var pt = f.Width*f.Height;

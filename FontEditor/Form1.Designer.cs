@@ -72,28 +72,28 @@
             this.ouvrirToolStripMenuItem.Name = "ouvrirToolStripMenuItem";
             this.ouvrirToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.ouvrirToolStripMenuItem.Text = "Ouvrir";
-            this.ouvrirToolStripMenuItem.Click += new System.EventHandler(this.ouvrirToolStripMenuItem_Click);
+            this.ouvrirToolStripMenuItem.Click += new System.EventHandler(this.OuvrirToolStripMenuItem_Click);
             // 
             // enregistrerToolStripMenuItem
             // 
             this.enregistrerToolStripMenuItem.Name = "enregistrerToolStripMenuItem";
             this.enregistrerToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.enregistrerToolStripMenuItem.Text = "Enregistrer";
-            this.enregistrerToolStripMenuItem.Click += new System.EventHandler(this.enregistrerToolStripMenuItem_Click);
+            this.enregistrerToolStripMenuItem.Click += new System.EventHandler(this.EnregistrerToolStripMenuItem_Click);
             // 
             // nouvelleToolStripMenuItem
             // 
             this.nouvelleToolStripMenuItem.Name = "nouvelleToolStripMenuItem";
             this.nouvelleToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.nouvelleToolStripMenuItem.Text = "Nouvelle";
-            this.nouvelleToolStripMenuItem.Click += new System.EventHandler(this.nouvelleToolStripMenuItem_Click);
+            this.nouvelleToolStripMenuItem.Click += new System.EventHandler(this.NouvelleToolStripMenuItem_Click);
             // 
             // importerToolStripMenuItem
             // 
             this.importerToolStripMenuItem.Name = "importerToolStripMenuItem";
             this.importerToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.importerToolStripMenuItem.Text = "Importer";
-            this.importerToolStripMenuItem.Click += new System.EventHandler(this.importerToolStripMenuItem_Click);
+            this.importerToolStripMenuItem.Click += new System.EventHandler(this.ImporterToolStripMenuItem_Click);
             // 
             // pbChar
             // 
@@ -103,7 +103,7 @@
             this.pbChar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbChar.TabIndex = 2;
             this.pbChar.TabStop = false;
-            this.pbChar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbChar_MouseUp);
+            this.pbChar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PbChar_MouseUp);
             // 
             // btnChangeSize
             // 
@@ -113,7 +113,7 @@
             this.btnChangeSize.TabIndex = 3;
             this.btnChangeSize.Text = "Change char size";
             this.btnChangeSize.UseVisualStyleBackColor = true;
-            this.btnChangeSize.Click += new System.EventHandler(this.btnChangeSize_Click);
+            this.btnChangeSize.Click += new System.EventHandler(this.BtnChangeSize_Click);
             // 
             // btnSave
             // 
@@ -123,7 +123,7 @@
             this.btnSave.TabIndex = 4;
             this.btnSave.Text = "SaveChar";
             this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.button2_Click);
+            this.btnSave.Click += new System.EventHandler(this.Button2_Click);
             // 
             // tbChar
             // 
@@ -132,7 +132,7 @@
             this.tbChar.Name = "tbChar";
             this.tbChar.Size = new System.Drawing.Size(100, 20);
             this.tbChar.TabIndex = 5;
-            this.tbChar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbChar_KeyPress);
+            this.tbChar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TbChar_KeyPress);
             // 
             // tbDemo
             // 
@@ -141,14 +141,14 @@
             this.tbDemo.Name = "tbDemo";
             this.tbDemo.Size = new System.Drawing.Size(100, 20);
             this.tbDemo.TabIndex = 6;
-            this.tbDemo.TextChanged += new System.EventHandler(this.tbDemo_TextChanged);
+            this.tbDemo.TextChanged += new System.EventHandler(this.TbDemo_TextChanged);
             // 
             // importerLensembleDesFontsToolStripMenuItem
             // 
             this.importerLensembleDesFontsToolStripMenuItem.Name = "importerLensembleDesFontsToolStripMenuItem";
             this.importerLensembleDesFontsToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.importerLensembleDesFontsToolStripMenuItem.Text = "Importer l\'ensemble des fonts";
-            this.importerLensembleDesFontsToolStripMenuItem.Click += new System.EventHandler(this.importerLensembleDesFontsToolStripMenuItem_Click);
+            this.importerLensembleDesFontsToolStripMenuItem.Click += new System.EventHandler(this.ImporterLensembleDesFontsToolStripMenuItem_Click);
             // 
             // progressBar1
             // 

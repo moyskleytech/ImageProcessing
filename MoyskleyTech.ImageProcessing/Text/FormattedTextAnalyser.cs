@@ -8,18 +8,42 @@ using System.Collections;
 
 namespace MoyskleyTech.ImageProcessing.Text
 {
+    /// <summary>
+    /// Analyser to check format from text
+    /// </summary>
     public class FormattedTextAnalyser : IEnumerable<FormattedChar>
     {
+        /// <summary>
+        /// Represent the desired format
+        /// </summary>
         protected struct FormattedTextStateF
         {
+            /// <summary>
+            /// Desired color
+            /// </summary>
             public Brush<Pixel> color;
+            /// <summary>
+            /// Desired font size
+            /// </summary>
             public float size;
+            /// <summary>
+            /// Desired bold
+            /// </summary>
             public bool bold;
+            /// <summary>
+            /// Desired italic
+            /// </summary>
             public bool italic;
         }
         private string raw;
         private string processed;
         private List<FormattedChar> chars=new List<FormattedChar>();
+        /// <summary>
+        /// Create a reader on formatted text
+        /// </summary>
+        /// <param name="formatted">formatted text</param>
+        /// <param name="defaultBrush">Initial brush(default black)</param>
+        /// <param name="defaultSize">Initial size(default 1)</param>
         public FormattedTextAnalyser(string formatted , Brush<Pixel> defaultBrush = null , float defaultSize = 1)
         {
             raw = formatted;
@@ -133,27 +157,62 @@ namespace MoyskleyTech.ImageProcessing.Text
             };
             chars.Add(fc);
         }
-
+        /// <summary>
+        /// Get every char
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<FormattedChar> GetEnumerator()
         {
             return ( ( IEnumerable<FormattedChar> ) chars ).GetEnumerator();
         }
-
+        /// <summary>
+        /// Get every char
+        /// </summary>
+        /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ( ( IEnumerable<FormattedChar> ) chars ).GetEnumerator();
         }
+        /// <summary>
+        /// Get number of char
+        /// </summary>
         public int Length { get { return chars.Count; } }
+        /// <summary>
+        /// Get raw text(without formatting)
+        /// </summary>
         public string Text { get { return processed; } }
+        /// <summary>
+        /// Get char at index
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public FormattedChar this[int p]
         { get { return chars[p]; } }
     }
+    /// <summary>
+    /// Represent a formatted char
+    /// </summary>
     public struct FormattedChar
-    {
+    { 
+        /// <summary>
+        /// Char itself
+        /// </summary>
         public char Char { get; set; }
+        /// <summary>
+        /// Desired bold
+        /// </summary>
         public bool Bold { get; set; }
+        /// <summary>
+        /// Desired italic
+        /// </summary>
         public bool Italic { get; set; }
+        /// <summary>
+        /// Desired color
+        /// </summary>
         public Brush<Pixel> Color { get; set; }
+        /// <summary>
+        /// Desired size
+        /// </summary>
         public float Size { get; set; }
     }
 }

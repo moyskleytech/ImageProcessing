@@ -56,9 +56,10 @@ namespace MoyskleyTech.Mathematics.Statistics
             {
                 statistics.AverageX = statistics.SumX / statistics.Count;
                 statistics.AverageY = statistics.SumY / statistics.Count;
-                var reg = new LinearRegression();
-
-                reg.B1 = ( statistics.SumXY - ( statistics.SumX *  statistics.SumY / statistics.Count ) ) / (  statistics.SumX2 - (  statistics.SumX * statistics.SumX / statistics.Count ) );
+                var reg = new LinearRegression
+                {
+                    B1 = ( statistics.SumXY - ( statistics.SumX * statistics.SumY / statistics.Count ) ) / ( statistics.SumX2 - ( statistics.SumX * statistics.SumX / statistics.Count ) )
+                };
                 reg.B1Ori = reg.B1;
                 double varExplique;
                 double varTot;
@@ -175,9 +176,10 @@ namespace MoyskleyTech.Mathematics.Statistics
             {
                 statistics.AverageX = ( dynamic ) statistics.SumX / statistics.Count;
                 statistics.AverageY = ( dynamic ) statistics.SumY / statistics.Count;
-                var reg = new LinearRegression<Number>();
-
-                reg.B1 = ( statistics.SumXY - ( ( dynamic ) statistics.SumX * statistics.SumY / statistics.Count ) ) / ( statistics.SumX2 - ( (dynamic)statistics.SumX * statistics.SumX / statistics.Count ) );
+                var reg = new LinearRegression<Number>
+                {
+                    B1 = ( statistics.SumXY - ( ( dynamic ) statistics.SumX * statistics.SumY / statistics.Count ) ) / ( statistics.SumX2 - ( ( dynamic ) statistics.SumX * statistics.SumX / statistics.Count ) )
+                };
                 reg.B1Ori = reg.B1;
                 Number varExplique;
                 Number varTot;

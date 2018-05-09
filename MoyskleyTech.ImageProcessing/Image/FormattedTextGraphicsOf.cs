@@ -10,6 +10,14 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class Graphics<Representation>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="currentState"></param>
+        /// <returns></returns>
         protected virtual int DrawFormattedCharInternal(bool[ , ] character , int x , int y , Graphics.FormattedTextState currentState)
         {
             var size = currentState.size;
@@ -45,12 +53,28 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return character.GetLength(1) * size + size;
         }
-
+        /// <summary>
+        /// Draw string using formatted text
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="p"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="f"></param>
+        /// <param name="size"></param>
         public virtual void DrawFormattedString(string str , Representation p , float x , float y , Font f , float size)
         {
             DrawFormattedString(str , new SolidBrush<Representation>(p) , x , y , f , size);
         }
-
+        /// <summary>
+        /// Draw string using formatted text
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="p"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="f"></param>
+        /// <param name="size"></param>
         public virtual void DrawFormattedString(string str , Brush<Representation> p , float x , float y , Font f , float size)
         {
             //bmp.instructions.AddLast(new Instruction("text" , str , x , y , p , size));
@@ -73,7 +97,14 @@ namespace MoyskleyTech.ImageProcessing.Image
                     x += DrawFormattedCharInternalF(character , x , y , fc);
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="currentState"></param>
+        /// <returns></returns>
         protected virtual float DrawFormattedCharInternalF(bool[ , ] character , float x , float y , FormattedChar currentState)
         {
             var intState= new Graphics.FormattedTextState() { bold = currentState.Bold , color = (currentState.Color) , italic = currentState.Italic , size = ( int ) currentState.Size };

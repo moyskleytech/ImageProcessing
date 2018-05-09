@@ -31,8 +31,8 @@ namespace Hjg.Pngcs.Zlib
 
         public override int Read(byte[ ] array , int offset , int count)
         {
-            if ( !initdone ) doInit();
-            if ( deflateStream == null && count > 0 ) initStream();
+            if ( !initdone ) DoInit();
+            if ( deflateStream == null && count > 0 ) InitStream();
             // we dont't check CRC on reading
             int r = deflateStream.Read(array, offset, count);
             if ( r < 1 && crcread == null )
@@ -45,7 +45,7 @@ namespace Hjg.Pngcs.Zlib
 
         public void Close()
         {
-            if ( !initdone ) doInit(); // can happen if never called write
+            if ( !initdone ) DoInit(); // can happen if never called write
             if ( closed ) return;
             closed = true;
             if ( crcread == null )
@@ -55,13 +55,13 @@ namespace Hjg.Pngcs.Zlib
             }
         }
 
-        private void initStream()
+        private void InitStream()
         {
             if ( deflateStream != null ) return;
             deflateStream = new DeflateStream(rawStream , CompressionMode.Decompress , true);
         }
 
-        private void doInit()
+        private void DoInit()
         {
             if ( initdone ) return;
             initdone = true;

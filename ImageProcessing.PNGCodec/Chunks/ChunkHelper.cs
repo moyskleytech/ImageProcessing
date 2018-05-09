@@ -182,10 +182,10 @@ namespace Hjg.Pngcs.Chunks {
             try {
                 MemoryStream inb = new MemoryStream(ori, offset, len);
                 Stream inx = inb;
-                if (!compress) inx = ZlibStreamFactory.createZlibInputStream(inb);
+                if (!compress) inx = ZlibStreamFactory.CreateZlibInputStream(inb);
                 MemoryStream outb = new MemoryStream();
                 Stream outx = outb;
-                if (compress) outx = ZlibStreamFactory.createZlibOutputStream(outb);
+                if (compress) outx = ZlibStreamFactory.CreateZlibOutputStream(outb);
                 shovelInToOut(inx, outx);
                 byte[] res = outb.ToArray();
                 return res;

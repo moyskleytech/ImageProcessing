@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Text
 {
+    /// <summary>
+    /// Create the formatted text format used in Graphics
+    /// </summary>
     public class FormattedTextBuilder
     {
+        /// <summary>
+        /// Create a formatter for specified text
+        /// </summary>
+        /// <param name="src"></param>
         public FormattedTextBuilder(string src)
         {
             this.src = src;
@@ -30,24 +37,48 @@ namespace MoyskleyTech.ImageProcessing.Text
         }
 
         private List<FormatAction> actions = new List<FormatAction>();
-
+        /// <summary>
+        /// Set bold on interval
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
         public void Bold(int begin , int end)
         {
             actions.Add(new FormatAction() { format = FormatActions.Bold , begin = begin , end = end });
         }
+        /// <summary>
+        /// Set Italic in interval
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
         public void Italic(int begin , int end)
         {
             actions.Add(new FormatAction() { format = FormatActions.Italic , begin = begin , end = end });
         }
+        /// <summary>
+        /// Set the size on interval
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
         public void Size(float size,int begin , int end)
         {
             actions.Add(new FormatAction() { format = FormatActions.Size , begin = begin , end = end, value=size });
         }
+        /// <summary>
+        /// Set the color on internal
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
         public void Color(Pixel color , int begin , int end)
         {
             actions.Add(new FormatAction() { format = FormatActions.Color , begin = begin , end = end , stringValue = color.A+","+color.R+","+color.G+","+color.B });
         }
-
+        /// <summary>
+        /// Build the formatted text for specified formatted info
+        /// </summary>
+        /// <returns></returns>
         public string Build()
         {
             StringBuilder sb = new StringBuilder();

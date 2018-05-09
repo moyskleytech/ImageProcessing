@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
-    public class BufferedStream:Stream
+    /// <summary>
+    /// Buffered stream to read bitmap from streams
+    /// </summary>
+    public class BufferedStream : Stream
     {
         Stream s;
         List<byte> buffer = new List<byte>();
         List<byte> readedBuffer = new List<byte>();
-
+        /// <summary>
+        /// Base class
+        /// </summary>
         public override bool CanRead
         {
             get
@@ -20,7 +25,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return true;
             }
         }
-
+        /// <summary>
+        /// Base class
+        /// </summary>
         public override bool CanSeek
         {
             get
@@ -28,7 +35,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return false;
             }
         }
-
+        /// <summary>
+        /// Base class
+        /// </summary>
         public override bool CanWrite
         {
             get
@@ -36,7 +45,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return false;
             }
         }
-
+        /// <summary>
+        /// Base class
+        /// </summary>
         public override long Length
         {
             get
@@ -44,7 +55,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return s.Length;
             }
         }
-
+        /// <summary>
+        /// Base class
+        /// </summary>
         public override long Position
         {
             get
@@ -57,13 +70,21 @@ namespace MoyskleyTech.ImageProcessing.Image
                 throw new NotImplementedException();
             }
         }
-
-        public BufferedStream(Stream s, IEnumerable<byte> buffer)
+        /// <summary>
+        /// Create from stream and current buffer
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="buffer"></param>
+        public BufferedStream(Stream s , IEnumerable<byte> buffer)
         {
             this.s = s;
-            if(buffer!=null)
-            this.buffer.AddRange(buffer);
+            if ( buffer != null )
+                this.buffer.AddRange(buffer);
         }
+        /// <summary>
+        /// Read a byte from the stream
+        /// </summary>
+        /// <returns></returns>
         public byte Read()
         {
             if ( buffer.Count > 0 )
@@ -77,6 +98,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             readedBuffer.Add(by);
             return by;
         }
+        /// <summary>
+        /// Rollback stream (N) bytes
+        /// </summary>
+        /// <param name="count"></param>
         public void Rollback(int count = 1)
         {
             if ( count == 0 )
@@ -87,17 +112,25 @@ namespace MoyskleyTech.ImageProcessing.Image
                 readedBuffer.RemoveAt(readedBuffer.Count - 1);
             }
         }
-
+        /// <summary>
+        /// Base class
+        /// </summary>
         public override void Flush()
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Read a lot of bytes
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public override int Read(byte[ ] buffer , int offset , int count)
         {
             int oriCount=count,readed=0;
             bool foundEnd=false;
-            while ( !foundEnd&& count>0 )
+            while ( !foundEnd && count > 0 )
             {
                 int by=0;
                 if ( this.buffer.Count > 0 )
@@ -112,21 +145,26 @@ namespace MoyskleyTech.ImageProcessing.Image
                 else
                 {
                     count--;
-                    buffer[offset + readed] = (byte)by;
+                    buffer[offset + readed] = ( byte ) by;
                     readed++;
                     readedBuffer.Add(( byte ) by);
                 }
             }
             return readed;
         }
-
+        /// <summary>
+        /// Seek position in stream
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="origin"></param>
+        /// <returns></returns>
         public override long Seek(long offset , SeekOrigin origin)
         {
             if ( origin == SeekOrigin.Begin )
             {
                 Rollback(0);
                 if ( offset > 0 )
-                    while ( offset-->0 )
+                    while ( offset-- > 0 )
                         Read();
             }
             else if ( origin == SeekOrigin.End )
@@ -149,8 +187,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                         readedBuffer.Add(( byte ) by);
                 }
                 if ( offset < 0 )
-                    Rollback((int)-offset);
-            }else if(origin == SeekOrigin.Current)
+                    Rollback(( int ) -offset);
+            }
+            else if ( origin == SeekOrigin.Current )
             {
                 if ( offset < 0 )
                     Rollback(( int ) -offset);
@@ -161,12 +200,20 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return Position;
         }
-
+        /// <summary>
+        /// Base class
+        /// </summary>
+        /// <param name="value"></param>
         public override void SetLength(long value)
         {
-            
-        }
 
+        }
+        /// <summary>
+        /// Base class
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
         public override void Write(byte[ ] buffer , int offset , int count)
         {
             throw new NotImplementedException();

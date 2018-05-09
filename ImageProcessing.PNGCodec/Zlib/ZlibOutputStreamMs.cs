@@ -18,22 +18,22 @@ namespace Hjg.Pngcs.Zlib {
         private bool closed = false;
 
         public override void WriteByte(byte value) {
-            if (!initdone) doInit();
-            if (deflateStream == null) initStream();
+            if (!initdone) DoInit();
+            if (deflateStream == null) InitStream();
             base.WriteByte(value);
             adler32.Update(value);
         }
 
         public override void Write(byte[] array, int offset, int count) {
             if (count == 0) return;
-            if (!initdone) doInit();
-            if (deflateStream == null) initStream();
+            if (!initdone) DoInit();
+            if (deflateStream == null) InitStream();
             deflateStream.Write(array, offset, count);
             adler32.Update(array, offset, count);
         }
 
         public void Close() {
-            if (!initdone) doInit(); // can happen if never called write
+            if (!initdone) DoInit(); // can happen if never called write
             if (closed) return;
             closed = true;
             // sigh ... no only must I close the parent stream to force a flush, but I must save a reference
@@ -54,7 +54,7 @@ namespace Hjg.Pngcs.Zlib {
                 rawStream.Dispose();
         }
 
-        private void initStream() {
+        private void InitStream() {
             if (deflateStream != null) return;
             // I must create the DeflateStream only if necessary, because of its bug with empty input (sigh)
             // I must create with leaveopen=true always and do the closing myself, because MS moronic implementation of DeflateStream: I cant force a flush of the underlying stream witouth closing (sigh bis)
@@ -65,7 +65,7 @@ namespace Hjg.Pngcs.Zlib {
             deflateStream = new DeflateStream(rawStream, clevel, true);
         }
 
-        private void doInit() {
+        private void DoInit() {
             if (initdone) return;
             initdone = true;
              // http://stackoverflow.com/a/2331025/277304

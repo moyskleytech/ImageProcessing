@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+#pragma warning disable CS1591
     public unsafe partial class HighRangeImage
     {
         public HighRangeImage Resize(int width , int height , ScalingMode mode = ScalingMode.Auto)
@@ -388,9 +389,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                         };
                         if ( acount > 0 )
                         {
-                            destinationpx.R = ( float ) ( sr  / acount );
-                            destinationpx.G = ( float ) ( sg  / acount );
-                            destinationpx.B = ( float ) ( sb  / acount );
+                            destinationpx.R = ( float ) ( sr / acount );
+                            destinationpx.G = ( float ) ( sg / acount );
+                            destinationpx.B = ( float ) ( sb / acount );
                         }
                         destination[x , y] = destinationpx;
                     }
@@ -573,7 +574,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                             sr += px * dy;
                         }
                         float destinationpx = ( float ) ( sr / 3 );
-                        
+
                         destination[x , y] = destinationpx;
                     }
                     else
@@ -677,4 +678,5 @@ namespace MoyskleyTech.ImageProcessing.Image
         public OneBandFloatImage Clone(Rectangle rectangle)
         { return GetSubBitmap(rectangle); }
     }
+#pragma warning restore CS1591
 }

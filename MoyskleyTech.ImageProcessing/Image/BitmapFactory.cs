@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// Class for all bitmap creation from stream
+    /// </summary>
     public class BitmapFactory
     {
         private List<IBitmapCodec> Codecs=new List<IBitmapCodec>();
         private static List<IBitmapCodec> RegisteredCodecs=new List<IBitmapCodec>();
+        /// <summary>
+        /// Create basic factory
+        /// </summary>
         public BitmapFactory()
         {
             Codecs.AddRange(RegisteredCodecs);
@@ -41,7 +47,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             {
                 signature += ( char ) f.ReadByte();
             }
-            /// compare signature against all decoders
+            // compare signature against all decoders
             for (int i = 0; i < Codecs.Count; i++ )
             {
                 var decoder= Codecs[i].CheckSignature(signature,f);
@@ -49,25 +55,42 @@ namespace MoyskleyTech.ImageProcessing.Image
                     return decoder;
             }
 
-            /// If no decoder was found, return base type
+            // If no decoder was found, return base type
             return null;
         }
+        /// <summary>
+        /// Allow registering systemwide codec
+        /// </summary>
+        /// <param name="codec"></param>
         public static void RegisterCodec(IBitmapCodec codec)
         {
             if ( !RegisteredCodecs.Contains(codec) )
                 RegisteredCodecs.Add(codec);
         }
+        /// <summary>
+        /// Allow registering of codec in this instance only
+        /// </summary>
+        /// <param name="codec"></param>
         public void AddCodec(IBitmapCodec codec)
         {
             if(!Codecs.Contains(codec))
                 Codecs.Add(codec);
         }
+        /// <summary>
+        /// Remove codec from current instance
+        /// </summary>
+        /// <param name="codec"></param>
         public void RemoveCodec(IBitmapCodec codec)
         {
             Type t = codec.GetType();
             Codecs.RemoveAll((x) => x.GetType() == t);
             Codecs.Remove(codec);
         }
+        /// <summary>
+        /// Allow Decoding of stream
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public Bitmap Decode(Stream s)
         {
             var decoder= FindDecoder(s);

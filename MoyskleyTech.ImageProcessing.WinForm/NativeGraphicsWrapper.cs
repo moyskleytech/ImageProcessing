@@ -215,13 +215,13 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             FillRectangle(p , x , y , 1 , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py, bool alpha)
+        protected override void SetPixelInternal(Pixel p , double px , double py , bool alpha)
         {
             var brush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(p.A,p.R,p.G,p.B));
             var mode = ctx.CompositingMode;
-            if(!alpha)
+            if ( !alpha )
                 ctx.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-            ctx.FillRectangle(brush , (float)px , ( float ) py , 1 , 1);
+            ctx.FillRectangle(brush , ( float ) px , ( float ) py , 1 , 1);
             ctx.CompositingMode = mode;
             brush.Dispose();
         }
@@ -257,18 +257,15 @@ namespace MoyskleyTech.ImageProcessing.WinForm
                 var img = ( myBrush as ImageBrush ).Image;
                 return new System.Drawing.TextureBrush(img.ToWinFormBitmap() , System.Drawing.Drawing2D.WrapMode.Tile);
             }
+            if ( myBrush is LinearGradientBrush lgb )
             {
-                LinearGradientBrush lgb = myBrush as LinearGradientBrush;
-                if ( lgb != null )
-                {
-                    var nlgb = new System.Drawing.Drawing2D.LinearGradientBrush(
+                var nlgb = new System.Drawing.Drawing2D.LinearGradientBrush(
                          new System.Drawing.Point(lgb.SourceLocation.X, lgb.SourceLocation.Y),
                          new System.Drawing.Point(lgb.FinalLocation.X, lgb.FinalLocation.Y),
                          ConvertToColor(lgb.SourceColor),
                          ConvertToColor(lgb.FinalColor)
                         );
-                    return nlgb;
-                }
+                return nlgb;
             }
             return new System.Drawing.SolidBrush(ConvertToColor(myBrush));
         }

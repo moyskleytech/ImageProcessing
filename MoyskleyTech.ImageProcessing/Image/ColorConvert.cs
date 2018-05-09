@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// All operation relative to convertion of colors
+    /// </summary>
     public static class ColorConvert
     {
+#pragma warning disable CS1591
         private class Transition
         {
             public Func<object , object> action;
@@ -450,10 +454,12 @@ namespace MoyskleyTech.ImageProcessing.Image
             var hue = src.H;
             var sat = src.S;
             var val = src.B;
-            HSL dst = new HSL();
-            dst.H = hue;
-            dst.S = sat * val / ( ( hue = ( 2 - sat ) * val ) < 1 ? hue : 2 - hue );
-            dst.L = hue / 2;//Lightness is (2-sat)*val/2
+            HSL dst = new HSL
+            {
+                H = hue ,
+                S = sat * val / ( ( hue = ( 2 - sat ) * val ) < 1 ? hue : 2 - hue ) ,
+                L = hue / 2//Lightness is (2-sat)*val/2
+            };
 
             return dst;
         }
@@ -1011,4 +1017,5 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         #endregion
     }
+#pragma warning restore CS1591
 }

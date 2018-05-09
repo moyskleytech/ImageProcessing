@@ -14,6 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Image
     public unsafe partial class Bitmap : Image<Pixel>, IDisposable
     {
         private Pixel* data;
+       
         /// <summary>
         /// Create a bitmap using Width and Height
         /// </summary>
@@ -40,7 +41,28 @@ namespace MoyskleyTech.ImageProcessing.Image
             width = w;
             height = h;
         }
-        
+        /// <summary>
+        /// Constructor that does not allocate memory
+        /// </summary>
+        /// <param name="ptr"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        protected Bitmap(IntPtr ptr , int w , int h) : base(ptr , w , h)
+        {
+           
+        }
+        /// <summary>
+        /// Create a bitmap using memory already allocated
+        /// </summary>
+        /// <param name="ptr"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <returns></returns>
+        public new static Bitmap UsingExistingMemoryPointer(IntPtr ptr , int w , int h)
+        {
+            return new Bitmap(ptr , w , h);
+        }
+
         /// <summary>
         /// Destrop bitmap
         /// </summary>
@@ -52,7 +74,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Source to edit or copy
         /// </summary>
         public Pixel* Source { get { return data; } }
-       
+       /// <summary>
+       /// Proxy an image easy
+       /// </summary>
+       /// <param name="rec"></param>
+       /// <returns></returns>
         public ImageProxy this[Rectangle rec]
         {
             get
@@ -364,6 +390,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Write bitmap to stream
         /// </summary>
         /// <param name="s">Destination</param>
+        /// <param name="palette">Palette to use in the stream(null=Grayscale)</param>
         public void Save8Bpp(Stream s , BitmapPalette8bpp palette = null)
         {
             palette = palette ?? BitmapPalette8bpp.Grayscale;
@@ -889,7 +916,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
-
+        /// <summary>
+        /// Conversion to HSB colorspace
+        /// </summary>
+        /// <returns></returns>
         public HSBImage ToHSB()
         {
             HSBImage img = new HSBImage(width,height);
@@ -902,6 +932,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        /// <summary>
+        /// Get a band image for alpha
+        /// </summary>
+        /// <returns></returns>
         public OneBandImage GetAlphaBandImage()
         {
             OneBandImage img = new OneBandImage(width,height);
@@ -914,6 +948,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        /// <summary>
+        /// Get a band image for red
+        /// </summary>
+        /// <returns></returns>
         public OneBandImage GetRedBandImage()
         {
             OneBandImage img = new OneBandImage(width,height);
@@ -926,6 +964,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        /// <summary>
+        /// Get a band image for green
+        /// </summary>
+        /// <returns></returns>
         public OneBandImage GetGreenBandImage()
         {
             OneBandImage img = new OneBandImage(width,height);
@@ -938,6 +980,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        /// <summary>
+        /// Get a band image for blue
+        /// </summary>
+        /// <returns></returns>
         public OneBandImage GetBlueBandImage()
         {
             OneBandImage img = new OneBandImage(width,height);
@@ -950,6 +996,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return img;
         }
+        /// <summary>
+        /// Get a grayscale version(compacted)
+        /// </summary>
+        /// <returns></returns>
         public OneBandImage GetGrayBandImage()
         {
             OneBandImage img = new OneBandImage(width,height);
@@ -963,6 +1013,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             return img;
         }
 
+        /// <summary>
+        /// Allow replace of a color band
+        /// </summary>
+        /// <param name="img"></param>
         public void ReplaceAlphaBand(OneBandImage img)
         {
             Pixel* o = data;
@@ -973,6 +1027,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 o++->A = *inp++ ;
             }
         }
+        /// <summary>
+        /// Allow replace of a color band
+        /// </summary>
+        /// <param name="img"></param>
         public void ReplaceRedBand(OneBandImage img)
         {
             Pixel* o = data;
@@ -983,6 +1041,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 o++->R = *inp++;
             }
         }
+        /// <summary>
+        /// Allow replace of a color band
+        /// </summary>
+        /// <param name="img"></param>
         public void ReplaceGreenBand(OneBandImage img)
         {
             Pixel* o = data;
@@ -993,6 +1055,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 o++->G = *inp++;
             }
         }
+        /// <summary>
+        /// Allow replace of a color band
+        /// </summary>
+        /// <param name="img"></param>
         public void ReplaceBlueBand(OneBandImage img)
         {
             Pixel* o = data;
@@ -1003,6 +1069,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 o++->B = *inp++;
             }
         }
+        /// <summary>
+        /// Allow replace of a color band
+        /// </summary>
+        /// <param name="img"></param>
         public void ReplaceGrayBand(OneBandImage img)
         {
             Pixel* o = data;
@@ -1016,10 +1086,18 @@ namespace MoyskleyTech.ImageProcessing.Image
                 o++->B = d;
             }
         }
+        /// <summary>
+        /// Allow extraction of statistics from bitmap
+        /// </summary>
+        /// <returns></returns>
         public ImageStatistics GetStatistics()
         {
             return new ImageStatistics(this);
         }
+        /// <summary>
+        /// Allow extraction of statistics from Bitmap using ROI
+        /// </summary>
+        /// <returns></returns>
         public ImageStatistics GetStatistics(Rectangle rectangle)
         {
             var cropped = this.Crop(rectangle);
@@ -1028,36 +1106,80 @@ namespace MoyskleyTech.ImageProcessing.Image
             return stats;
         }
 
-        
+        /// <summary>
+        /// Allow proxying of bitmap
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
         public new ImageProxy Proxy(Rectangle rectangle)
         {
             return new ImageProxy(this , rectangle);
         }
-
+        /// <summary>
+        /// Allow bitmap subtraction
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <param name="bitmapB"></param>
+        /// <returns></returns>
         public static BitmapSubstract operator -(Bitmap bitmapA , Bitmap bitmapB)
         {
             return new BitmapSubstract(bitmapA , bitmapB);
         }
+        /// <summary>
+        /// Allow bitmap subtraction
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <param name="bitmapB"></param>
+        /// <returns></returns>
         public static BitmapSubstract operator -(Image<Pixel> bitmapA , Bitmap bitmapB)
         {
             return new BitmapSubstract(bitmapA , bitmapB);
         }
+        /// <summary>
+        /// Allow bitmap subtraction
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <param name="bitmapB"></param>
+        /// <returns></returns>
         public static BitmapSubstract operator -(Bitmap bitmapA , Image<Pixel> bitmapB)
         {
             return new BitmapSubstract(bitmapA , bitmapB);
         }
+        /// <summary>
+        /// Allow inver of bitmap
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <returns></returns>
         public static BitmapInvert operator !(Bitmap bitmapA)
         {
             return new BitmapInvert(bitmapA);
         }
+        /// <summary>
+        /// Allow bitmap addition
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <param name="bitmapB"></param>
+        /// <returns></returns>
         public static BitmapAddition operator +(Bitmap bitmapA , Bitmap bitmapB)
         {
             return new BitmapAddition(bitmapA , bitmapB);
         }
+        /// <summary>
+        /// Allow bitmap addition
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <param name="bitmapB"></param>
+        /// <returns></returns>
         public static BitmapAddition operator +(Image<Pixel> bitmapA , Bitmap bitmapB)
         {
             return new BitmapAddition(bitmapA , bitmapB);
         }
+        /// <summary>
+        /// Allow bitmap addition
+        /// </summary>
+        /// <param name="bitmapA"></param>
+        /// <param name="bitmapB"></param>
+        /// <returns></returns>
         public static BitmapAddition operator +(Bitmap bitmapA , Image<Pixel> bitmapB)
         {
             return new BitmapAddition(bitmapA , bitmapB);

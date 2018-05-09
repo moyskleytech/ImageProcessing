@@ -27,7 +27,7 @@ namespace PDFCodecTest
             BitmapFactory.RegisterCodec(new PngCodec());
         }
 
-        private void button1_Click(object sender , EventArgs e)
+        private void Button1_Click(object sender , EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             PngCodec codec = new PngCodec();

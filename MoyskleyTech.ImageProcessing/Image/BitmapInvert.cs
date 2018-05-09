@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// Allow bitmap inversion
+    /// </summary>
     public class BitmapInvert
     {
+        /// <summary>
+        /// The inversion mode
+        /// </summary>
         public BitmapInvertMode Mode { get; set; }
       
         private Image<Pixel> Aa;
@@ -16,12 +22,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             
         }
+        /// <summary>
+        /// Create the inversion from image
+        /// </summary>
+        /// <param name="bitmapA"></param>
         public BitmapInvert(Image<Pixel> bitmapA) : this()
         {
             this.Aa = bitmapA;
         }
-
-
+        /// <summary>
+        /// Allow change of mode
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
         public BitmapInvert this[BitmapInvertMode m]
         {
             get
@@ -29,16 +42,23 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return new BitmapInvert() { Aa = Aa ,Mode = m };
             }
         }
-
+        /// <summary>
+        /// Get result
+        /// </summary>
+        /// <param name="b"></param>
         public static implicit operator Bitmap(BitmapInvert b)
         {
             return b.ToBitmap();
         }
+        /// <summary>
+        /// Get result
+        /// </summary>
+        /// <param name="b"></param>
         public static implicit operator Image<Pixel>(BitmapInvert b)
         {
             return b.ToImage();
         }
-        public byte B(int b)
+        private byte B(int b)
         {
             return ( byte ) b;
         }
@@ -46,12 +66,20 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return Aa[i];
         }
+        /// <summary>
+        /// Get result
+        /// </summary>
+        /// <returns></returns>
         public Bitmap ToBitmap()
         {
             Bitmap result = new Bitmap(Aa.Width,Aa.Height);
             Do((i , x) => result[i] = x);
             return result;
         }
+        /// <summary>
+        /// Get result
+        /// </summary>
+        /// <returns></returns>
         public Image<Pixel> ToImage()
         {
             return ToBitmap();
@@ -85,8 +113,22 @@ namespace MoyskleyTech.ImageProcessing.Image
 
         }
     }
+    /// <summary>
+    /// Define mode for inversion
+    /// </summary>
     public enum BitmapInvertMode
     {
-        Color,AllBand,Alpha
+        /// <summary>
+        /// Invert color only
+        /// </summary>
+        Color,
+        /// <summary>
+        /// Invert all band (color+alpha)
+        /// </summary>
+        AllBand,
+        /// <summary>
+        /// Invert Alpha only
+        /// </summary>
+        Alpha
     }
 }

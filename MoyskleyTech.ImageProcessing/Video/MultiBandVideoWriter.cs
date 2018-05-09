@@ -8,16 +8,31 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Video
 {
+    /// <summary>
+    /// Writer for multiband video
+    /// </summary>
     public class MultiBandVideoWriter
     {
         private Stream s;
         private OneBandImage[] bands;
+        /// <summary>
+        /// Minimum difference to write
+        /// </summary>
         public byte Quality { get; set; }
+        /// <summary>
+        /// Create a writer for a multiband video
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="quality"></param>
         public MultiBandVideoWriter(Stream s,byte quality=0)
         {
             this.s = s;
             Quality = quality;
         }
+        /// <summary>
+        /// Write a frame to the stream
+        /// </summary>
+        /// <param name="img"></param>
         public void WriteFrame(OneBandImage[] img)
         {
             if ( bands == null )

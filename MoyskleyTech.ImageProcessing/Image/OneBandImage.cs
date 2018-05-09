@@ -14,6 +14,9 @@ namespace MoyskleyTech.ImageProcessing.Image
     [NotSerialized]
     public unsafe partial class OneBandImage : Image<byte>, IDisposable
     {
+        /// <summary>
+        /// Same as DataPointer
+        /// </summary>
         public byte* Source { get => dataPointer; }
         /// <summary>
         /// Create a bitmap using Width and Height
@@ -76,6 +79,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Write bitmap to stream
         /// </summary>
         /// <param name="s">Destination</param>
+        ///  /// <param name="palette">Color</param>
         public void Save(Stream s , BitmapPalette8bpp palette = null)
         {
             palette = palette ?? BitmapPalette8bpp.Grayscale;
@@ -142,7 +146,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Copy image from raw Grayscale
         /// </summary>
         /// <param name="raw">Input data</param>
-        /// <param name="palette">Color palette</param>
         public void CopyFromRawGrayscale(byte[ ] raw)
         {
             int size = width*height;
@@ -252,6 +255,14 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
+        /// <summary>
+        /// Mix multiple bands into a bitmap
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="R"></param>
+        /// <param name="G"></param>
+        /// <param name="B"></param>
+        /// <returns></returns>
         public static Bitmap MixBands(Image<byte> A , Image<byte> R , Image<byte> G , Image<byte> B)
         {
             Bitmap bmp = new Bitmap(A.Width,A.Height);
@@ -271,6 +282,13 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return bmp;
         }
+        /// <summary>
+        /// Mix multiple bands into a bitmap
+        /// </summary>
+        /// <param name="R"></param>
+        /// <param name="G"></param>
+        /// <param name="B"></param>
+        /// <returns></returns>
         public static Bitmap MixBands(Image<byte> R , Image<byte> G , Image<byte> B)
         {
             Bitmap bmp = new Bitmap(R.Width,R.Height);
@@ -289,10 +307,18 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return bmp;
         }
+        /// <summary>
+        /// Allow copy of OneBandImage
+        /// </summary>
+        /// <param name="other"></param>
         public void CopyTo(OneBandImage other)
         {
             other.CopyFromRawGrayscale(this.CreateRaw8bppArray());
         }
+        /// <summary>
+        /// Clear the whole band with this byte
+        /// </summary>
+        /// <param name="b"></param>
         public void Clear(byte b)
         {
             byte* r=dataPointer;

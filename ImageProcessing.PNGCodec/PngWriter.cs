@@ -124,7 +124,7 @@ namespace Hjg.Pngcs {
         /// <param name="filename">Optional, can be the filename or a description.</param>
         public PngWriter(Stream outputStream, ImageInfo imgInfo,
                 String filename) {
-            this.filename = (filename == null) ? "" : filename;
+            this.filename = filename ?? "";
             this.outputStream = outputStream;
             this.ImgInfo = imgInfo;
             // defaults settings
@@ -146,14 +146,14 @@ namespace Hjg.Pngcs {
         /// <summary>
         /// init: is called automatically before writing the first row
         /// </summary>
-        private void init() {
+        private void Init() {
             datStream = new PngIDatChunkOutputStream(this.outputStream, this.IdatMaxSize);
-            datStreamDeflated = ZlibStreamFactory.createZlibOutputStream(datStream, this.CompLevel, this.CompressionStrategy, true);
+            datStreamDeflated = ZlibStreamFactory.CreateZlibOutputStream(datStream, this.CompLevel, this.CompressionStrategy, true);
             WriteSignatureAndIHDR();
             WriteFirstChunks();
         }
 
-        private void reportResultsForFilter(int rown, FilterType type, bool tentative) {
+        private void ReportResultsForFilter(int rown, FilterType type, bool tentative) {
             for (int i = 0; i < histox.Length; i++)
                 histox[i] = 0;
             int s = 0, v;
@@ -208,11 +208,13 @@ namespace Hjg.Pngcs {
         private void WriteSignatureAndIHDR() {
             CurrentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
             PngHelperInternal.WriteBytes(outputStream, Hjg.Pngcs.PngHelperInternal.PNG_ID_SIGNATURE); // signature
-            PngChunkIHDR ihdr = new PngChunkIHDR(ImgInfo);
-            // http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
-            ihdr.Cols = ImgInfo.Cols;
-            ihdr.Rows = ImgInfo.Rows;
-            ihdr.Bitspc = ImgInfo.BitDepth;
+            PngChunkIHDR ihdr = new PngChunkIHDR(ImgInfo)
+            {
+                // http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
+                Cols = ImgInfo.Cols ,
+                Rows = ImgInfo.Rows ,
+                Bitspc = ImgInfo.BitDepth
+            };
             int colormodel = 0;
             if (ImgInfo.Alpha)
                 colormodel += 0x04;
@@ -227,7 +229,7 @@ namespace Hjg.Pngcs {
             ihdr.CreateRawChunk().WriteChunk(outputStream);
         }
 
-        protected void encodeRowFromByte(byte[] row) {
+        protected void EncodeRowFromByte(byte[] row) {
             if (row.Length == ImgInfo.SamplesPerRowPacked && !needsPack) {
                 // some duplication of code - because this case is typical and it works faster this way
                 int j = 1;
@@ -260,7 +262,7 @@ namespace Hjg.Pngcs {
         }
 
 
-        protected void encodeRowFromInt(int[] row) {
+        protected void EncodeRowFromInt(int[] row) {
             if (row.Length == ImgInfo.SamplesPerRowPacked && !needsPack) {
                 // some duplication of code - because this case is typical and it works faster this way
                 int j = 1;
@@ -298,15 +300,15 @@ namespace Hjg.Pngcs {
             // initialized to 0 the first time
             if (filterStrat.shouldTestAll(rown)) {
                 FilterRowNone();
-                reportResultsForFilter(rown, FilterType.FILTER_NONE, true);
+                ReportResultsForFilter(rown, FilterType.FILTER_NONE, true);
                 FilterRowSub();
-                reportResultsForFilter(rown, FilterType.FILTER_SUB, true);
+                ReportResultsForFilter(rown, FilterType.FILTER_SUB, true);
                 FilterRowUp();
-                reportResultsForFilter(rown, FilterType.FILTER_UP, true);
+                ReportResultsForFilter(rown, FilterType.FILTER_UP, true);
                 FilterRowAverage();
-                reportResultsForFilter(rown, FilterType.FILTER_AVERAGE, true);
+                ReportResultsForFilter(rown, FilterType.FILTER_AVERAGE, true);
                 FilterRowPaeth();
-                reportResultsForFilter(rown, FilterType.FILTER_PAETH, true);
+                ReportResultsForFilter(rown, FilterType.FILTER_PAETH, true);
             }
             FilterType filterType = filterStrat.gimmeFilterType(rown, true);
             rowbfilter[0] = (byte)(int)filterType;
@@ -329,12 +331,12 @@ namespace Hjg.Pngcs {
                 default:
                     throw new PngjOutputException("Filter type " + filterType + " not implemented");
             }
-            reportResultsForFilter(rown, filterType, false);
+            ReportResultsForFilter(rown, filterType, false);
         }
 
-        private void prepareEncodeRow(int rown) {
+        private void PrepareEncodeRow(int rown) {
             if (datStream == null)
-                init();
+                Init();
             rowNum++;
             if (rown >= 0 && rowNum != rown)
                 throw new PngjOutputException("rows must be written in order: expected:" + rowNum
@@ -345,7 +347,7 @@ namespace Hjg.Pngcs {
             rowbprev = tmp;
         }
 
-        private void filterAndSend(int rown) {
+        private void FilterAndSend(int rown) {
             FilterRow(rown);
             datStreamDeflated.Write(rowbfilter, 0, ImgInfo.BytesPerRow + 1);
             datStreamDeflated.Flush();
@@ -540,15 +542,15 @@ namespace Hjg.Pngcs {
         /// <param name="newrow">Array of pixel values</param>
         /// <param name="rown">Number of row, from 0 (top) to rows-1 (bottom)</param>
         public void WriteRowInt(int[] newrow, int rown) {
-            prepareEncodeRow(rown);
-            encodeRowFromInt(newrow);
-            filterAndSend(rown);
+            PrepareEncodeRow(rown);
+            EncodeRowFromInt(newrow);
+            FilterAndSend(rown);
         }
 
         public void WriteRowByte(byte[] newrow, int rown) {
-            prepareEncodeRow(rown);
-            encodeRowFromByte(newrow);
-            filterAndSend(rown);
+            PrepareEncodeRow(rown);
+            EncodeRowFromByte(newrow);
+            FilterAndSend(rown);
         }
 
 

@@ -52,7 +52,7 @@ namespace MoyskleyTech.Mathematics
             for ( var lignePivot = 0; lignePivot < res.Rows - 1; lignePivot++ )
             {
                 //Trouver le pivot pour la ligne
-                int positionPivot = res.gaussFindPivotForLine(lignePivot);
+                int positionPivot = res.GaussFindPivotForLine(lignePivot);
                 if ( positionPivot == -1 )
                     throw new InvalidOperationException("Impossible de trouver un pivot");
                 operation *= ( dynamic ) 0;
@@ -70,7 +70,7 @@ namespace MoyskleyTech.Mathematics
             //Pour mettre des 0 en haut des pivots et mettre la diagonale à 1
             for ( var lignePivot = res.Rows - 1; lignePivot >= 0; lignePivot-- )
             {
-                int positionPivot = res.gaussFindPivotForLine(lignePivot);
+                int positionPivot = res.GaussFindPivotForLine(lignePivot);
                 if ( positionPivot == -1 )
                     throw new InvalidOperationException("Impossible de trouver un pivot");
                 operation *= ( dynamic ) 0;
@@ -126,7 +126,7 @@ namespace MoyskleyTech.Mathematics
         /// </summary>
         /// <param name="lignePivot">Numéro de ligne</param>
         /// <returns>Numéro de colonne du pivot</returns>
-        private int gaussFindPivotForLine(int lignePivot)
+        private int GaussFindPivotForLine(int lignePivot)
         {
             for ( var i = 0; i < Columns; i++ )
             {

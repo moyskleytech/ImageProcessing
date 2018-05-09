@@ -39,22 +39,26 @@ namespace MoyskleyTech.ImageProcessing.WPF
         }
         public override void DrawCircle(Brush<Pixel> p , int x0 , int y0 , double r , int thickness)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Stroke = Convert(p,(int)(x0-r),(int)(y0-r));
-            circle.StrokeThickness = thickness;
-            circle.Width = r + r;
-            circle.Height = r + r;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Stroke = Convert(p , ( int ) ( x0 - r ) , ( int ) ( y0 - r )) ,
+                StrokeThickness = thickness ,
+                Width = r + r ,
+                Height = r + r
+            };
             Canvas.SetLeft(circle , x0 - r);
             Canvas.SetTop(circle , y0 - r);
             ctx.Children.Add(circle);
         }
         public override void DrawCircle(Pixel p , int x0 , int y0 , double r , int thickness)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Stroke = ConvertBrush(p);
-            circle.StrokeThickness = thickness;
-            circle.Width = r + r;
-            circle.Height = r + r;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Stroke = ConvertBrush(p) ,
+                StrokeThickness = thickness ,
+                Width = r + r ,
+                Height = r + r
+            };
             Canvas.SetLeft(circle , x0 - r);
             Canvas.SetTop(circle , y0 - r);
             ctx.Children.Add(circle);
@@ -65,11 +69,13 @@ namespace MoyskleyTech.ImageProcessing.WPF
         }
         public override void DrawEllipse(Pixel p , int x , int y , int w , int h , int t)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Stroke = ConvertBrush(p);
-            circle.StrokeThickness = t;
-            circle.Width = w;
-            circle.Height = h;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Stroke = ConvertBrush(p) ,
+                StrokeThickness = t ,
+                Width = w ,
+                Height = h
+            };
             Canvas.SetLeft(circle , x);
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
@@ -80,51 +86,61 @@ namespace MoyskleyTech.ImageProcessing.WPF
         }
         public override void DrawEllipse(Brush<Pixel> p , int x , int y , int w , int h , int t)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Stroke = Convert(p,x,y);
-            circle.StrokeThickness = t;
-            circle.Width = w;
-            circle.Height = h;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Stroke = Convert(p , x , y) ,
+                StrokeThickness = t ,
+                Width = w ,
+                Height = h
+            };
             Canvas.SetLeft(circle , x);
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
         public override void FillCircle(Brush<Pixel> p , int x0 , int y0 , double r)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Fill = Convert(p,(int)(x0-r),(int)(y0-r));
-            circle.Width = r + r;
-            circle.Height = r + r;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Fill = Convert(p , ( int ) ( x0 - r ) , ( int ) ( y0 - r )) ,
+                Width = r + r ,
+                Height = r + r
+            };
             Canvas.SetLeft(circle , x0 - r);
             Canvas.SetTop(circle , y0 - r);
             ctx.Children.Add(circle);
         }
         public override void FillCircle(Pixel p , int x0 , int y0 , double r)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Fill = ConvertBrush(p);
-            circle.Width = r + r;
-            circle.Height = r + r;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Fill = ConvertBrush(p) ,
+                Width = r + r ,
+                Height = r + r
+            };
             Canvas.SetLeft(circle , x0 - r);
             Canvas.SetTop(circle , y0 - r);
             ctx.Children.Add(circle);
         }
         public override void FillEllipse(Pixel p , int x , int y , int w , int h)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Fill = ConvertBrush(p);
-            circle.Width = w;
-            circle.Height = h;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Fill = ConvertBrush(p) ,
+                Width = w ,
+                Height = h
+            };
             Canvas.SetLeft(circle , x);
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
         public override void FillEllipse(Brush<Pixel> p , int x , int y , int w , int h)
         {
-            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse();
-            circle.Fill = Convert(p,x,y);
-            circle.Width = w;
-            circle.Height = h;
+            System.Windows.Shapes.Ellipse circle = new System.Windows.Shapes.Ellipse
+            {
+                Fill = Convert(p , x , y) ,
+                Width = w ,
+                Height = h
+            };
             Canvas.SetLeft(circle , x);
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
@@ -157,24 +173,28 @@ namespace MoyskleyTech.ImageProcessing.WPF
         }
         public override void DrawLine(Pixel p , double x , double y , double x2 , double y2 , int thickness)
         {
-            System.Windows.Shapes.Line line = new System.Windows.Shapes.Line();
-            line.X1 = x;
-            line.X2 = x2;
-            line.Y1 = y;
-            line.Y2 = y2;
-            line.Stroke = ConvertBrush(p);
-            line.StrokeThickness = thickness;
+            System.Windows.Shapes.Line line = new System.Windows.Shapes.Line
+            {
+                X1 = x ,
+                X2 = x2 ,
+                Y1 = y ,
+                Y2 = y2 ,
+                Stroke = ConvertBrush(p) ,
+                StrokeThickness = thickness
+            };
             ctx.Children.Add(line);
         }
         public override void DrawLine(Brush<Pixel> p , double x , double y , double x2 , double y2 , int thickness)
         {
-            System.Windows.Shapes.Line line = new System.Windows.Shapes.Line();
-            line.X1 = x;
-            line.X2 = x2;
-            line.Y1 = y;
-            line.Y2 = y2;
-            line.Stroke = Convert(p,(int)x,(int)y);
-            line.StrokeThickness = thickness;
+            System.Windows.Shapes.Line line = new System.Windows.Shapes.Line
+            {
+                X1 = x ,
+                X2 = x2 ,
+                Y1 = y ,
+                Y2 = y2 ,
+                Stroke = Convert(p , ( int ) x , ( int ) y) ,
+                StrokeThickness = thickness
+            };
             ctx.Children.Add(line);
         }
         public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
@@ -208,7 +228,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             context.XmlnsDictionary.Add("" , "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
             context.XmlnsDictionary.Add("x" , "http://schemas.microsoft.com/winfx/2006/xaml");
 
-            return XamlReader.Parse("<Path Data='" + CreatePolygon(points) + "'/>",context) as System.Windows.Shapes.Path;
+            return XamlReader.Parse("<Path Data='" + CreatePolygon(points) + "'/>" , context) as System.Windows.Shapes.Path;
         }
 
         public string CreatePolygon(params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
@@ -232,12 +252,12 @@ namespace MoyskleyTech.ImageProcessing.WPF
         public override void FillPolygon(Pixel p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             System.Windows.Shapes.Path path = ParsePath(points);
-            
+
             path.Fill = ConvertBrush(p);
             ctx.Children.Add(path);
         }
 
-      
+
 
         public override void DrawPolygon(Brush<Pixel> p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
@@ -255,7 +275,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             path.StrokeThickness = 1;
             ctx.Children.Add(path);
         }
-        
+
         public override void DrawPolygon(Pixel p , int thickness , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             System.Windows.Shapes.Path path = ParsePath(points);
@@ -270,11 +290,13 @@ namespace MoyskleyTech.ImageProcessing.WPF
         }
         public override void DrawString(string str , Pixel p , int x , int y , Font f , int size , StringFormat sf = null)
         {
-            TextBlock tb = new TextBlock();
-            tb.Text = str;
-            tb.FontFamily = new System.Windows.Media.FontFamily(f.Name);
-            tb.FontSize = size * 12;
-            tb.Foreground = ConvertBrush(p);
+            TextBlock tb = new TextBlock
+            {
+                Text = str ,
+                FontFamily = new System.Windows.Media.FontFamily(f.Name) ,
+                FontSize = size * 12 ,
+                Foreground = ConvertBrush(p)
+            };
             Canvas.SetLeft(tb , x);
             Canvas.SetTop(tb , y);
             ctx.Children.Add(tb);
@@ -282,33 +304,37 @@ namespace MoyskleyTech.ImageProcessing.WPF
         }
         public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
         {
-            TextBlock tb = new TextBlock();
-            tb.Text = str;
-            tb.FontFamily = new System.Windows.Media.FontFamily(f.Name);
-            tb.FontSize = size * 12;
-            tb.Foreground = Convert(p,x,y);
+            TextBlock tb = new TextBlock
+            {
+                Text = str ,
+                FontFamily = new System.Windows.Media.FontFamily(f.Name) ,
+                FontSize = size * 12 ,
+                Foreground = Convert(p , x , y)
+            };
             Canvas.SetLeft(tb , x);
             Canvas.SetTop(tb , y);
             ctx.Children.Add(tb);
         }
         public override void SetPixel(Brush<Pixel> p , double x , double y)
         {
-            DrawLine(p ,new PointF(x , y), new PointF(x+1 , y),1);
+            DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
         public override void SetPixel(Pixel p , double x , double y)
         {
-            DrawLine(p ,new PointF(x , y), new PointF(x+1 , y),1);
+            DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py,bool alpha)
+        protected override void SetPixelInternal(Pixel p , double px , double py , bool alpha)
         {
             FillRectangle(p , px , py , 1 , 1);
         }
         public void DrawImage(System.Windows.Media.ImageSource src , int x , int y)
         {
-            System.Windows.Controls.Image tb = new System.Windows.Controls.Image();
-            tb.Width = src.Width;
-            tb.Height = src.Height;
-            tb.Source = src;
+            System.Windows.Controls.Image tb = new System.Windows.Controls.Image
+            {
+                Width = src.Width ,
+                Height = src.Height ,
+                Source = src
+            };
             Canvas.SetLeft(tb , x);
             Canvas.SetTop(tb , y);
             ctx.Children.Add(tb);
@@ -335,7 +361,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
                 B = myBrush.B
             };
         }
-        private System.Windows.Media.Brush Convert(Brush<Pixel> myBrush ,int x=0,int y=0)
+        private System.Windows.Media.Brush Convert(Brush<Pixel> myBrush , int x = 0 , int y = 0)
         {
             if ( myBrush is ImageBrush )
             {
@@ -350,42 +376,35 @@ namespace MoyskleyTech.ImageProcessing.WPF
 
                 return new System.Windows.Media.ImageBrush(imageSource) { TileMode = System.Windows.Media.TileMode.Tile };
             }
+            if ( myBrush is LinearGradientBrush lgb )
             {
-                LinearGradientBrush lgb = myBrush as LinearGradientBrush;
-                if ( lgb != null )
+                var nlgb = new System.Windows.Media.LinearGradientBrush
                 {
-                    var nlgb = new System.Windows.Media.LinearGradientBrush();
-                    nlgb.StartPoint = new System.Windows.Point(lgb.SourceLocation.X-x , lgb.SourceLocation.Y-y);
-                    nlgb.EndPoint = new System.Windows.Point(lgb.FinalLocation.X-x , lgb.FinalLocation.Y-y);
-                    nlgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(lgb.SourceColor) , 0));
-                    nlgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(lgb.FinalColor) , 1));
-                    nlgb.MappingMode = System.Windows.Media.BrushMappingMode.Absolute;
-                    
-                    nlgb.ColorInterpolationMode = System.Windows.Media.ColorInterpolationMode.SRgbLinearInterpolation;
-                    return nlgb;
-                }
-            }
-            {
-                RadialGradientBrush rgb = myBrush as RadialGradientBrush;
-                if ( rgb != null )
-                {
-                    var nrgb = new System.Windows.Media.RadialGradientBrush();
-                    nrgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(rgb.SourceColor) , 0));
-                    nrgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(rgb.FinalColor) , 1));
-                    nrgb.Center = new System.Windows.Point(rgb.SourceLocation.X-x , rgb.SourceLocation.Y-y);
-                    nrgb.RadiusX = rgb.Radius;
-                    nrgb.RadiusY = rgb.Radius;
-                    nrgb.MappingMode = System.Windows.Media.BrushMappingMode.Absolute;
-                    return nrgb;
-                }
-            }
-            {
-                VisualBrush vb = myBrush as VisualBrush;
-                if ( vb != null )
-                    return vb.Inner;
-            }
+                    StartPoint = new System.Windows.Point(lgb.SourceLocation.X - x , lgb.SourceLocation.Y - y) ,
+                    EndPoint = new System.Windows.Point(lgb.FinalLocation.X - x , lgb.FinalLocation.Y - y)
+                };
+                nlgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(lgb.SourceColor) , 0));
+                nlgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(lgb.FinalColor) , 1));
+                nlgb.MappingMode = System.Windows.Media.BrushMappingMode.Absolute;
 
-            
+                nlgb.ColorInterpolationMode = System.Windows.Media.ColorInterpolationMode.SRgbLinearInterpolation;
+                return nlgb;
+            }
+            if ( myBrush is RadialGradientBrush rgb )
+            {
+                var nrgb = new System.Windows.Media.RadialGradientBrush();
+                nrgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(rgb.SourceColor) , 0));
+                nrgb.GradientStops.Add(new System.Windows.Media.GradientStop(Convert(rgb.FinalColor) , 1));
+                nrgb.Center = new System.Windows.Point(rgb.SourceLocation.X - x , rgb.SourceLocation.Y - y);
+                nrgb.RadiusX = rgb.Radius;
+                nrgb.RadiusY = rgb.Radius;
+                nrgb.MappingMode = System.Windows.Media.BrushMappingMode.Absolute;
+                return nrgb;
+            }
+            if ( myBrush is VisualBrush vb )
+                return vb.Inner;
+
+
             return null;
         }
         public override void Dispose()

@@ -95,11 +95,20 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new Image.Pixel() { A = a , R = r , G = g , B = b };
         }
+        /// <summary>
+        /// Get Pixel from name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Pixel FromName(string name)
         {
             return Pixels.GetPixel(name);
         }
-
+        /// <summary>
+        /// Get Pixel from 565
+        /// </summary>
+        /// <param name="rgb565"></param>
+        /// <returns></returns>
         public static Pixel FromRGB565(UInt16 rgb565)
         {
             var r = rgb565 >> 11;
@@ -111,6 +120,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             b = b * 256 / 0b11111;
             return FromArgb(255 , ( byte ) r , ( byte ) g , ( byte ) b);
         }
+        /// <summary>
+        /// Get Pixel from 565
+        /// </summary>
+        /// <param name="rgb555"></param>
+        /// <returns></returns>
         public static Pixel FromRGB555(UInt16 rgb555)
         {
             var r = (rgb555 >> 10) &0b11111;
@@ -122,7 +136,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             b = b * 256 / 0b11111;
             return FromArgb(255 , ( byte ) r , ( byte ) g , ( byte ) b);
         }
-
+        /// <summary>
+        /// Get the 565 representation of the pixel
+        /// </summary>
+        /// <returns></returns>
         public ushort ToRGB565()
         {
             int r = R;
@@ -134,6 +151,10 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return ( ushort ) ( r << 11 | g << 5 | b );
         }
+        /// <summary>
+        /// Get the 555 representation of the pixel
+        /// </summary>
+        /// <returns></returns>
         public ushort ToRGB555()
         {
             int r = R;
@@ -292,38 +313,74 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return single;
         }
+        /// <summary>
+        /// Convert to HSB colorspace
+        /// </summary>
+        /// <returns></returns>
         public HSB ToHSB()
         {
             return HSB.FromHSB(GetHue() , GetSaturation() , GetBrightness());
         }
+        /// <summary>
+        /// Can use a Pixel as a SolidBrush
+        /// </summary>
+        /// <param name="p"></param>
         public static explicit operator Brush(Pixel p)
         {
             return new SolidBrush(p);
         }
+        /// <summary>
+        /// Can use a Pixel as a SolidBrush
+        /// </summary>
+        /// <param name="p"></param>
         public static explicit operator Brush<Pixel>(Pixel p)
         {
             return new SolidBrush(p);
         }
+        /// <summary>
+        /// Represent the pixel as a string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return "Pixel[" + R + "," + G + "," + B + "]";
         }
 
-
+        /// <summary>
+        /// Check equality of the pixel
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator ==(Pixel a , Pixel b)
         {
             return a.ToArgb() == b.ToArgb();
         }
+        /// <summary>
+        /// Check difference of the pixel
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool operator !=(Pixel a , Pixel b)
         {
             return a.ToArgb() != b.ToArgb();
         }
+        /// <summary>
+        /// Check equality
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if ( obj is Pixel p )
                 return p == this;
             return base.Equals(obj);
         }
+        /// <summary>
+        /// Get a hash
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return ToArgb().GetHashCode();
@@ -438,16 +495,20 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return ( p + ( q - p ) * ( 2d / 3 - t ) * 6 );
             return ( p );
         }
+        /// <summary>
+        /// Represent HSB as string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return "HSB[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%]";
         }
         /// <summary>
-        /// 
+        /// Create HSB from float
         /// </summary>
-        /// <param name="v1">0-360</param>
-        /// <param name="v2">0-1</param>
-        /// <param name="v3">0-1</param>
+        /// <param name="v1">0-360 hue</param>
+        /// <param name="v2">0-1 saturation</param>
+        /// <param name="v3">0-1 brithness</param>
         /// <returns></returns>
         public static HSB FromHSB(float v1 , float v2 , float v3)
         {
@@ -460,6 +521,13 @@ namespace MoyskleyTech.ImageProcessing.Image
             hsb.B = ( byte ) b;
             return hsb;
         }
+        /// <summary>
+        /// Create HSB from byte
+        /// </summary>
+        /// <param name="v1">0-255 hue</param>
+        /// <param name="v2">0-255 saturation</param>
+        /// <param name="v3">0-255 brithness</param>
+        /// <returns></returns>
         public static HSB FromHSB(int v1 , int v2 , int v3)
         {
             HSB hsb = new HSB();
@@ -473,6 +541,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
 
     }
+    /// <summary>
+    /// Struct to store HSVA
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct HSBA
     {
@@ -488,8 +559,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Value
         /// </summary>
         public byte B;
+        /// <summary>
+        /// Alpha
+        /// </summary>
         public byte A;
-
+        /// <summary>
+        /// ConvertToPixel
+        /// </summary>
+        /// <returns></returns>
         public Pixel ToRGB()
         {
             double hue=H/255d , saturation=S/255d , brightness=B/255d;
@@ -523,6 +600,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return ( p + ( q - p ) * ( 2d / 3 - t ) * 6 );
             return ( p );
         }
+        /// <summary>
+        /// Represent HSBA as string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return "HSBA[" + ( H * 360 / 255 ).ToString("0") + "," + ( S / 2.55 ).ToString("0") + "%," + ( B / 2.55 ).ToString("0") + "%," + A + "/255]";
@@ -533,6 +614,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="v1">0-360</param>
         /// <param name="v2">0-1</param>
         /// <param name="v3">0-1</param>
+        /// <param name="a">0-255</param>
         /// <returns></returns>
         public static HSBA FromHSBA(float v1 , float v2 , float v3 , byte a)
         {
@@ -546,6 +628,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             hsb.A = a;
             return hsb;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v1">0-255</param>
+        /// <param name="v2">0-255</param>
+        /// <param name="v3">0-255</param>
+        /// <param name="a">0-255</param>
+        /// <returns></returns>
         public static HSBA FromHSBA(int v1 , int v2 , int v3 , byte a)
         {
             HSBA hsb = new HSBA();
@@ -560,68 +650,186 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
 
     }
+    /// <summary>
+    /// Struct to store CYMK
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CYMK
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public float C,Y,M,K;
     }
+    /// <summary>
+    /// Struct to store HSL
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct HSL
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public float H,S,L;
     }
+    /// <summary>
+    /// Struct to store HSB_Float
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct HSB_Float
-    {
-        public float H,S,B;
+    { 
+         /// <summary>
+         /// Color components
+         /// </summary>
+    public float H,S,B;
     }
+    /// <summary>
+    /// Struct to store _565
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct _565
-    {
+    { /// <summary>
+      /// Color components
+      /// </summary>
         public ushort _565_;
+        /// <summary>
+        /// Red
+        /// </summary>
         public byte R { get { return ( byte ) ( _565_ >> 11 ); } set { _565_ &= 0b0000011111111111; _565_ |= unchecked(( ushort ) ( value << 11 )); } }
+        /// <summary>
+        /// Green
+        /// </summary>
         public byte G { get { return ( byte ) ( ( _565_ >> 5 ) & 0b111111 ); } set { _565_ &= 0b1111100000011111; _565_ |= unchecked(( ushort ) ( ( value & 0b111111 ) << 6 )); } }
+        /// <summary>
+        /// Blue
+        /// </summary>
         public byte B { get { return ( byte ) ( _565_ & 0b11111 ); } set { _565_ &= 0b1111111111100000; _565_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
+        /// <summary>
+        /// Conversion to ushort
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator ushort(_565 v) => v._565_;
+        /// <summary>
+        /// Conversion from ushort
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator _565(ushort v) => new _565 { _565_ = v };
     }
+    /// <summary>
+    /// Struct to store _555
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct _555
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public ushort _555_;
+        /// <summary>
+        /// Red
+        /// </summary>
         public byte R { get { return ( byte ) ( ( _555_ & 0b0111110000000000 ) >> 10 ); } set { _555_ &= 0b0000001111111111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
+        /// <summary>
+        /// Green
+        /// </summary>
         public byte G { get { return ( byte ) ( ( _555_ & 0b0000001111100000 ) >> 5 ); } set { _555_ &= 0b1111110000011111; _555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
+        /// <summary>
+        /// Blue
+        /// </summary>
         public byte B { get { return ( byte ) ( _555_ & 0b11111 ); } set { _555_ &= 0b1111111111100000; _555_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
+        /// <summary>
+        /// Conversion to ushort
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator ushort(_555 v) => v._555_;
+        /// <summary>
+        /// Conversion from ushort
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator _555(ushort v) => new _555 { _555_ = v };
-        public static implicit operator _555(_1555 v) => new _555 { _555_ = v };
+        /// <summary>
+        /// Conversion from 1555(555 with alpha)
+        /// </summary>
+        /// <param name="v"></param>
+        public static explicit operator _555(_1555 v) => new _555 { _555_ = v };
     }
+    /// <summary>
+    /// Struct to store _1555
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct _1555
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public ushort _1555_;
+        /// <summary>
+        /// Red
+        /// </summary>
         public byte R { get { return ( byte ) ( ( _1555_ & 0b0111110000000000 ) >> 10 ); } set { _1555_ &= 0b0000001111111111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 10 )); } }
+        /// <summary>
+        /// Green
+        /// </summary>
         public byte G { get { return ( byte ) ( ( _1555_ & 0b0000001111100000 ) >> 5 ); } set { _1555_ &= 0b1111110000011111; _1555_ |= unchecked(( ushort ) ( ( value & 0b11111 ) << 5 )); } }
+        /// <summary>
+        /// Blue
+        /// </summary>
         public byte B { get { return ( byte ) ( _1555_ & 0b11111 ); } set { _1555_ &= 0b1111111111100000; _1555_ |= unchecked(( ushort ) ( value & 0b11111 )); } }
+        /// <summary>
+        /// Alpha
+        /// </summary>
         public bool A { get => _1555_ >= 1 << 15; set { _1555_ &= 0b0111111111111111; _1555_ |= unchecked(( ushort ) ( value ? 1 : 0 )); } }
+        /// <summary>
+        /// Conversion to ushort
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator ushort(_1555 v) => v._1555_;
+        /// <summary>
+        /// Conversion from ushort
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator _1555(ushort v) => new _1555 { _1555_ = v };
+        /// <summary>
+        /// Conversion from 555 without alpha
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator _1555(_555 v) => new _1555 { _1555_ = v._555_ , A = true };
     }
+    /// <summary>
+    /// Struct to store BGR
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct BGR
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public byte B,G,R;
     }
+    /// <summary>
+    /// Struct to store RGB
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct RGB
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public byte R,G,B;
     }
+    /// <summary>
+    /// Struct to store _332
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct _332
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public byte _332_;
+        /// <summary>
+        /// Red component
+        /// </summary>
         public byte R
         {
             get
@@ -634,6 +842,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 _332_ |= unchecked(( byte ) ( ( value & 0b111 ) << 5 ));
             }
         }
+        /// <summary>
+        /// Green component
+        /// </summary>
         public byte G
         {
             get
@@ -646,6 +857,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 _332_ |= unchecked(( byte ) ( ( value & 0b111 ) << 2 ));
             }
         }
+        /// <summary>
+        /// Blue component
+        /// </summary>
         public byte B
         {
             get
@@ -658,13 +872,31 @@ namespace MoyskleyTech.ImageProcessing.Image
                 _332_ |= unchecked(( byte ) ( value & 0b11 ));
             }
         }
+        /// <summary>
+        /// Conversion to byte
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator byte(_332 v) => v._332_;
+        /// <summary>
+        /// Conversion from byte
+        /// </summary>
+        /// <param name="v"></param>
         public static implicit operator _332(byte v) => new _332 { _332_ = v };
     }
+    /// <summary>
+    /// Struct to store ARGB_Float
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ARGB_Float
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public float A,R,G,B;
+        /// <summary>
+        /// Get the gray tone
+        /// </summary>
+        /// <returns></returns>
         public float GetGrayTone()
         {
             if ( R == G && G == B )
@@ -672,10 +904,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             return ( float ) ( 0.21 * R + 0.72 * G + 0.07 * B );
         }
     }
+    /// <summary>
+    /// Struct to store ARGB_16bit
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ARGB_16bit
     {
+        /// <summary>
+        /// Color components
+        /// </summary>
         public ushort A,R,G,B;
+        /// <summary>
+        /// Get the graytone for the ARGB
+        /// </summary>
+        /// <returns></returns>
         public ushort GetGrayTone()
         {
             if ( R == G && G == B )

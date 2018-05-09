@@ -41,10 +41,12 @@ namespace FontEditor
             //g = Graphics.FromImage(bmp);
         }
 
-        private void ouvrirToolStripMenuItem_Click(object sender , EventArgs e)
+        private void OuvrirToolStripMenuItem_Click(object sender , EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Font | *.bin";
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "Font | *.bin"
+            };
             if ( ofd.ShowDialog() == DialogResult.OK )
             {
                 var fs =System.IO.File.Open(ofd.FileName , System.IO.FileMode.Open , System.IO.FileAccess.Read);
@@ -53,10 +55,12 @@ namespace FontEditor
             }
         }
 
-        private void enregistrerToolStripMenuItem_Click(object sender , EventArgs e)
+        private void EnregistrerToolStripMenuItem_Click(object sender , EventArgs e)
         {
-            SaveFileDialog svd = new SaveFileDialog();
-            svd.Filter = "Font | *.bin";
+            SaveFileDialog svd = new SaveFileDialog
+            {
+                Filter = "Font | *.bin"
+            };
             if ( svd.ShowDialog() == DialogResult.OK )
             {
                 var fs =System.IO.File.Open(svd.FileName , System.IO.FileMode.OpenOrCreate , System.IO.FileAccess.Write);
@@ -65,17 +69,17 @@ namespace FontEditor
             }
         }
 
-        private void nouvelleToolStripMenuItem_Click(object sender , EventArgs e)
+        private void NouvelleToolStripMenuItem_Click(object sender , EventArgs e)
         {
             current = new MoyskleyTech.ImageProcessing.Image.Font(Microsoft.VisualBasic.Interaction.InputBox("Quel nom?"));
         }
 
-        private void button2_Click(object sender , EventArgs e)
+        private void Button2_Click(object sender , EventArgs e)
         {
             current.SetChar(currentCharIndex , currentChar);
         }
 
-        private void btnChangeSize_Click(object sender , EventArgs e)
+        private void BtnChangeSize_Click(object sender , EventArgs e)
         {
             string i1,i2;
             i1 = Interaction.InputBox("Lignes");
@@ -90,13 +94,13 @@ namespace FontEditor
             ShowChar();
         }
 
-        private void tbChar_KeyPress(object sender , KeyPressEventArgs e)
+        private void TbChar_KeyPress(object sender , KeyPressEventArgs e)
         {
             tbDemo.Text = tbChar.Text = e.KeyChar.ToString();
             LoadChar(e.KeyChar);
         }
 
-        private void pbChar_MouseUp(object sender , MouseEventArgs e)
+        private void PbChar_MouseUp(object sender , MouseEventArgs e)
         {
             int charw = currentChar.GetLength(1);
             int charh = currentChar.GetLength(0);
@@ -114,10 +118,12 @@ namespace FontEditor
             ShowChar();
         }
 
-        private void importerToolStripMenuItem_Click(object sender , EventArgs e)
+        private void ImporterToolStripMenuItem_Click(object sender , EventArgs e)
         {
-            FontDialog fd = new FontDialog();
-            fd.ShowApply = true;
+            FontDialog fd = new FontDialog
+            {
+                ShowApply = true
+            };
             fd.Apply += Fd_Apply;
             if ( fd.ShowDialog() == DialogResult.OK )
             {
@@ -182,15 +188,17 @@ namespace FontEditor
             pbChar.Image = bmp;
         }
 
-        private void tbDemo_TextChanged(object sender , EventArgs e)
+        private void TbDemo_TextChanged(object sender , EventArgs e)
         {
             ShowChar();
         }
 
-        private async void importerLensembleDesFontsToolStripMenuItem_Click(object sender , EventArgs e)
+        private async void ImporterLensembleDesFontsToolStripMenuItem_Click(object sender , EventArgs e)
         {
-            FolderBrowserDialog fd = new FolderBrowserDialog();
-            fd.ShowNewFolderButton = true;
+            FolderBrowserDialog fd = new FolderBrowserDialog
+            {
+                ShowNewFolderButton = true
+            };
             if ( fd.ShowDialog() == DialogResult.OK )
             {
                 await ImportFonts(fd,1);

@@ -75,8 +75,10 @@ namespace MoyskleyTech.ImageProcessing.Android
         }
         private G.Paint Stroke(G.Paint src , float thickness)
         {
-            G.Paint p = new G.Paint();
-            p.Color = src.Color;
+            G.Paint p = new G.Paint
+            {
+                Color = src.Color
+            };
             if ( src.Shader != null )
                 p.SetShader(src.Shader);
             p.StrokeWidth = thickness;

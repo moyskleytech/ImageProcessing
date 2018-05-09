@@ -4,10 +4,19 @@ using System.Linq;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// Palette for 4bpp Bitmap
+    /// </summary>
     public class BitmapPalette4bpp
     {
         Pixel[] inner = new Pixel[16];
        
+        /// <summary>
+        /// Create palette using a gradient from two colors
+        /// </summary>
+        /// <param name="first">Start color</param>
+        /// <param name="last">End color</param>
+        /// <returns></returns>
         public static BitmapPalette4bpp FromGradient(Pixel first , Pixel last)
         {
             BitmapPalette4bpp palette = new BitmapPalette4bpp();
@@ -18,6 +27,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return palette;
         }
+        /// <summary>
+        /// Accesor for color in palette
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public Pixel this[int index]
         {
             get
@@ -29,6 +43,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
+        /// <summary>
+        /// Accesor for finding Pixel in palette or -1 if not present
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public int this[Pixel index]
         {
             get
@@ -43,10 +62,18 @@ namespace MoyskleyTech.ImageProcessing.Image
                     inner[i].A = 255;
         }
     }
+    /// <summary>
+    /// Palette for 2bpp bitmap
+    /// </summary>
     public class BitmapPalette2bpp
     {
         Pixel[] inner = new Pixel[4];
-
+        /// <summary>
+        /// Create from 2 colors
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="last"></param>
+        /// <returns></returns>
         public static BitmapPalette2bpp FromGradient(Pixel first , Pixel last)
         {
             BitmapPalette2bpp palette = new BitmapPalette2bpp();
@@ -57,6 +84,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return palette;
         }
+        /// <summary>
+        /// Get color at specified index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public Pixel this[int index]
         {
             get
@@ -68,6 +100,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
+        /// <summary>
+        /// Find index of color
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public int this[Pixel index]
         {
             get
@@ -82,10 +119,17 @@ namespace MoyskleyTech.ImageProcessing.Image
                     inner[i].A = 255;
         }
     }
+    /// <summary>
+    /// Palette for 1bpp Bitmap(Monochrome)
+    /// </summary>
     public class BitmapPalette1bpp
     {
         Pixel[] inner = new Pixel[2];
-
+        /// <summary>
+        /// Access palette at index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public Pixel this[int index]
         {
             get
@@ -97,6 +141,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 inner[index] = value;
             }
         }
+        /// <summary>
+        /// Find index of color
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public int this[Pixel index]
         {
             get

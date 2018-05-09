@@ -7,11 +7,18 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Specialized
 {
+    /// <summary>
+    /// Allow creation of LightTrail images
+    /// </summary>
     public class LightTrailBuilder
     {
         int width,height,max;
         Bitmap workingObject;
-
+        /// <summary>
+        /// Create a lightTrailBuilder using size
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public LightTrailBuilder(int width , int height)
         {
             this.width = width;
@@ -20,6 +27,10 @@ namespace MoyskleyTech.ImageProcessing.Specialized
             workingObject = new Bitmap(width , height);
             Graphics.FromImage(workingObject).Clear(Pixels.Black);
         }
+        /// <summary>
+        /// Create a lightTrailBuilder using first frame
+        /// </summary>
+        /// <param name="firstFrame"></param>
         public LightTrailBuilder(Bitmap firstFrame)
         {
             width = workingObject.Width;
@@ -27,7 +38,10 @@ namespace MoyskleyTech.ImageProcessing.Specialized
             max = width * height;
             workingObject = (Bitmap)firstFrame.Clone();
         }
-
+        /// <summary>
+        /// Add a frame to the lighttrail(Max of current and added)
+        /// </summary>
+        /// <param name="frame"></param>
         public void AddFrame(Bitmap frame)
         {
             if ( frame.Width != width )
@@ -47,6 +61,10 @@ namespace MoyskleyTech.ImageProcessing.Specialized
                 }
             }
         }
+        /// <summary>
+        /// Return result
+        /// </summary>
+        /// <returns></returns>
         public Bitmap Build()
         {
             return ( Bitmap ) workingObject.Clone();

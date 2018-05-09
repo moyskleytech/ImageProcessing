@@ -42,7 +42,7 @@
             this.imgSrc.Size = new System.Drawing.Size(128, 237);
             this.imgSrc.TabIndex = 0;
             this.imgSrc.TabStop = false;
-            this.imgSrc.Click += new System.EventHandler(this.imgSrc_Click);
+            this.imgSrc.Click += new System.EventHandler(this.ImgSrc_Click);
             // 
             // imgDest
             // 
@@ -52,7 +52,7 @@
             this.imgDest.Size = new System.Drawing.Size(126, 237);
             this.imgDest.TabIndex = 1;
             this.imgDest.TabStop = false;
-            this.imgDest.MouseUp += new System.Windows.Forms.MouseEventHandler(this.imgDest_MouseUp);
+            this.imgDest.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImgDest_MouseUp);
             // 
             // Form1
             // 

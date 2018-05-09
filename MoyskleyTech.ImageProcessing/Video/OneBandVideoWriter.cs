@@ -8,17 +8,32 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Video
 {
+    /// <summary>
+    /// Writer for video
+    /// </summary>
     public class OneBandVideoWriter
     {
         private Stream s;
         private OneBandImage f;
         int ct;
+        /// <summary>
+        /// Minimum difference to store in video(higher value = smaller file)
+        /// </summary>
         public byte Quality { get; set; }
+        /// <summary>
+        /// Create a writer on the specified stream
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="quality"></param>
         public OneBandVideoWriter(Stream s,byte quality=0)
         {
             this.s = s;
             Quality = quality;
         }
+        /// <summary>
+        /// Write a frame to the monochrome video
+        /// </summary>
+        /// <param name="img"></param>
         public void WriteFrame(OneBandImage img)
         {
             if ( f == null )
@@ -30,7 +45,15 @@ namespace MoyskleyTech.ImageProcessing.Video
                 ct = f.Height * f.Width;
             }
             WriteBand(f , img , Quality , s);
+            s.Flush();
         }
+        /// <summary>
+        /// Write a specified band to the video
+        /// </summary>
+        /// <param name="previous"></param>
+        /// <param name="next"></param>
+        /// <param name="Quality"></param>
+        /// <param name="s"></param>
         public static void WriteBand(OneBandImage previous , OneBandImage next,int Quality,Stream s)
         {
             var diff = GetDiff(previous,next,Quality);
@@ -80,7 +103,13 @@ namespace MoyskleyTech.ImageProcessing.Video
                 count = 0;
             }
         }
-
+        /// <summary>
+        /// Method to get the difference between 2 OneBandImage
+        /// </summary>
+        /// <param name="f"></param>
+        /// <param name="img"></param>
+        /// <param name="Quality"></param>
+        /// <returns></returns>
         public static byte[] GetDiff(OneBandImage f , OneBandImage img,int Quality)
         {
             var ct = f.Width*f.Height;

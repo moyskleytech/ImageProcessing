@@ -9,15 +9,26 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image.BitmapExtentions
 {
+    /// <summary>
+    /// Allow basic operation of bitmap that are added
+    /// </summary>
     public static class BitmapExtentions
     {
+        /// <summary>
+        /// Noise value of bitmap(usefull to hide bitmap content after use)
+        /// </summary>
+        /// <param name="bmp"></param>
         public static void Noise(this Bitmap bmp)
         {
             Graphics g = Graphics.FromImage(bmp);
             g.Clear(new NoiseBrush());
             g.Dispose();
         }
-
+        /// <summary>
+        /// Reduce color to 8bpp
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
         public unsafe static BitmapPalette8bpp ReduceColor(this Bitmap bmp)
         {
             BitmapPalette8bpp palette = new BitmapPalette8bpp();
@@ -44,6 +55,11 @@ namespace MoyskleyTech.ImageProcessing.Image.BitmapExtentions
             }
             return palette;
         }
+        /// <summary>
+        /// Allow saving in 8bpp mode
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="s"></param>
         public unsafe static void SaveReducedColor(this Bitmap bmp , Stream s)
         {
             Bitmap tmp = new Bitmap(bmp.Width,bmp.Height);

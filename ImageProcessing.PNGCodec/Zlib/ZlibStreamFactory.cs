@@ -7,29 +7,29 @@ namespace Hjg.Pngcs.Zlib
 {
     public class ZlibStreamFactory
     {
-        public static ZlibInputStreamMs createZlibInputStream(Stream st , bool leaveOpen)
+        public static ZlibInputStreamMs CreateZlibInputStream(Stream st , bool leaveOpen)
         {
             return new ZlibInputStreamMs(st,leaveOpen);
         }
 
-        public static ZlibInputStreamMs createZlibInputStream(Stream st)
+        public static ZlibInputStreamMs CreateZlibInputStream(Stream st)
         {
-            return createZlibInputStream(st , false);
+            return CreateZlibInputStream(st , false);
         }
 
-        public static ZlibOutputStreamMs createZlibOutputStream(Stream st , int compressLevel , EDeflateCompressStrategy strat , bool leaveOpen)
+        public static ZlibOutputStreamMs CreateZlibOutputStream(Stream st , int compressLevel , EDeflateCompressStrategy strat , bool leaveOpen)
         {
             return new ZlibOutputStreamMs(st , compressLevel , strat , leaveOpen);
         }
 
-        public static ZlibOutputStreamMs createZlibOutputStream(Stream st)
+        public static ZlibOutputStreamMs CreateZlibOutputStream(Stream st)
         {
-            return createZlibOutputStream(st , false);
+            return CreateZlibOutputStream(st , false);
         }
 
-        public static ZlibOutputStreamMs createZlibOutputStream(Stream st , bool leaveOpen)
+        public static ZlibOutputStreamMs CreateZlibOutputStream(Stream st , bool leaveOpen)
         {
-            return createZlibOutputStream(st , DeflateCompressLevel.DEFAULT , EDeflateCompressStrategy.Default , leaveOpen);
+            return CreateZlibOutputStream(st , DeflateCompressLevel.DEFAULT , EDeflateCompressStrategy.Default , leaveOpen);
         }
     }
 }

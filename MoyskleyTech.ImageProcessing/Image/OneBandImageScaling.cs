@@ -8,6 +8,13 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class OneBandImage
     {
+        /// <summary>
+        /// Allow rescale on grayscale image
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         public OneBandImage Rescale(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             if ( width <= 0 )
@@ -135,6 +142,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
+        /// <summary>
+        /// Async scale
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         public Task<OneBandImage> RescaleAsync(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             return Task.Run(() => Rescale(width , height , mode));

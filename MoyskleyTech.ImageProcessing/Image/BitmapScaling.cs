@@ -8,10 +8,24 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class Bitmap
     {
+        /// <summary>
+        /// Let resize a bitmap to a new size
+        /// </summary>
+        /// <param name="width">New width</param>
+        /// <param name="height">New height</param>
+        /// <param name="mode">Mode</param>
+        /// <returns>New bitmap</returns>
         public Bitmap Resize(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             return Rescale(width , height , mode);
         }
+        /// <summary>
+        /// Let resize a bitmap to a new size
+        /// </summary>
+        /// <param name="width">New width</param>
+        /// <param name="height">New height</param>
+        /// <param name="mode">Mode</param>
+        /// <returns>New bitmap</returns>
         public Bitmap Rescale(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             if ( width <= 0 )
@@ -163,6 +177,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
+        /// <summary>
+        /// Let resize a bitmap to a new size(ASYNC)
+        /// </summary>
+        /// <param name="width">New width</param>
+        /// <param name="height">New height</param>
+        /// <param name="mode">Mode</param>
+        /// <returns>New bitmap</returns>
         public Task<Bitmap> RescaleAsync(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             return Task.Run(() => Rescale(width , height , mode));
@@ -221,6 +242,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 destination[ex , ey] = this[sx , sy];
             }
         }
+        /// <summary>
+        /// Get a cropped version of image
+        /// </summary>
+        /// <param name="location"></param>
+        /// <returns></returns>
         public Bitmap GetSubBitmap(Rectangle location)
         {
             Bitmap bmp = new Bitmap(location.Width,location.Height);
@@ -233,12 +259,30 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return bmp;
         }
+        /// <summary>
+        /// Get a cropped version of image
+        /// </summary>
+        /// <param name="x">Left</param>
+        /// <param name="y">Top</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <returns></returns>
         public Bitmap GetBitmap(int x , int y , int w , int h)
         {
             return GetSubBitmap(new Rectangle(x , y , w , h));
         }
+        /// <summary>
+        /// Get a cropped version of image
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
         public new Bitmap Crop(Rectangle rectangle)
         { return GetSubBitmap(rectangle); }
+        /// <summary>
+        /// Get a cropped version of image
+        /// </summary>
+        /// <param name="rectangle"></param>
+        /// <returns></returns>
         public Bitmap Clone(Rectangle rectangle)
         { return GetSubBitmap(rectangle); }
     }

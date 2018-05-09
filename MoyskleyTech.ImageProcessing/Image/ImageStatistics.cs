@@ -6,17 +6,51 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
+    /// <summary>
+    /// Represent all statistics relative to an image
+    /// </summary>
     public class ImageStatistics
     {
+        /// <summary>
+        /// Red band
+        /// </summary>
         public BandStatistics Red { get; set; }
+        /// <summary>
+        /// Green band
+        /// </summary>
         public BandStatistics Green { get; set; }
+        /// <summary>
+        /// Blue band
+        /// </summary>
         public BandStatistics Blue { get; set; }
+        /// <summary>
+        /// Alpha band
+        /// </summary>
         public BandStatistics Alpha { get; set; }
+        /// <summary>
+        /// Gray band
+        /// </summary>
         public BandStatistics GrayTone { get; set; }
+        /// <summary>
+        /// Hue band
+        /// </summary>
         public BandStatistics Hue { get; set; }
+        /// <summary>
+        /// Saturation band
+        /// </summary>
         public BandStatistics Saturation { get; set; }
+        /// <summary>
+        /// Brightness band
+        /// </summary>
         public BandStatistics Brightness { get; set; }
+        /// <summary>
+        /// Statistics on color
+        /// </summary>
         public ColorStatistics ColorStatistics { get; set; }
+        /// <summary>
+        /// Create the statistics from imageproxy
+        /// </summary>
+        /// <param name="bmp"></param>
         public ImageStatistics(ImageProxy<Pixel> bmp)
         {
             int ct = bmp.Width*bmp.Height;
@@ -36,12 +70,22 @@ namespace MoyskleyTech.ImageProcessing.Image
             Saturation = new BandStatistics(from x in numberSelector select hsb[x].S , Band.Saturation);
             Brightness = new BandStatistics(from x in numberSelector select hsb[x].B , Band.Brightness);
             hsb.Dispose();
-           
+
         }
     }
+    /// <summary>
+    /// Represent the color statistics
+    /// </summary>
     public class ColorStatistics
     {
+        /// <summary>
+        /// Dictionnary of each pixel and their quantity
+        /// </summary>
         public Dictionary<Pixel , int> Dominance { get; set; } = new Dictionary<Pixel , int>();
+        /// <summary>
+        /// Create statistics from enumerable
+        /// </summary>
+        /// <param name="enumerable"></param>
         public ColorStatistics(IEnumerable<Pixel> enumerable)
         {
             foreach ( var px in enumerable )
@@ -53,9 +97,20 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
         }
     }
+    /// <summary>
+    /// Image statistic over one band
+    /// </summary>
     public class BandStatistics
     {
+        /// <summary>
+        /// Name of band
+        /// </summary>
         public Band Band { get; set; }
+        /// <summary>
+        /// Create statistics from enumerator of values in band
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="band"></param>
         public BandStatistics(IEnumerable<byte> selector , Band band)
         {
             this.Band = band;
@@ -76,28 +131,66 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             Average = ( byte ) ( sum / count );
         }
+        /// <summary>
+        /// Minimum of band
+        /// </summary>
         public byte Min { get; set; }
+        /// <summary>
+        /// Maximum of band
+        /// </summary>
         public byte Max { get; set; }
+        /// <summary>
+        /// Average of band
+        /// </summary>
         public byte Average { get; set; }
+        /// <summary>
+        /// Histogram of band
+        /// </summary>
         public HistogramStatistic Histogram { get; set; }
     }
+    /// <summary>
+    /// Represent an histogram of a band
+    /// </summary>
     public class HistogramStatistic
     {
+        /// <summary>
+        /// Band name
+        /// </summary>
         public Band Band { get; set; }
+        /// <summary>
+        /// Create an histograms
+        /// </summary>
+        /// <param name="b"></param>
         public HistogramStatistic(Band b)
         {
             Band = b;
         }
         int count=0;
         private int[] vals = new int[256];
+        /// <summary>
+        /// Append a value in the histogram
+        /// </summary>
+        /// <param name="b"></param>
         public void Append(byte b)
         {
             vals[b]++;
             count++;
         }
+        /// <summary>
+        /// Get the max count in 0-1 value
+        /// </summary>
         public float MaxNormalizedCount { get { return NormalizedCount.Max(); } }
+        /// <summary>
+        /// Get the count in 0-1 value
+        /// </summary>
         public float[ ] NormalizedCount { get { return ( from x in vals select ( float ) x / count ).ToArray(); } }
+        /// <summary>
+        /// Get the count of each value
+        /// </summary>
         public int[ ] Count { get { return ( from x in vals select x ).ToArray(); } }
+        /// <summary>
+        /// Get the max value
+        /// </summary>
         public int DominantValue
         {
             get
@@ -106,6 +199,15 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return ( from x in vals select new { val = x , pos = i++ } ).ToArray().OrderByDescending((x) => x.val).First().pos;
             }
         }
+        /// <summary>
+        /// Draw the histogram in a graphics
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <param name="background"></param>
         public void Render(Graphics g , int x = 0 , int y = 0 , int w = 256 , int h = 256 , Pixel? background = null)
         {
             g.FillRectangle(background ?? Pixels.Transparent , x , y , w , h);
@@ -157,6 +259,12 @@ namespace MoyskleyTech.ImageProcessing.Image
                 g.DrawLine(b , i , top , i , bottom);
             }
         }
+        /// <summary>
+        /// Render the histogram in a bitmap
+        /// </summary>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <returns></returns>
         public Bitmap Render(int w = 256 , int h = 256)
         {
             Bitmap bmp = new Bitmap(w,h);
@@ -167,8 +275,13 @@ namespace MoyskleyTech.ImageProcessing.Image
             return bmp;
         }
     }
+    /// <summary>
+    /// Enumeration of all possible Band in statistics
+    /// </summary>
     public enum Band
     {
-        Red, Green, Blue, Hue, Saturation, Brightness, Alpha,Gray
+#pragma warning disable CS1591
+        Red, Green, Blue, Hue, Saturation, Brightness, Alpha, Gray
+#pragma warning restore CS1591
     }
 }

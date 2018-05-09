@@ -16,10 +16,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         where Representation : struct
     {
         /// <summary>
-        /// The bitmap where to draw
+        /// The bitmap where to draw(null if proxy)
         /// </summary>
         protected Image<Representation> bmp;
+        /// <summary>
+        /// The image proxy(null if bitmap of graphics proxy)
+        /// </summary>
         protected ImageProxy<Representation> proxy;
+        /// <summary>
+        /// The graphics proxy(null if bitmap or image proxy)
+        /// </summary>
         protected Graphics<Representation> gProxy;
 
         private Matrix transformationMatrix;
@@ -28,9 +34,21 @@ namespace MoyskleyTech.ImageProcessing.Image
         private PointF[] clipPolygon;
         private double[]clipPolygonConstant , clipPolygonMultiple;
 
+        /// <summary>
+        /// Represent how to draw lines
+        /// </summary>
         public LineMode LineMode = LineMode.ForLoop;
+        /// <summary>
+        /// Transform position using function instead of matrix(before matrix)
+        /// </summary>
         public Func<PointF , PointF> PreTransformFunction { get; set; }
+        /// <summary>
+        /// Transform position using function instead of matrix(after matrix)
+        /// </summary>
         public Func<PointF , PointF> PostTransformFunction { get; set; }
+        /// <summary>
+        /// Function to choose what appen to current pixels
+        /// </summary>
         public Func<Representation,Representation,Representation> CompositionFunction;
         private Func<Representation,Pixel> ToPixel;
         /// <summary>
@@ -87,10 +105,24 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             ToPixel = ColorConvert.GetConversionFrom<Representation , Pixel>();
         }
+        /// <summary>
+        /// Optionnal height for proxy
+        /// </summary>
         protected int? width,height,x,y;
+        /// <summary>
+        /// Get width of graphics
+        /// </summary>
         public virtual int Width { get => width ?? bmp?.Width ?? proxy?.Width ?? gProxy?.Width ?? 0; set { width = value; } }
+        /// <summary>
+        /// Get height of graphics
+        /// </summary>
         public virtual int Height { get => height ?? bmp?.Height ?? proxy?.Height ?? gProxy?.Height ?? 0; set { height = value; } }
 
+        /// <summary>
+        /// Allow proxying graphics as another graphics(high level)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public virtual Graphics<Representation> Proxy(Rectangle r)
         {
             Graphics<Representation> instance;
@@ -742,6 +774,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             SetPixelInternal(p , px , py , true);
         }
+        /// <summary>
+        /// Helper to set pixel
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="px">X position</param>
+        /// <param name="py">Y position</param>
+        /// <param name="alpha">if pixel contains alpha</param>
         protected virtual void SetPixelInternal(Representation p , double px , double py , bool alpha)
         {
             int x,y;
@@ -776,7 +815,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Helper to set pixel
         /// </summary>
-        /// <param name="p">The color</param>
+        /// <param name="b">The color</param>
         /// <param name="px">X position</param>
         /// <param name="py">Y position</param>
         private void SetPixelInternal(Brush<Representation> b , double px , double py)
@@ -806,6 +845,12 @@ namespace MoyskleyTech.ImageProcessing.Image
 
                 }
         }
+        /// <summary>
+        /// Base Composing function
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="fromImage"></param>
+        /// <returns></returns>
         public static Pixel ComposingFunctionPixel(Pixel current , Pixel fromImage)
         {
             byte[] result = new byte[4];
@@ -815,6 +860,12 @@ namespace MoyskleyTech.ImageProcessing.Image
             result[3] = ( byte ) ( ( current.A * current.B + fromImage.B * ( 255 - current.A ) ) / 255 );
             return Pixel.FromArgb(result[0] , result[1] , result[2] , result[3]);
         }
+        /// <summary>
+        /// Base Composing function
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="fromImage"></param>
+        /// <returns></returns>
         public static ARGB_Float ComposingFunctionARGB_Float(ARGB_Float current , ARGB_Float fromImage)
         {
             float[] result = new float[4];
@@ -824,6 +875,12 @@ namespace MoyskleyTech.ImageProcessing.Image
             result[3] = ( float ) ( ( current.A * current.B + fromImage.B * (1- current.A ) ) );
             return new ARGB_Float { A = result[0] , R = result[1] , G = result[2] , B = result[3] };
         }
+        /// <summary>
+        /// Base Composing function
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="fromImage"></param>
+        /// <returns></returns>
         public static ARGB_16bit ComposingFunctionARGB_16bit(ARGB_16bit current , ARGB_16bit fromImage)
         {
             ushort[] result = new ushort[4];
@@ -1567,7 +1624,12 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             SetPixelInternal(p.GetColor(( int ) x , ( int ) y) , p1.X , p1.Y);
         }
-
+        /// <summary>
+        /// Transform a point using the matrix and get the new point
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="transformationMatrix"></param>
+        /// <returns></returns>
         public PointF TransformUsingMatrix(PointF a , Matrix transformationMatrix)
         {
             if ( PreTransformFunction != null )
@@ -1579,6 +1641,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                 a = PostTransformFunction(a);
             return a;
         }
+        /// <summary>
+        /// Transform a point using the matrix and get the new point
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public PointF TransformUsingMatrix(PointF a)
         {
             if ( PreTransformFunction != null )
@@ -1599,7 +1666,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return TransformUsingMatrix(new PointF(x , y));
         }
-
+        /// <summary>
+        /// Transform a point using the matrix and get the new point
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns></returns>
         public Point TransformUsingMatrix(Point a)
         {
             if ( PreTransformFunction != null )
@@ -1625,8 +1696,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="str">Text to write</param>
         /// <param name="p">The color</param>
-        /// <param name="x">X origin</param>
-        /// <param name="y">Y origin</param>
+        /// <param name="ox">X origin</param>
+        /// <param name="oy">Y origin</param>
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
@@ -1639,8 +1710,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="str">Text to write</param>
         /// <param name="p">The color</param>
-        /// <param name="x">X origin</param>
-        /// <param name="y">Y origin</param>
+        /// <param name="ox">X origin</param>
+        /// <param name="oy">Y origin</param>
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
@@ -1689,8 +1760,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="str">Text to write</param>
         /// <param name="p">The color</param>
-        /// <param name="x">X origin</param>
-        /// <param name="y">Y origin</param>
+        /// <param name="ox">X origin</param>
+        /// <param name="oy">Y origin</param>
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
@@ -1703,8 +1774,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="str">Text to write</param>
         /// <param name="p">The color</param>
-        /// <param name="x">X origin</param>
-        /// <param name="y">Y origin</param>
+        /// <param name="ox">X origin</param>
+        /// <param name="oy">Y origin</param>
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
@@ -2073,11 +2144,32 @@ namespace MoyskleyTech.ImageProcessing.Image
             mx = System.Math.Max(mx , x);
             return new StringMeasurement() { Height = y + mh * size , Width = mx };
         }
+        /// <summary>
+        /// Draw rotated ellipse
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="major"></param>
+        /// <param name="minor"></param>
+        /// <param name="angle"></param>
+        /// <param name="thickness"></param>
+        /// <param name="angleIncrement"></param>
         public virtual void DrawRotatedEllipse(Representation b , double x , double y , double major , double minor , double angle , int thickness = 0 , double angleIncrement = 0)
         {
             DrawRotatedEllipse(new SolidBrush<Representation>(b) , x , y , major , minor , angle , thickness , angleIncrement);
         }
-
+        /// <summary>
+        /// Draw rotated ellipse
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="major"></param>
+        /// <param name="minor"></param>
+        /// <param name="angle"></param>
+        /// <param name="thickness"></param>
+        /// <param name="angleIncrement"></param>
         public virtual void DrawRotatedEllipse(Brush<Representation> b , double x , double y , double major , double minor , double angle , int thickness = 0 , double angleIncrement = 0)
         {
             const double D_PI = System.Math.PI*2;
@@ -2089,11 +2181,30 @@ namespace MoyskleyTech.ImageProcessing.Image
             DrawPolygon(b , thickness , pts);
         }
 
+        /// <summary>
+        /// Fill rotated ellipse
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="major"></param>
+        /// <param name="minor"></param>
+        /// <param name="angle"></param>
+        /// <param name="angleIncrement"></param>
         public virtual void FillRotatedEllipse(Representation b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
         {
             FillRotatedEllipse(new SolidBrush<Representation>(b) , x , y , major , minor , angle , angleIncrement);
         }
-
+        /// <summary>
+        /// Fill rotated ellipse
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="major"></param>
+        /// <param name="minor"></param>
+        /// <param name="angle"></param>
+        /// <param name="angleIncrement"></param>
         public virtual void FillRotatedEllipse(Brush<Representation> b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
         {
             const double D_PI = System.Math.PI*2;
@@ -2115,6 +2226,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             return new PointF(xt , yt);
         }
         #region Transform
+        /// <summary>
+        /// Create matrix to project image from 4 points to 4 points
+        /// </summary>
+        /// <param name="src">4 points</param>
+        /// <param name="dst">4 points</param>
         public virtual void ProjectTransform(PointF[ ] src , PointF[ ] dst)
         {
             Matrix A = new Matrix(new double[,]{
@@ -2259,7 +2375,11 @@ namespace MoyskleyTech.ImageProcessing.Image
             PostTransformFunction = null;
         }
         #endregion
-
+        /// <summary>
+        /// Allow to obtain Representation as specified position
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
         protected Representation this[int m]
         {
             get
@@ -2277,6 +2397,12 @@ namespace MoyskleyTech.ImageProcessing.Image
                     proxy[m] = value;
             }
         }
+        /// <summary>
+        /// Allow to obtain Representation as specified position
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         protected Representation this[int x , int y]
         {
             get
