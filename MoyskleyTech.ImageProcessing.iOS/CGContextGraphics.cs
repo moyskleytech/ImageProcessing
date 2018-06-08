@@ -143,6 +143,14 @@ namespace MoyskleyTech.ImageProcessing.iOS
         {
             ctx.DrawImage(new CGRect(x , y , source.Width , source.Height) , source.ToCGBitmap().ToImage());
         }
+        public void DrawImage(CGImage source , int x , int y)
+        {
+            ctx.DrawImage(new CGRect(x , y , source.Width , source.Height) , source);
+        }
+        public void DrawImage(CGImage source , CGRect rect)
+        {
+            ctx.DrawImage(rect , source);
+        }
         public override void DrawLine(Pixel p , double x , double y , double x2 , double y2)
         {
             DrawLine(p , x , y , x2 , y2 , 1);
@@ -171,22 +179,7 @@ namespace MoyskleyTech.ImageProcessing.iOS
             ctx.AddLineToPoint(( nfloat ) x2 , ( nfloat ) y2);
             ctx.StrokePath();
         }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
+      
         public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             ResetContext();
@@ -252,7 +245,7 @@ namespace MoyskleyTech.ImageProcessing.iOS
         {
             DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py , bool alpha)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py , bool alpha)
         {
             FillRectangle(p , px , py , 1 , 1);
         }

@@ -96,7 +96,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.FillEllipse(brush , x , y , w , h);
             brush.Dispose();
         }
-        public override void DrawImage(MoyskleyTech.ImageProcessing.Image.Bitmap source , int x , int y)
+        public override void DrawImage(Image<Pixel> source , int x , int y)
         {
             var img=source.ToWinFormBitmap();
             ctx.DrawImage(img , x , y);
@@ -121,22 +121,6 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             var pen=ConvertToPen(p,thickness);
             ctx.DrawLine(pen , ( float ) x , ( float ) y , ( float ) x2 , ( float ) y2);
             pen.Dispose();
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
         public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
@@ -173,22 +157,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             DrawPolygon(p , 1 , points);
         }
-        public override void DrawString(string str , Pixel p , int x , int y , Font f , int size , StringFormat sf = null)
-        {
-            var brush = ConvertToBrush(p);
-            var font=new System.Drawing.Font(f.Name , size*FONT_FACTOR);
-            ctx.DrawString(str , font , brush , x , y , Convert(sf));
-            font.Dispose();
-            brush.Dispose();
-        }
-        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
-        {
-            var brush = ConvertToBrush(p);
-            var font=new System.Drawing.Font(f.Name , size*FONT_FACTOR);
-            ctx.DrawString(str , font , brush , x , y , Convert(sf));
-            font.Dispose();
-            brush.Dispose();
-        }
+        
         public override void DrawString(string str , Pixel p , int x , int y , Font f , float size , StringFormat sf = null)
         {
             var brush = ConvertToBrush(p);
@@ -215,7 +184,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             FillRectangle(p , x , y , 1 , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py , bool alpha)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py , bool alpha)
         {
             var brush = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(p.A,p.R,p.G,p.B));
             var mode = ctx.CompositingMode;
@@ -241,12 +210,18 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
         private System.Drawing.Pen ConvertToPen(Image.Pixel p , float width)
         {
-            return new System.Drawing.Pen(ConvertToColor(p) , width);
+            var pen=new System.Drawing.Pen(ConvertToColor(p) , width);
+            pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+            pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+            return pen;
         }
         private System.Drawing.Pen ConvertToPen(Image.Brush<Pixel> p , float width)
         {
             var brush = ConvertToBrush(p);
-            return new System.Drawing.Pen(brush , width);
+            var pen=new System.Drawing.Pen(brush , width);
+            pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+            pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+            return pen;
         }
 
         private System.Drawing.Brush ConvertToBrush(Image.Brush<Pixel> myBrush)
@@ -277,11 +252,15 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             if ( sf == null )
                 return new System.Drawing.StringFormat();
-            return new System.Drawing.StringFormat() { Alignment = Convert(sf.Alignment) , LineAlignment = Convert(sf.LineAlignment) };
+            return new System.Drawing.StringFormat() { Alignment = Convert(sf.Alignment) , LineAlignment = Convert(sf.LineAlignment), Trimming = Convert(sf.EllipsisMode) };
         }
         private System.Drawing.StringAlignment Convert(Image.StringAlignment alignment)
         {
             return ( System.Drawing.StringAlignment ) Enum.Parse(typeof(System.Drawing.StringAlignment) , alignment.ToString());
+        }
+        private System.Drawing.StringTrimming Convert(Image.EllipsisMode alignment)
+        {
+            return ( System.Drawing.StringTrimming ) Enum.Parse(typeof(System.Drawing.StringTrimming) , alignment.ToString());
         }
         private System.Drawing.PointF[ ] Convert(PointF[ ] pts)
         {
@@ -332,15 +311,62 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             font.Dispose();
             return ret;
         }
-        public override void DrawRectangle(Pixel p , Rectangle r)
+        public override void DrawRectangle(Brush<Pixel> p , double x , double y , double w , double h)
         {
             var pen = ConvertToPen(p , 1);
-            ctx.DrawRectangle(pen , r.X , r.Y , r.Width , r.Height);
+            ctx.DrawRectangle(pen , (float)x, ( float ) y , ( float ) w , ( float ) h);
             pen.Dispose();
+        }
+        public override void DrawRectangle(Brush<Pixel> p , double x , double y , double w , double h , int thick)
+        {
+            var pen = ConvertToPen(p , 1);
+            ctx.DrawRectangle(pen , ( float ) x , ( float ) y , ( float ) w , ( float ) h);
+            pen.Dispose();
+        }
+        public override void DrawRectangle(Pixel p , double x , double y , double w , double h)
+        {
+            var pen = ConvertToPen(p , 1);
+            ctx.DrawRectangle(pen , ( float ) x , ( float ) y , ( float ) w , ( float ) h);
+            pen.Dispose();
+        }
+        public override void DrawRectangle(Pixel p , double x , double y , double w , double h , int thick)
+        {
+            var pen = ConvertToPen(p , 1);
+            ctx.DrawRectangle(pen , ( float ) x , ( float ) y , ( float ) w , ( float ) h);
+            pen.Dispose();
+        }
+        public override void DrawString(string text , FontSizeF f , Brush<Pixel> color , Rectangle area , StringFormat sf)
+        {
+            var font=new System.Drawing.Font(f.Font.Name , f.Size*FONT_FACTOR);
+            var b = ConvertToBrush(color);
+            ctx.DrawString(text , font ,b , new System.Drawing.RectangleF(area.X , area.Y , area.Width , area.Height) , Convert(sf));
+            b.Dispose();
+            font.Dispose();
+        }
+        public override void DrawString(string text , FontSizeF f , Pixel color , Rectangle area , StringFormat sf)
+        {
+            var font=new System.Drawing.Font(f.Font.Name , f.Size*FONT_FACTOR);
+            var b = ConvertToBrush(color);
+            ctx.DrawString(text , font , b , new System.Drawing.RectangleF(area.X , area.Y , area.Width , area.Height) , Convert(sf));
+            b.Dispose();
+            font.Dispose();
         }
         public override void Dispose()
         {
             ctx.Dispose();
+        }
+        protected override Pixel this[int m] { get => Pixels.Black; set => base[m] = value; }
+        protected override Pixel this[int x , int y] { get => Pixels.Black; set => base[x , y] = value; }
+        public override ClipState SaveClipState()
+        {
+            var s= base.SaveClipState();
+            s.OtherState = ctx.Save();
+            return s;
+        }
+        public override void RestoreClipState(ClipState state)
+        {
+            base.RestoreClipState(state);
+            ctx.Restore(( System.Drawing.Drawing2D.GraphicsState ) state.OtherState);
         }
     }
 }

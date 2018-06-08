@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
-    public unsafe partial class Bitmap
+    public unsafe partial class Image<Representation>
     {
         /// <summary>
         /// Let resize a bitmap to a new size
@@ -15,7 +15,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="height">New height</param>
         /// <param name="mode">Mode</param>
         /// <returns>New bitmap</returns>
-        public Bitmap Resize(int width , int height , ScalingMode mode = ScalingMode.Auto)
+        public Image<Representation> Resize(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             return Rescale(width , height , mode);
         }
@@ -26,13 +26,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="height">New height</param>
         /// <param name="mode">Mode</param>
         /// <returns>New bitmap</returns>
-        public Bitmap Rescale(int width , int height , ScalingMode mode = ScalingMode.Auto)
+        public Image<Representation> Rescale(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             if ( width <= 0 )
                 throw new ArgumentException(nameof(width) + " cannot be less than 1");
             if ( height <= 0 )
                 throw new ArgumentException(nameof(height) + " cannot be less than 1");
-            Bitmap destination = new Bitmap(width,height);
+            Image<Representation> destination = Image<Representation>.Create(width,height);
 
             if ( mode == ScalingMode.Auto )
             {
@@ -73,7 +73,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return destination;
         }
-        private void RescaleAverage(Bitmap destination , bool interpolate = false)
+        private void RescaleAverage(Image<Representation> destination , bool interpolate = false)
         {
             double scaleX = (double)width / destination.width;
             double scaleY = (double)height / destination.height;
@@ -91,87 +91,17 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var dsey = ((y+1)*scaleY);
                     if ( interpolate && ( dsex - dsx < 1 || dsey - dsy < 1 ) )
                     {
-
-                        var dx = dsx-sx;
-                        var dy = dsy-sy;
-                        var dx2 = 1-dx;
-                        var dy2 = 1-dy;
-                        var ipx = this[sx,sy];
-                        double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
-                        if ( sx > 0 )
-                        {
-                            var px = this[sx - 1 , sy];
-                            sa += px.A * dx2;
-                            sr += px.R * dx2;
-                            sg += px.G * dx2;
-                            sb += px.B * dx2;
-                        }
-                        if ( sy > 0 )
-                        {
-                            var px=this[sx , sy - 1];
-                            sa += px.A * dy2;
-                            sr += px.R * dy2;
-                            sg += px.G * dy2;
-                            sb += px.B * dy2;
-                        }
-                        if ( sx < width - 1 )
-                        {
-                            var px = this[sex + 1 , sey];
-                            sa += px.A * dx;
-                            sr += px.R * dx;
-                            sg += px.G * dx;
-                            sb += px.B * dx;
-                        }
-                        if ( sy < height - 1 )
-                        {
-                            var px = this[sex  , sey+ 1];
-                            sa += px.A * dy;
-                            sr += px.R * dy;
-                            sg += px.G * dy;
-                            sb += px.B * dy;
-                        }
-                        Pixel destinationpx = new Pixel()
-                        {
-                            R = ( byte ) ( sr / 3 ),
-                            G = ( byte ) ( sg / 3 ),
-                            B = ( byte ) ( sb / 3 ),
-                            A = ( byte ) ( sa / 3 )
-                        };
+                        var destinationpx = this.Get(dsx , dsy);
 
                         destination[x , y] = destinationpx;
                     }
                     else
                     {
-                        if ( sex == sx )
+                        if ( sx == sex )
                             sex++;
-                        if ( sey == sy )
+                        if ( sy == sey )
                             sey++;
-                        ulong count=0;
-                        ulong acount=0;
-                        ulong sa=0,sr=0,sg=0,sb=0;
-                        for ( var i = sx; i < sex; i++ )
-                        {
-                            for ( var j = sy; j < sey; j++ )
-                            {
-                                count++;
-                                Pixel source = this[i,j];
-                                acount += source.A;
-                                sa += source.A;
-                                sr += source.R;
-                                sg += source.G;
-                                sb += source.B;
-                            }
-                        }
-                        Pixel destinationpx = new Pixel
-                        {
-                            A = ( byte ) ( sa / count )
-                        };
-                        if ( acount > 0 )
-                        {
-                            destinationpx.R = ( byte ) ( sr * 255 / acount );
-                            destinationpx.G = ( byte ) ( sg * 255 / acount );
-                            destinationpx.B = ( byte ) ( sb * 255 / acount );
-                        }
+                        var destinationpx = Average(sx,sy,sex-sx,sey-sy);
                         destination[x , y] = destinationpx;
                     }
                 }
@@ -184,11 +114,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="height">New height</param>
         /// <param name="mode">Mode</param>
         /// <returns>New bitmap</returns>
-        public Task<Bitmap> RescaleAsync(int width , int height , ScalingMode mode = ScalingMode.Auto)
+        public Task<Image<Representation>> RescaleAsync(int width , int height , ScalingMode mode = ScalingMode.Auto)
         {
             return Task.Run(() => Rescale(width , height , mode));
         }
-        private void RescaleLinearFromSourceH(Bitmap destination , ScalingMode verticalMode)
+        private void RescaleLinearFromSourceH(Image<Representation> destination , ScalingMode verticalMode)
         {
             var vmode = (ScalingMode)((int)verticalMode&0xFF00);
             double scaleX = (double)destination.width / width;
@@ -197,7 +127,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 RescaleV(destination , vmode , i , ( int ) ( i * scaleX ));
             }
         }
-        private void RescaleLinearFromDestinationH(Bitmap destination , ScalingMode verticalMode)
+        private void RescaleLinearFromDestinationH(Image<Representation> destination , ScalingMode verticalMode)
         {
             var vmode = (ScalingMode)((int)verticalMode&0xFF00);
             double scaleX = (double)width / destination.width;
@@ -206,7 +136,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 RescaleV(destination , vmode , ( int ) ( i * scaleX ) , i);
             }
         }
-        private void RescaleV(Bitmap destination , ScalingMode verticalMode , int sx , int ex)
+        private void RescaleV(Image<Representation> destination , ScalingMode verticalMode , int sx , int ex)
         {
             switch ( verticalMode )
             {
@@ -222,7 +152,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     break;
             }
         }
-        private void RescaleLinearFromSourceV(Bitmap destination , int sx , int ex)
+        private void RescaleLinearFromSourceV(Image<Representation> destination , int sx , int ex)
         {
             double scaleY = (double)destination.height / height;
             for ( var i = 0; i < height; i++ )
@@ -232,7 +162,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 destination[ex , ey] = this[sx , sy];
             }
         }
-        private void RescaleLinearFromDestinationV(Bitmap destination , int sx , int ex)
+        private void RescaleLinearFromDestinationV(Image<Representation> destination , int sx , int ex)
         {
             double scaleY = (double)height / destination.height;
             for ( var i = 0; i < destination.height; i++ )
@@ -247,9 +177,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public Bitmap GetSubBitmap(Rectangle location)
+        public Image<Representation> GetSubBitmap(Rectangle location)
         {
-            Bitmap bmp = new Bitmap(location.Width,location.Height);
+            Image<Representation> bmp = Image<Representation>.Create(location.Width,location.Height);
             for ( int x1 = 0, x = location.Left; x <= location.Right && x < width; x++, x1++ )
             {
                 for ( int y1 = 0, y = location.Top; y <= location.Bottom && y < height; y++, y1++ )
@@ -267,23 +197,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <returns></returns>
-        public Bitmap GetBitmap(int x , int y , int w , int h)
+        public Image<Representation> GetBitmap(int x , int y , int w , int h)
         {
             return GetSubBitmap(new Rectangle(x , y , w , h));
         }
+       
         /// <summary>
         /// Get a cropped version of image
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns></returns>
-        public new Bitmap Crop(Rectangle rectangle)
-        { return GetSubBitmap(rectangle); }
-        /// <summary>
-        /// Get a cropped version of image
-        /// </summary>
-        /// <param name="rectangle"></param>
-        /// <returns></returns>
-        public Bitmap Clone(Rectangle rectangle)
+        public Image<Representation> Clone(Rectangle rectangle)
         { return GetSubBitmap(rectangle); }
     }
 }

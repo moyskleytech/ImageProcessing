@@ -16,7 +16,7 @@ namespace MoyskleyTech.ImageProcessing.Android
         {
             ColorConvertAndroid.RegisterIfNot();
         }
-        public static G.Bitmap ToAndroidBitmap(this Image<Pixel> bmp)
+        public static G.Bitmap ToAndroidBitmap(this Bitmap bmp)
         {
             G.Bitmap bitmap = G.Bitmap.CreateBitmap(bmp.Width,bmp.Height, G.Bitmap.Config.Argb8888);
             bitmap.CopyFrom(bmp);
@@ -28,16 +28,16 @@ namespace MoyskleyTech.ImageProcessing.Android
             bmp.CopyFrom(src);
             return bmp;
         }
-        public static void CopyFrom(this G.Bitmap bitmap , Image<Pixel> bmp)
+        public static void CopyFrom(this G.Bitmap bitmap , Bitmap bmp)
         {
             var ptr = bitmap.LockPixels();
-            bmp.CopyTo(ptr);
+            bmp.CopyToRGBA(ptr);
             bitmap.UnlockPixels();
         }
         public static void CopyFrom(this Bitmap bmp,G.Bitmap src)
         {
             var ptr = src.LockPixels();
-            bmp.CopyFromABGR(ptr);
+            bmp.CopyFromRGBA(ptr);
             src.UnlockPixels();
         }
     }

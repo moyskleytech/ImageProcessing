@@ -14,23 +14,27 @@ using Graphics = System.Drawing.Graphics;
 using Braphics = MoyskleyTech.ImageProcessing.Image.Graphics;
 using Rectangle = MoyskleyTech.ImageProcessing.Image.Rectangle;
 using Font = MoyskleyTech.ImageProcessing.Image.Font;
+
 namespace WinFormDemo_Multiple_Test_
 {
     public partial class RPG : Form
     {
-        int WIDTH=>pbRPG.Width;
-        int HEIGHT=> pbRPG.Height;
+        int WIDTH => pbRPG.Width;
+        int HEIGHT => pbRPG.Height;
         int MESSAGE_TOP => HEIGHT - MESSAGE_HEIGHT;
-        int MESSAGE_HEIGHT=>Math.Min(200,HEIGHT/3);
+        int MESSAGE_HEIGHT => Math.Min(200 , HEIGHT / 3);
         const string FONT_NAME = "POKEMON GB";
         private Bitmap bmp;
         private Bitmap bmpTampon;
         private NativeGraphicsWrapper graphicsTampon;
         private Graphics graphics;
-        private Braphics messagePane;
+        private Graphics<Pixel> messagePane;
         private Rectangle messageArea;
         private Font rpgFont;
         private string txt;
+        private bool InButton=false;
+        private bool ButtonClicked=false;
+        
         public RPG()
         {
             InitializeComponent();
@@ -44,7 +48,7 @@ namespace WinFormDemo_Multiple_Test_
             CreateFrame();
             DisplayFrame();
         }
-
+        
         private void InitGraphics()
         {
             bmp?.Dispose();
@@ -58,12 +62,12 @@ namespace WinFormDemo_Multiple_Test_
             messageArea = messageArea = new Rectangle(0 , MESSAGE_TOP , WIDTH , MESSAGE_HEIGHT);
             graphics = Graphics.FromImage(bmp);
             graphicsTampon = new NativeGraphicsWrapper(Graphics.FromImage(bmpTampon));
-            messagePane = (Braphics)graphicsTampon.Proxy(messageArea);
+            messagePane = graphicsTampon.Proxy(messageArea);
         }
 
         private void ShowMessage(string message)
         {
-            graphicsTampon.FillRectangle(Pixels.DarkBlue , messageArea.X, messageArea.Y, messageArea.Width, messageArea.Height);
+            graphicsTampon.FillRectangle(Pixels.DarkBlue , messageArea.X , messageArea.Y , messageArea.Width , messageArea.Height);
             //messagePane.Clear(Pixels.DarkBlue);
             messagePane.DrawRectangle(Pixels.White , 1 , 1 , WIDTH - 2 , MESSAGE_HEIGHT - 2);
             var splitted = message.Split(' ');
@@ -73,28 +77,31 @@ namespace WinFormDemo_Multiple_Test_
             var line=0;
             var lineHeight = (int)messagePane.MeasureString(FONT_NAME,rpgFont,1).Height;
             var maxLineCount = (messageArea.Height-6)/lineHeight;
-            while ( idx < splitted.Length && line<maxLineCount )
+            while ( idx < splitted.Length && line < maxLineCount )
             {
-                while (sidx==idx ||( idx < splitted.Length && messagePane.MeasureString(str + " " + splitted[idx] , rpgFont , 1).Width < messageArea.Width - 6 ))
+                while ( sidx == idx || ( idx < splitted.Length && messagePane.MeasureString(str + " " + splitted[idx] , rpgFont , 1).Width < messageArea.Width - 6 ) )
                 {
-                    str += ((string.IsNullOrWhiteSpace(str))?"":" ") + splitted[idx];
+                    str += ( ( string.IsNullOrWhiteSpace(str) ) ? "" : " " ) + splitted[idx];
                     idx++;
                 }
-                messagePane.DrawString(str , Pixels.White , 3 , 3 + line*(lineHeight+1) , rpgFont , 1);
+                messagePane.DrawString(str , Pixels.White , 3 , 3 + line * ( lineHeight + 1 ) , rpgFont , 1);
                 line++;
                 sidx = idx;
                 str = "";
             }
-            
+
         }
         private void CreateFrame()
         {
             graphicsTampon.Clear(Pixels.Black);
-            ShowMessage(txt??"Welcome, this is a test message, very long test message that should get across multiple lines");
+            ShowMessage(txt ?? "Welcome, this is a test message, very long test message that should get across multiple lines");
         }
+
+
+        
         private void DisplayFrame()
         {
-            graphics.DrawImage(bmpTampon,0,0,WIDTH,HEIGHT);
+            graphics.DrawImage(bmpTampon , 0 , 0 , WIDTH , HEIGHT);
             pbRPG.Image = bmp;
             this.Invalidate();
         }
@@ -118,5 +125,27 @@ namespace WinFormDemo_Multiple_Test_
             CreateFrame();
             DisplayFrame();
         }
+
+        private void pbRPG_MouseDown(object sender , MouseEventArgs e)
+        {
+            CreateFrame();
+            DisplayFrame();
+        }
+
+        private void pbRPG_MouseMove(object sender , MouseEventArgs e)
+        {
+            CreateFrame();
+            DisplayFrame();
+        }
+
+
+
+        private void pbRPG_MouseUp(object sender , MouseEventArgs e)
+        {
+            CreateFrame();
+            DisplayFrame();
+        }
+
+
     }
 }

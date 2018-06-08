@@ -57,7 +57,9 @@
     <Compile Include="Duo.cs" />
     <Compile Include="Matrix\MatrixOFT.cs" />
     <Compile Include="Number\InpreciseNumber.cs" />
+    <Compile Include="Optimization\GraphOptimization.cs" />
     <Compile Include="Statistics\DescriptiveStatistics.cs" />
+    <Compile Include="Tools\MathFunctions.cs" />
     <Compile Include="XMeans.cs" />
     <Compile Include="KMeans.cs" />
     <Compile Include="Linq\LINQ.cs" />

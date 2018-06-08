@@ -116,7 +116,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( h != 0 && w != 0 )
             {
                 Bitmap src = new Bitmap((w*(int)(size+1))*2,(h*(int)(size+1)));
-                Bitmap bmp = new Bitmap((int)(w*size)*2,(int)(h*size));
+                Image<Pixel> bmp = Image<Pixel>.Create((int)(w*size)*2,(int)(h*size));
                 Graphics gSrc = Graphics.FromImage(src);
                 intState.size += 1;
                 gSrc.Clear(Pixels.Transparent);

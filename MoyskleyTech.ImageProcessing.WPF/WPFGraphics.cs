@@ -145,11 +145,18 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
-        public override void DrawImage(MoyskleyTech.ImageProcessing.Image.Bitmap source , int x , int y)
+        public override void DrawImage(Image<Pixel> source , int x , int y)
         {
             System.Windows.Controls.Image img = new System.Windows.Controls.Image();
             MemoryStream ms = new MemoryStream();
-            source.ToStream(ms);
+            if ( source is Bitmap bmp )
+                bmp.ToStream(ms);
+            else
+            {
+                var bmpS = (Bitmap)source.ConvertTo<Pixel>();
+                bmpS.ToStream(ms);
+                bmpS.Dispose();
+            }
 
             var imageSource = new System.Windows.Media.Imaging.BitmapImage();
             ms.Position = 0;
@@ -196,22 +203,6 @@ namespace MoyskleyTech.ImageProcessing.WPF
                 StrokeThickness = thickness
             };
             ctx.Children.Add(line);
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
         public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
@@ -288,7 +279,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             DrawPolygon(p , 1 , points);
         }
-        public override void DrawString(string str , Pixel p , int x , int y , Font f , int size , StringFormat sf = null)
+        public override void DrawString(string str , Pixel p , int x , int y , Font f , float size , StringFormat sf = null)
         {
             TextBlock tb = new TextBlock
             {
@@ -300,9 +291,8 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetLeft(tb , x);
             Canvas.SetTop(tb , y);
             ctx.Children.Add(tb);
-
         }
-        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
+        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , float size , StringFormat sf = null)
         {
             TextBlock tb = new TextBlock
             {
@@ -323,7 +313,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py , bool alpha)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py , bool alpha)
         {
             FillRectangle(p , px , py , 1 , 1);
         }

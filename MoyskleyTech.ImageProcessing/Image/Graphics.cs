@@ -51,22 +51,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         private Graphics(int u):base(u)
         {
         }
-        /// <summary>
-        /// Allow draw of bitmap in graphics
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        public virtual void DrawImage(Bitmap source , int x , int y)
-        {
-            DrawImage((Image<Pixel>) source , x , y);
-        }
+       
         /// <summary>
         /// Draw image in bitmap
         /// </summary>
         /// <param name="source">Source</param>
         /// <param name="dest">X origin</param>
-        public virtual void DrawImage(Bitmap source , Rectangle dest)
+        public virtual void DrawImage(Image<Pixel> source , Rectangle dest)
         {
             var tmp = source.Resize(dest.Width , dest.Height, ScalingMode.AverageInterpolate);
             DrawImage(( Image<Pixel> ) tmp , dest.X , dest.Y);
@@ -78,12 +69,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="source">Source</param>
         /// <param name="dest">X origin</param>
         /// <param name="src">Y origin</param>
-        public virtual void DrawImage(Bitmap source , Rectangle dest , Rectangle src)
+        public virtual void DrawImage(Image<Pixel> source , Rectangle dest , Rectangle src)
         {
             var tmp = source.Crop(src);
             DrawImage(tmp , dest);
             tmp.Dispose();
         }
+
+       
     }
 }
 

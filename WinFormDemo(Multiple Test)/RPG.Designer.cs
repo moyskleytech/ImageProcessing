@@ -40,6 +40,9 @@
             this.pbRPG.Size = new System.Drawing.Size(524, 382);
             this.pbRPG.TabIndex = 0;
             this.pbRPG.TabStop = false;
+            this.pbRPG.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbRPG_MouseDown);
+            this.pbRPG.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbRPG_MouseMove);
+            this.pbRPG.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbRPG_MouseUp);
             // 
             // RPG
             // 

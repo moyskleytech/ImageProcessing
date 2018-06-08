@@ -60,13 +60,13 @@ namespace MoyskleyTech.ImageProcessing.Android
             }
             if ( myBrush is RadialGradientBrush rgb )
             {
-                paint.SetShader(new G.RadialGradient(rgb.SourceLocation.X, rgb.SourceLocation.Y ,(float)rgb.Radius, G.Color.Argb(rgb.SourceColor.A , rgb.SourceColor.R , rgb.SourceColor.G , rgb.SourceColor.B) , G.Color.Argb(rgb.FinalColor.A , rgb.FinalColor.R , rgb.FinalColor.G , rgb.FinalColor.B) , G.Shader.TileMode.Clamp));
+                paint.SetShader(new G.RadialGradient(rgb.SourceLocation.X , rgb.SourceLocation.Y , ( float ) rgb.Radius , G.Color.Argb(rgb.SourceColor.A , rgb.SourceColor.R , rgb.SourceColor.G , rgb.SourceColor.B) , G.Color.Argb(rgb.FinalColor.A , rgb.FinalColor.R , rgb.FinalColor.G , rgb.FinalColor.B) , G.Shader.TileMode.Clamp));
                 return paint;
             }
             paint.SetARGB(0 , 0 , 0 , 0);
             return paint;
         }
-       
+
         private G.Paint ConvertFill(Brush<Pixel> p , double x , double y)
         {
             var paint = Convert(p,x,y);
@@ -82,6 +82,7 @@ namespace MoyskleyTech.ImageProcessing.Android
             if ( src.Shader != null )
                 p.SetShader(src.Shader);
             p.StrokeWidth = thickness;
+            p.SetStyle(src.GetStyle());
             return p;
         }
 
@@ -159,7 +160,19 @@ namespace MoyskleyTech.ImageProcessing.Android
         }
         public override void DrawImage(Image<Pixel> source , int x , int y)
         {
-            ctx.DrawBitmap(source.ToAndroidBitmap() , x , y , null);
+            if ( source is Bitmap b )
+                ctx.DrawBitmap(b.ToAndroidBitmap() , x , y , null);
+            else
+            {
+                Bitmap bitmap = new Bitmap(source.Width,source.Height);
+                bitmap.CopyFrom(source.DataPointer);
+                ctx.DrawBitmap(bitmap.ToAndroidBitmap() , x , y , null);
+                bitmap.Dispose();
+            }
+        }
+        public void DrawImage(G.Bitmap source , int x , int y)
+        {
+            ctx.DrawBitmap(source , x , y , null);
         }
         public override void DrawLine(Pixel p , double x , double y , double x2 , double y2)
         {
@@ -177,28 +190,11 @@ namespace MoyskleyTech.ImageProcessing.Android
         {
             ctx.DrawLine(( float ) x , ( float ) y , ( float ) x2 , ( float ) y2 , Stroke(Convert(p , x , y) , thickness));
         }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
         public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             G.Path wallpath = GetPath(points);
             ctx.DrawPath(wallpath , ConvertFill(p , 0 , 0));
         }
-
         private static G.Path GetPath(PointF[ ] points)
         {
             G.Path wallpath = new G.Path();
@@ -248,7 +244,7 @@ namespace MoyskleyTech.ImageProcessing.Android
         {
             DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py , bool alpha)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py , bool alpha)
         {
             FillRectangle(p , px , py , 1 , 1);
         }
@@ -256,6 +252,29 @@ namespace MoyskleyTech.ImageProcessing.Android
         {
 
         }
-
+        protected override Pixel this[int m]
+        {
+            get
+            {
+                return Pixels.Black;
+            }
+            set
+            {
+                SetPixelWithoutTransform(value , m % width.Value , m / width.Value);
+            }
+        }
+        protected override Pixel this[int x , int y]
+        {
+            get
+            {
+                return Pixels.Black;
+            }
+            set
+            {
+                SetPixelWithoutTransform(value , x , y);
+            }
+        }
+        public override int Height { get => ctx.Height; set { } }
+        public override int Width { get => ctx.Width; set { } }
     }
 }

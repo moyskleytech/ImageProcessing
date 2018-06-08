@@ -45,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Maze.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Maze.Designer.cs">
+      <DependentUpon>Maze.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -59,11 +65,23 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CustomForms.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomForms.Designer.cs">
+      <DependentUpon>CustomForms.cs</DependentUpon>
+    </Compile>
     <Compile Include="RPG.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="RPG.Designer.cs">
       <DependentUpon>RPG.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Scaling.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Scaling.Designer.cs">
+      <DependentUpon>Scaling.cs</DependentUpon>
     </Compile>
     <Compile Include="SpeedTest.cs">
       <SubType>Form</SubType>
@@ -71,6 +89,9 @@
     <Compile Include="SpeedTest.Designer.cs">
       <DependentUpon>SpeedTest.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Maze.resx">
+      <DependentUpon>Maze.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -86,8 +107,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CustomForms.resx">
+      <DependentUpon>CustomForms.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RPG.resx">
       <DependentUpon>RPG.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scaling.resx">
+      <DependentUpon>Scaling.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpeedTest.resx">
       <DependentUpon>SpeedTest.cs</DependentUpon>

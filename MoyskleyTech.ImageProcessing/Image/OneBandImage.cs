@@ -27,6 +27,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
         }
         /// <summary>
+        /// Create a bitmap using Width and Height
+        /// </summary>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <param name="p">Height</param>
+        public OneBandImage(IntPtr p , int w , int h) : base(p,w , h)
+        {
+            
+        }
+        /// <summary>
         /// Create a bitmap using Width and Height and source from RGBA format
         /// </summary>
         /// <param name="w">Width</param>

@@ -10,7 +10,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
 {
     public static class BitmapHelper
     {
-        public static System.Drawing.Bitmap ToWinFormBitmap(this Bitmap bmp)
+        public static System.Drawing.Bitmap ToWinFormBitmap(this Image<Pixel> bmp)
         {
             System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             dest.CopyFrom(bmp);
@@ -22,13 +22,13 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             bmp.CopyFrom(src);
             return bmp;
         }
-        public static void CopyFrom(this System.Drawing.Bitmap dest , Bitmap bmp)
+        public static void CopyFrom(this System.Drawing.Bitmap dest , Image<Pixel> bmp)
         {
             var loc = dest.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             bmp.CopyToBGRA(loc.Scan0);
             dest.UnlockBits(loc);
         }
-        public static void CopyFrom(this Bitmap dest,System.Drawing.Bitmap bmp)
+        public static void CopyFrom(this Image<Pixel> dest ,System.Drawing.Bitmap bmp)
         {
             var loc = bmp.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             dest.CopyFromBGRA(loc.Scan0);

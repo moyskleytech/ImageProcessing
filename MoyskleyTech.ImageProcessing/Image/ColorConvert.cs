@@ -9,24 +9,13 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <summary>
     /// All operation relative to convertion of colors
     /// </summary>
-    public static class ColorConvert
+    public static partial class ColorConvert
     {
 #pragma warning disable CS1591
         private class Transition
         {
             public Func<object , object> action;
             public double quality;
-        }
-        private class ConvertedBrush<T, V>:Brush<V>
-            where T:struct
-            where V:struct
-        {
-            public Brush<T> brush;
-            public Func<T,V> converter;
-            public override V GetColor(int x , int y)
-            {
-                return converter(brush.GetColor(x , y));
-            }
         }
         private static Dictionary<Type,Dictionary<Type,Transition>> transitions = new Dictionary<Type, Dictionary<Type, Transition>>();
         public static Func<T , V> GetConversionFrom<T, V>()
@@ -131,7 +120,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             if ( b is SolidBrush<T> a )
                 return a.As<V>();
-            return new ConvertedBrush<T,V>() { brush = b , converter = GetConversionFrom<T , V>() };
+            return new ConvertedBrush<T,V>() { Brush = b , Converter = GetConversionFrom<T , V>() };
         }
         public static Image<V> Convert<T, V>(Image<T> b)
            where T : struct
@@ -170,6 +159,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             RegisterTransition<_332 , Pixel>(ToPixel , 1);
             RegisterTransition<ARGB_16bit , Pixel>(ToPixel, 0.5);
             RegisterTransition<ARGB_Float , Pixel>(ToPixel, 0.5);
+            RegisterTransition<RGBA , Pixel>(ToPixel , 1);
+            RegisterTransition<BGRA , Pixel>(ToPixel , 1);
+            RegisterTransition<ARGB , Pixel>(ToPixel , 1);
+            RegisterTransition<ABGR , Pixel>(ToPixel , 1);
 
             RegisterTransition<HSB_Float , HSL>(ToHSL , 1);
 
@@ -202,6 +195,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             RegisterTransition<Pixel , BGR>(ToBGR , 0.75);
             RegisterTransition<bool , BGR>(ToBGR , 1);
             RegisterTransition<byte , BGR>(ToBGR , 1);
+
+            RegisterTransition<Pixel , RGBA>(ToRGBA , 1);
+
+            RegisterTransition<Pixel , ARGB>(ToARGB , 1);
+
+            RegisterTransition<Pixel , BGRA>(ToBGRA , 1);
+
+            RegisterTransition<Pixel , ABGR>(ToABGR , 1);
 
             RegisterTransition<Pixel , _332>(To_332 , 0.1);
 
@@ -422,6 +423,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static Pixel ToPixel(this RGB src)
         {
             return Pixel.FromArgb(255 , src.R , src.G , src.B);
+        }
+        public static Pixel ToPixel(this RGBA src)
+        {
+            return Pixel.FromArgb(src.A , src.R , src.G , src.B);
+        }
+        public static Pixel ToPixel(this ARGB src)
+        {
+            return Pixel.FromArgb(src.A , src.R , src.G , src.B);
+        }
+        public static Pixel ToPixel(this BGRA src)
+        {
+            return Pixel.FromArgb(src.A , src.R , src.G , src.B);
+        }
+        public static Pixel ToPixel(this ABGR src)
+        {
+            return Pixel.FromArgb(src.A , src.R , src.G , src.B);
         }
         public static Pixel ToPixel(this _332 p)
         {
@@ -836,6 +853,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         #endregion
         #region helper
+        public static ARGB ToARGB(this Pixel src)
+        {
+            return new ARGB() {A = src.A, R = src.R , G = src.G , B = src.B };
+        }
+        public static RGBA ToRGBA(this Pixel src)
+        {
+            return new RGBA() { A = src.A , R = src.R , G = src.G , B = src.B };
+        }
+        public static ABGR ToABGR(this Pixel src)
+        {
+            return new ABGR() { A = src.A , R = src.R , G = src.G , B = src.B };
+        }
+        public static BGRA ToBGRA(this Pixel src)
+        {
+            return new BGRA() { A = src.A , R = src.R , G = src.G , B = src.B };
+        }
         public static float ToFloat(this ARGB_Float src)
         {
             return src.GetGrayTone();

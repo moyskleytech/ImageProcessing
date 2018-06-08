@@ -21,11 +21,11 @@ namespace MoyskleyTech.ImageProcessing.Android
         {
             return new AndroidBitmapGraphics() { bitmap = bmp };
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py)
         {
             bitmap.SetPixel((int)px , ( int )py , G.Color.Argb(p.A , p.R , p.G , p.B));
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py,bool alpha)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py,bool alpha)
         {
             if ( alpha )
             {

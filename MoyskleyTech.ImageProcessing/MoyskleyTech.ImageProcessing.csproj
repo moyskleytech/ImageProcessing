@@ -56,14 +56,36 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form\BaseControl.cs" />
+    <Compile Include="Form\ControlRendering.cs" />
+    <Compile Include="Form\Control\CheckBox.cs" />
+    <Compile Include="Form\Control\Button.cs" />
+    <Compile Include="Form\Control\BlockPanel.cs" />
+    <Compile Include="Form\Control\Picture.cs" />
+    <Compile Include="Form\Control\TrackBar.cs" />
+    <Compile Include="Form\Control\ProgressBar.cs" />
+    <Compile Include="Form\Control\Label.cs" />
+    <Compile Include="Form\Control\Panel.cs" />
+    <Compile Include="Form\Control\Window.cs" />
+    <Compile Include="Form\PictureRenderer.cs" />
+    <Compile Include="Form\PanelRenderer.cs" />
+    <Compile Include="Form\LabelRenderer.cs" />
+    <Compile Include="Form\WindowRenderer.cs" />
+    <Compile Include="Form\ProgressBarRenderer.cs" />
+    <Compile Include="Form\CheckBoxBase.cs" />
+    <Compile Include="Form\ButtonBase.cs" />
+    <Compile Include="Form\IControl.cs" />
+    <Compile Include="Form\IRenderer.cs" />
     <Compile Include="Image\BaseFonts.cs" />
     <Compile Include="Image\BitmapInvert.cs" />
     <Compile Include="Image\BitmapAddition.cs" />
-    <Compile Include="Image\BitmapScalingHighRange.cs" />
     <Compile Include="Image\BitmapSubstract.cs" />
+    <Compile Include="Image\ClipState.cs" />
     <Compile Include="Image\ColorConvert.cs" />
+    <Compile Include="Image\ConvertedBrush.cs" />
     <Compile Include="Image\Filters\Filters.cs" />
     <Compile Include="Image\FormattedTextGraphicsOf.cs" />
+    <Compile Include="Image\GraphicsHelper.cs" />
     <Compile Include="Image\GraphicsOf.cs" />
     <Compile Include="Image\Image.cs" />
     <Compile Include="Image\ImageProxy.cs" />
@@ -76,7 +98,7 @@
     <Compile Include="Image\BitmapFactory.cs" />
     <Compile Include="Image\BitmapPalette4bpp.cs" />
     <Compile Include="Image\BitmapPalette8bpp.cs" />
-    <Compile Include="Image\BitmapScaling.cs" />
+    <Compile Include="Image\ImageScaling.cs" />
     <Compile Include="Image\Brush.cs" />
     <Compile Include="Image\BufferedStream.cs" />
     <Compile Include="Image\ContentAlignment.cs" />
@@ -101,6 +123,8 @@
     <Compile Include="Image\SpecializedBrushes\AlphaBrush.cs" />
     <Compile Include="Image\SpecializedBrushes\NoiseBrush.cs" />
     <Compile Include="Image\StringFormat.cs" />
+    <Compile Include="Image\StringMeasurement.cs" />
+    <Compile Include="Image\TypeProxyGraphics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Image\RotateFlipType.cs" />
     <Compile Include="Specialized\LightTrailBuilder.cs" />

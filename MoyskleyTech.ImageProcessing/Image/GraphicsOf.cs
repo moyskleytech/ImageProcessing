@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using MoyskleyTech.Mathematics;
 using MoyskleyTech.ImageProcessing.Image.Helper;
 using System.Reflection;
+using static MoyskleyTech.ImageProcessing.Image.GraphicsHelper;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
     /// <summary>
     /// PCL Portability to System.Drawing.Graphics
     /// </summary>
-    public partial class Graphics<Representation> : IDisposable
-        where Representation : struct
+    public partial class Graphics<Representation> : IDisposable where Representation : struct
     {
         /// <summary>
         /// The bitmap where to draw(null if proxy)
@@ -62,6 +62,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns>Return null if not applicable</returns>
         public static Graphics<Representation> FromImage(Image<Representation> bmp)
         {
+            if ( bmp.Disposed )
+                throw new ObjectDisposedException(nameof(bmp));
             Graphics<Representation> instance;
             instance = new Graphics<Representation>(1)
             {
@@ -70,6 +72,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             instance.ResetClip();
             return instance;
         }
+
         /// <summary>
         /// Create a Graphics object from image
         /// </summary>
@@ -97,7 +100,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             CompositionFunction = (x , y) => x;
 
             if ( typeof(Representation) == typeof(Pixel) )
-                CompositionFunction = (x , y) => (Representation)(object)ComposingFunctionPixel(( Pixel ) (object)x , ( Pixel ) ( object ) y);
+                CompositionFunction = (x , y) => ( Representation ) ( object ) ComposingFunctionPixel(( Pixel ) ( object ) x , ( Pixel ) ( object ) y);
             if ( typeof(Representation) == typeof(ARGB_16bit) )
                 CompositionFunction = (x , y) => ( Representation ) ( object ) ComposingFunctionARGB_16bit(( ARGB_16bit ) ( object ) x , ( ARGB_16bit ) ( object ) y);
             if ( typeof(Representation) == typeof(ARGB_Float) )
@@ -168,6 +171,25 @@ namespace MoyskleyTech.ImageProcessing.Image
             clipPolygon = null;
             clipPolygonConstant = null;
             clipPolygonMultiple = null;
+        }
+
+        public virtual ClipState SaveClipState()
+        {
+            ClipState state = new ClipState
+            {
+                clip = clip ,
+                clipPolygon = ( PointF[ ] ) clipPolygon?.Clone() ,
+                clipPolygonConstant = ( double[ ] ) clipPolygonConstant?.Clone() ,
+                clipPolygonMultiple = ( double[ ] ) clipPolygonMultiple?.Clone()
+            };
+            return state;
+        }
+        public virtual void RestoreClipState(ClipState state)
+        {
+            clip = state.clip;
+            clipPolygon = ( PointF[ ] ) state.clipPolygon?.Clone();
+            clipPolygonConstant = ( double[ ] ) state.clipPolygonConstant?.Clone();
+            clipPolygonMultiple = ( double[ ] ) state.clipPolygonMultiple?.Clone();
         }
         /// <summary>
         /// Get the transformation matrix for editing purpose
@@ -255,7 +277,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="pos">Position</param>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
-        public virtual void DrawRectangle(Representation p , PointF pos , int w , int h)
+        public void DrawRectangle(Representation p , PointF pos , int w , int h)
         {
             DrawRectangle(p , pos.X , pos.Y , w , h);
         }
@@ -266,7 +288,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="pos">Position</param>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
-        public virtual void DrawRectangle(Brush<Representation> p , PointF pos , int w , int h)
+        public void DrawRectangle(Brush<Representation> p , PointF pos , int w , int h)
         {
             DrawRectangle(p , pos.X , pos.Y , w , h);
         }
@@ -274,8 +296,30 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Draw a rectangle of the specified color
         /// </summary>
         /// <param name="p">The color</param>
+        /// <param name="pos">Position</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        public void DrawRectangle(Representation p , PointF pos , SizeF h)
+        {
+            DrawRectangle(p , pos.X , pos.Y , h.Width , h.Height);
+        }
+        /// <summary>
+        /// Draw a rectangle of the specified color
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="pos">Position</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        public void DrawRectangle(Brush<Representation> p , PointF pos , SizeF h)
+        {
+            DrawRectangle(p , pos.X , pos.Y , h.Width , h.Height);
+        }
+        /// <summary>
+        /// Draw a rectangle of the specified color
+        /// </summary>
+        /// <param name="p">The color</param>
         /// <param name="r">The rectangle</param>
-        public virtual void DrawRectangle(Representation p , Rectangle r)
+        public void DrawRectangle(Representation p , Rectangle r)
         {
             DrawRectangle(p , r.X , r.Y , r.Width , r.Height);
         }
@@ -284,7 +328,25 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="p">The color</param>
         /// <param name="r">The rectangle</param>
-        public virtual void DrawRectangle(Brush<Representation> p , Rectangle r)
+        public void DrawRectangle(Brush<Representation> p , Rectangle r)
+        {
+            DrawRectangle(p , r.X , r.Y , r.Width , r.Height);
+        }
+        /// <summary>
+        /// Draw a rectangle of the specified color
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="r">The rectangle</param>
+        public void DrawRectangle(Representation p , RectangleF r)
+        {
+            DrawRectangle(p , r.X , r.Y , r.Width , r.Height);
+        }
+        /// <summary>
+        /// Draw a rectangle of the specified color
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="r">The rectangle</param>
+        public void DrawRectangle(Brush<Representation> p , RectangleF r)
         {
             DrawRectangle(p , r.X , r.Y , r.Width , r.Height);
         }
@@ -318,7 +380,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="points">Points describing the polygon</param>
         public virtual void DrawPolygon(Representation p , int thickness , params PointF[ ] points)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 DrawPolygon(p , points);
             else
             {
@@ -335,7 +397,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="points">Points describing the polygon</param>
         public virtual void DrawPolygon(Brush<Representation> p , int thickness , params PointF[ ] points)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 DrawPolygon(p , points);
             else
             {
@@ -344,12 +406,66 @@ namespace MoyskleyTech.ImageProcessing.Image
                 DrawLine(p , points[0] , points[points.Length - 1] , thickness);
             }
         }
+
         /// <summary>
         /// Draw a polygon outline
         /// </summary>
         /// <param name="p">The color</param>
         /// <param name="points">Points describing the polygon</param>
-        public virtual void DrawPolygon(Representation p , IEnumerable<PointF> points)
+        public virtual void DrawPath(Representation p , params PointF[ ] points)
+        {
+            for ( var i = 0; i < points.Length - 1; i++ )
+                DrawLine(p , points[i] , points[i + 1]);
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="points">Points describing the polygon</param>
+        public virtual void DrawPath(Brush<Representation> p , params PointF[ ] points)
+        {
+            for ( var i = 0; i < points.Length - 1; i++ )
+                DrawLine(p , points[i] , points[i + 1]);
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="thickness">Thickness of outline</param>
+        /// <param name="points">Points describing the polygon</param>
+        public virtual void DrawPath(Representation p , int thickness , params PointF[ ] points)
+        {
+            if ( thickness <= 1 )
+                DrawPath(p , points);
+            else
+            {
+                for ( var i = 0; i < points.Length - 1; i++ )
+                    DrawLine(p , points[i] , points[i + 1] , thickness);
+            }
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="thickness">Thickness of outline</param>
+        /// <param name="points">Points describing the polygon</param>
+        public virtual void DrawPath(Brush<Representation> p , int thickness , params PointF[ ] points)
+        {
+            if ( thickness <= 1 )
+                DrawPath(p , points);
+            else
+            {
+                for ( var i = 0; i < points.Length - 1; i++ )
+                    DrawLine(p , points[i] , points[i + 1] , thickness);
+            }
+        }
+
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPolygon(Representation p , IEnumerable<PointF> points)
         {
             DrawPolygon(p , points.ToArray());
         }
@@ -358,7 +474,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="p">The color</param>
         /// <param name="points">Points describing the polygon</param>
-        public virtual void DrawPolygon(Brush<Representation> p , IEnumerable<PointF> points)
+        public void DrawPolygon(Brush<Representation> p , IEnumerable<PointF> points)
         {
             DrawPolygon(p , points.ToArray());
         }
@@ -368,7 +484,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="thickness">Thickness of outline</param>
         /// <param name="points">Points describing the polygon</param>
-        public virtual void DrawPolygon(Representation p , int thickness , IEnumerable<PointF> points)
+        public void DrawPolygon(Representation p , int thickness , IEnumerable<PointF> points)
         {
             DrawPolygon(p , thickness , points.ToArray());
         }
@@ -378,9 +494,48 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="thickness">Thickness of outline</param>
         /// <param name="points">Points describing the polygon</param>
-        public virtual void DrawPolygon(Brush<Representation> p , int thickness , IEnumerable<PointF> points)
+        public void DrawPolygon(Brush<Representation> p , int thickness , IEnumerable<PointF> points)
         {
             DrawPolygon(p , thickness , points.ToArray());
+        }
+
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPath(Representation p , IEnumerable<PointF> points)
+        {
+            DrawPath(p , points.ToArray());
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPath(Brush<Representation> p , IEnumerable<PointF> points)
+        {
+            DrawPath(p , points.ToArray());
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="thickness">Thickness of outline</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPath(Representation p , int thickness , IEnumerable<PointF> points)
+        {
+            DrawPath(p , thickness , points.ToArray());
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="thickness">Thickness of outline</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPath(Brush<Representation> p , int thickness , IEnumerable<PointF> points)
+        {
+            DrawPath(p , thickness , points.ToArray());
         }
         /// <summary>
         /// Fill the rectangle using the specified color
@@ -563,6 +718,16 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
+        /// <summary>
+        /// Draw image in bitmap
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public void DrawImage(Image<Representation> source , Point pt)
+        {
+            DrawImage(source , pt.X , pt.Y);
+        }
 
         /// <summary>
         /// Draw a line
@@ -609,7 +774,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="thickness">Thickness of line</param>
         public virtual void DrawLine(Representation p , double x , double y , double x2 , double y2 , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 DrawLine(p , x , y , x2 , y2);
             else
                 DrawLineBeforeTransform(p , x , y , x2 , y2 , thickness);
@@ -625,7 +790,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="thickness">Thickness of line</param>
         public virtual void DrawLine(Brush<Representation> p , double x , double y , double x2 , double y2 , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 0 )
                 DrawLine(p , x , y , x2 , y2);
             else
                 DrawLineBeforeTransform(p , x , y , x2 , y2 , thickness);
@@ -702,7 +867,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
-        public virtual void DrawLine(Representation p , PointF p1 , PointF p2)
+        public void DrawLine(Representation p , PointF p1 , PointF p2)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y);
         }
@@ -712,7 +877,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
-        public virtual void DrawLine(Brush<Representation> p , PointF p1 , PointF p2)
+        public void DrawLine(Brush<Representation> p , PointF p1 , PointF p2)
         {
             DrawLine(p , p1.X , p1.Y , p2.X , p2.Y);
         }
@@ -723,12 +888,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
         /// <param name="thickness">Thickness of line</param>
-        public virtual void DrawLine(Representation p , PointF p1 , PointF p2 , int thickness)
+        public void DrawLine(Representation p , PointF p1 , PointF p2 , int thickness)
         {
-            if ( thickness == 0 )
-                DrawLine(p , p1.X , p1.Y , p2.X , p2.Y);
-            else
-                DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
+            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
         /// <summary>
         /// Draw line
@@ -737,12 +899,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
         /// <param name="thickness">Thickness of line</param>
-        public virtual void DrawLine(Brush<Representation> p , PointF p1 , PointF p2 , int thickness)
+        public void DrawLine(Brush<Representation> p , PointF p1 , PointF p2 , int thickness)
         {
-            if ( thickness == 0 )
-                DrawLine(p , p1.X , p1.Y , p2.X , p2.Y);
-            else
-                DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
+            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
         }
         /// <summary>
         /// Clear the Bitmap using specified color
@@ -770,9 +929,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="px">X position</param>
         /// <param name="py">Y position</param>
-        protected virtual void SetPixelInternal(Representation p , double px , double py)
+        public virtual void SetPixelWithoutTransform(Representation p , double px , double py)
         {
-            SetPixelInternal(p , px , py , true);
+            SetPixelWithoutTransform(p , px , py , true);
+        }
+        public void SetPixelWithoutTransform(Representation p , PointF pt)
+        {
+            SetPixelWithoutTransform(p , pt.X , pt.Y);
         }
         /// <summary>
         /// Helper to set pixel
@@ -781,7 +944,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="px">X position</param>
         /// <param name="py">Y position</param>
         /// <param name="alpha">if pixel contains alpha</param>
-        protected virtual void SetPixelInternal(Representation p , double px , double py , bool alpha)
+        public virtual void SetPixelWithoutTransform(Representation p , double px , double py , bool alpha)
         {
             int x,y;
             x = ( int ) px;
@@ -791,7 +954,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             {
                 if ( gProxy != null )
                 {
-                    gProxy.SetPixelInternal(p , px + this.x.Value , py + this.y.Value , alpha);
+                    gProxy.SetPixelWithoutTransform(p , px + this.x.Value , py + this.y.Value , alpha);
                 }
                 else
                 {
@@ -800,6 +963,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                     this[x , y] = CompositionFunction(that , fromImage);
                 }
             }
+        }
+        public void SetPixelWithoutTransform(Representation p , PointF pt , bool alpha)
+        {
+            SetPixelWithoutTransform(p , pt.X , pt.Y , alpha);
         }
         private bool IsInClipRange(int x , int y)
         {
@@ -834,7 +1001,7 @@ namespace MoyskleyTech.ImageProcessing.Image
 
                     if ( gProxy != null )
                     {
-                        gProxy.SetPixelInternal(b.GetColor(x , y) , px + this.x.Value , py + this.y.Value , alpha);
+                        gProxy.SetPixelWithoutTransform(b.GetColor(x , y) , px + this.x.Value , py + this.y.Value , alpha);
                     }
                     Representation p = b.GetColor(x,y);
                     {
@@ -870,9 +1037,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             float[] result = new float[4];
             result[0] = ( float ) System.Math.Max(current.A , fromImage.A);
-            result[1] = ( float ) ( ( current.A * current.R + fromImage.R * (1- current.A ) ) );
-            result[2] = ( float ) ( ( current.A * current.G + fromImage.G * (1- current.A ) ) );
-            result[3] = ( float ) ( ( current.A * current.B + fromImage.B * (1- current.A ) ) );
+            result[1] = ( float ) ( ( current.A * current.R + fromImage.R * ( 1 - current.A ) ) );
+            result[2] = ( float ) ( ( current.A * current.G + fromImage.G * ( 1 - current.A ) ) );
+            result[3] = ( float ) ( ( current.A * current.B + fromImage.B * ( 1 - current.A ) ) );
             return new ARGB_Float { A = result[0] , R = result[1] , G = result[2] , B = result[3] };
         }
         /// <summary>
@@ -885,7 +1052,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             ushort[] result = new ushort[4];
             result[0] = ( ushort ) System.Math.Max(current.A , fromImage.A);
-            result[1] = ( ushort ) ( ( current.A * current.R + fromImage.R * ( 1 - current.A ) )/ushort.MaxValue );
+            result[1] = ( ushort ) ( ( current.A * current.R + fromImage.R * ( 1 - current.A ) ) / ushort.MaxValue );
             result[2] = ( ushort ) ( ( current.A * current.G + fromImage.G * ( 1 - current.A ) ) / ushort.MaxValue );
             result[3] = ( ushort ) ( ( current.A * current.B + fromImage.B * ( 1 - current.A ) ) / ushort.MaxValue );
             return new ARGB_16bit { A = result[0] , R = result[1] , G = result[2] , B = result[3] };
@@ -915,21 +1082,21 @@ namespace MoyskleyTech.ImageProcessing.Image
 
                 if ( dx < 0 )
                     for ( var i = x2; i < x1; i++ )
-                        SetPixelInternal(p , i , y2 + dydx * ( i - x2 ));
+                        SetPixelWithoutTransform(p , i , y2 + dydx * ( i - x2 ));
                 else
                     for ( var i = x1; i < x2; i++ )
-                        SetPixelInternal(p , i , y1 + dydx * ( i - x1 ));
+                        SetPixelWithoutTransform(p , i , y1 + dydx * ( i - x1 ));
 
                 if ( dy < 0 )
                     for ( var i = y2; i < y1; i++ )
-                        SetPixelInternal(p , x2 + dxdy * ( i - y2 ) , i);
+                        SetPixelWithoutTransform(p , x2 + dxdy * ( i - y2 ) , i);
                 else
                     for ( var i = y1; i < y2; i++ )
-                        SetPixelInternal(p , x1 + dxdy * ( i - y1 ) , i);
+                        SetPixelWithoutTransform(p , x1 + dxdy * ( i - y1 ) , i);
             }
             else if ( LineMode == LineMode.FourConnex )
             {
-                SetPixelInternal(p , x1 , y1);
+                SetPixelWithoutTransform(p , x1 , y1);
                 while ( y1 != y2 || x2 != x1 )
                 {
                     var options = new List<Point>(4)
@@ -942,12 +1109,12 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var pt = FindBestOption(x2,y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
-                    SetPixelInternal(p , x1 , y1);
+                    SetPixelWithoutTransform(p , x1 , y1);
                 }
             }
             else if ( LineMode == LineMode.EightConnex )
             {
-                SetPixelInternal(p , x1 , y1);
+                SetPixelWithoutTransform(p , x1 , y1);
                 while ( y1 != y2 || x2 != x1 )
                 {
                     var options = new List<Point>(8)
@@ -965,7 +1132,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var pt = FindBestOption(x2,y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
-                    SetPixelInternal(p , x1 , y1);
+                    SetPixelWithoutTransform(p , x1 , y1);
                 }
             }
         }
@@ -1107,7 +1274,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="thickness">Thickness of outline</param>
         public virtual void DrawCircle(Representation p , int x0 , int y0 , double r , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
             {
                 DrawCircle(p , x0 , y0 , r);
                 return;
@@ -1128,7 +1295,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="thickness">Thickness of outline</param>
         public virtual void DrawCircle(Brush<Representation> p , int x0 , int y0 , double r , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
             {
                 DrawCircle(p , x0 , y0 , r);
                 return;
@@ -1140,6 +1307,52 @@ namespace MoyskleyTech.ImageProcessing.Image
 
         }
         /// <summary>
+        /// Draw circle outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="r">Radius</param>
+        public void DrawCircle(Representation p , Point pt , double r)
+        {
+            DrawCircle(p , pt.X , pt.Y , r);
+        }
+        /// <summary>
+        /// Draw circle outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="r">Radius</param>
+        public void DrawCircle(Brush<Representation> p , Point pt , double r)
+        {
+            DrawCircle(p , pt.X , pt.Y , r);
+        }
+        /// <summary>
+        /// Draw circle outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="r">Radius</param>
+        /// <param name="thickness">Thickness of outline</param>
+        public void DrawCircle(Representation p , Point pt , double r , int thickness)
+        {
+            DrawCircle(p , pt.X , pt.Y , r , thickness);
+        }
+        /// <summary>
+        /// Draw circle outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="r">Radius</param>
+        /// <param name="thickness">Thickness of outline</param>
+        public void DrawCircle(Brush<Representation> p , Point pt , double r , int thickness)
+        {
+            DrawCircle(p , pt.X , pt.Y , r , thickness);
+        }
+        /// <summary>
         /// Fill circle
         /// </summary>
         /// <param name="p">The color</param>
@@ -1149,10 +1362,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         public virtual void FillCircle(Representation p , int x0 , int y0 , double r)
         {
             Point px = TransformUsingMatrix(x0,y0);
+            if ( r <= 1 )
+                SetPixel(p , x0 , y0);
+            else
+            {
+                var poly = GetCirclePolygon(x0 , y0 , r);
 
-            var poly = GetCirclePolygon(x0 , y0 , r);
-
-            FillPolygon(p , poly);
+                FillPolygon(p , poly);
+            }
         }
         /// <summary>
         /// Fill circle
@@ -1164,10 +1381,37 @@ namespace MoyskleyTech.ImageProcessing.Image
         public virtual void FillCircle(Brush<Representation> p , int x0 , int y0 , double r)
         {
             Point px = TransformUsingMatrix(x0,y0);
+            if ( r <= 1 )
+                SetPixel(p , x0 , y0);
+            else
+            {
+                var poly = GetCirclePolygon(x0 , y0 , r);
 
-            var poly = GetCirclePolygon(x0 , y0 , r);
+                FillPolygon(p , poly);
+            }
+        }
 
-            FillPolygon(p , poly);
+        /// <summary>
+        /// Fill circle
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="r">Radius</param>
+        public void FillCircle(Representation p , Point pt , double r)
+        {
+            FillCircle(p , pt.X , pt.Y , r);
+        }
+        /// <summary>
+        /// Fill circle
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x0">X center</param>
+        /// <param name="y0">Y center</param>
+        /// <param name="r">Radius</param>
+        public void FillCircle(Brush<Representation> p , Point pt , double r)
+        {
+            FillCircle(p , pt.X , pt.Y , r);
         }
         /// <summary>
         /// Fill Ellipse(circle)
@@ -1179,8 +1423,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void FillEllipse(Representation p , int x , int y , int w , int h)
         {
-            var poly = GetEllipse(x , y , w,h);
+            var poly = GetEllipsePolygon(x , y , w,h);
             FillPolygon(p , poly);
+        }
+        public void FillEllipse(Representation p , Point pt , int w , int h)
+        {
+            FillEllipse(p , pt.X , pt.Y , w , h);
+        }
+        public void FillEllipse(Representation p , Point pt , Size s)
+        {
+            FillEllipse(p , pt.X , pt.Y , s.Width , s.Height);
         }
         /// <summary>
         /// Fill Ellipse(circle)
@@ -1192,7 +1444,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void FillEllipse(Brush<Representation> p , int x , int y , int w , int h)
         {
-            var poly = GetEllipse(x , y , w,h);
+            var poly = GetEllipsePolygon(x , y , w,h);
             FillPolygon(p , poly);
         }
         /// <summary>
@@ -1205,7 +1457,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void DrawEllipse(Representation p , int x , int y , int w , int h)
         {
-            var poly = GetEllipse(x , y , w,h);
+            var poly = GetEllipsePolygon(x , y , w,h);
             DrawPolygon(p , poly);
         }
         /// <summary>
@@ -1218,8 +1470,32 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h">Height</param>
         public virtual void DrawEllipse(Brush<Representation> p , int x , int y , int w , int h)
         {
-            var poly = GetEllipse(x , y , w,h);
+            var poly = GetEllipsePolygon(x , y , w,h);
             DrawPolygon(p , poly);
+        }
+        /// <summary>
+        /// Draw Ellipse(circle)
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x">X center</param>
+        /// <param name="y">Y center</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        public void DrawEllipse(Brush<Representation> p , Point pt , int w , int h)
+        {
+            DrawEllipse(p , pt.X , pt.Y , w , h);
+        }
+        /// <summary>
+        /// Draw Ellipse(circle)
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x">X center</param>
+        /// <param name="y">Y center</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        public void DrawEllipse(Brush<Representation> p , Point pt , Size s)
+        {
+            DrawEllipse(p , pt.X , pt.Y , s.Width , s.Height);
         }
         /// 
         /// <summary>
@@ -1233,13 +1509,39 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="t">Thickness of outline</param>
         public virtual void DrawEllipse(Representation p , int x , int y , int w , int h , int t)
         {
-            if ( t == 0 )
+            if ( t <= 1 )
                 DrawEllipse(p , x , y , w , h);
             else
             {
-                var poly = GetEllipse(x , y , w,h);
+                var poly = GetEllipsePolygon(x , y , w,h);
                 DrawPolygon(p , t , poly);
             }
+        }
+        /// <summary>
+        /// Draw Ellipse(circle)
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x">X center</param>
+        /// <param name="y">Y center</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <param name="t">Thickness of outline</param>
+        public void DrawEllipse(Representation p , Point pt , int w , int h , int t)
+        {
+            DrawEllipse(p , pt.X , pt.Y , w , h , t);
+        }
+        /// <summary>
+        /// Draw Ellipse(circle)
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x">X center</param>
+        /// <param name="y">Y center</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <param name="t">Thickness of outline</param>
+        public void DrawEllipse(Representation p , Point pt , Size s , int t)
+        {
+            DrawEllipse(p , pt.X , pt.Y , s.Width , s.Height , t);
         }
         /// 
         /// <summary>
@@ -1253,11 +1555,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="t">Thickness of outline</param>
         public virtual void DrawEllipse(Brush<Representation> p , int x , int y , int w , int h , int t)
         {
-            if ( t == 0 )
+            if ( t <= 1 )
                 DrawEllipse(p , x , y , w , h);
             else
             {
-                var poly = GetEllipse(x , y , w,h);
+                var poly = GetEllipsePolygon(x , y , w,h);
                 DrawPolygon(p , t , poly);
             }
         }
@@ -1279,6 +1581,22 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return poly2;
         }
+        public IEnumerable<PointF> DrawPie(Representation p , Point pt , double r , double spanAngle , double startAngle)
+        {
+            return DrawPie(p , pt.X , pt.Y , r , spanAngle , startAngle);
+        }
+        public IEnumerable<PointF> DrawPie(Representation p , Point pt , double r , double spanAngle , double startAngle , int thickness)
+        {
+            return DrawPie(p , pt.X , pt.Y , r , spanAngle , startAngle , thickness);
+        }
+        public IEnumerable<PointF> DrawPie(Representation p , Point pt , Size s , double spanAngle , double startAngle)
+        {
+            return DrawPie(p , pt.X , pt.Y , s.Width , s.Height , spanAngle , startAngle);
+        }
+        public IEnumerable<PointF> DrawPie(Representation p , Point pt , Size s , double spanAngle , double startAngle , int thickness)
+        {
+            return DrawPie(p , pt.X , pt.Y , s.Width , s.Height , spanAngle , startAngle , thickness);
+        }
         /// <summary>
         /// Draw pie
         /// </summary>
@@ -1296,6 +1614,10 @@ namespace MoyskleyTech.ImageProcessing.Image
             DrawPolygon(p , poly2);
 
             return poly2;
+        }
+        public IEnumerable<PointF> DrawPie(Brush<Representation> p , Point pt , double r , double spanAngle , double startAngle)
+        {
+            return DrawPie(p , pt.X , pt.Y , r , spanAngle , startAngle);
         }
         /// <summary>
         /// Draw pie
@@ -1316,6 +1638,7 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return poly2;
         }
+
         /// <summary>
         /// Draw pie
         /// </summary>
@@ -1335,6 +1658,14 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return poly2;
         }
+        public IEnumerable<PointF> DrawPie(Brush<Representation> p , Point pt , Size s , double spanAngle , double startAngle)
+        {
+            return DrawPie(p , pt.X , pt.Y , s.Width , s.Height , spanAngle , startAngle);
+        }
+        public IEnumerable<PointF> DrawPie(Brush<Representation> p , Point pt , Size s , double spanAngle , double startAngle , int thickness)
+        {
+            return DrawPie(p , pt.X , pt.Y , s.Width , s.Height , spanAngle , startAngle , thickness);
+        }
         /// <summary>
         /// Draw pie
         /// </summary>
@@ -1348,7 +1679,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns>Polygon describing the pie</returns>
         public virtual IEnumerable<PointF> DrawPie(Representation p , int x0 , int y0 , double r , double spanAngle , double startAngle , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 return DrawPie(p , x0 , y0 , r , spanAngle , startAngle);
             else
             {
@@ -1370,7 +1701,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns>Polygon describing the pie</returns>
         public virtual IEnumerable<PointF> DrawPie(Brush<Representation> p , int x0 , int y0 , double r , double spanAngle , double startAngle , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 return DrawPie(p , x0 , y0 , r , spanAngle , startAngle);
             else
             {
@@ -1378,6 +1709,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 DrawPolygon(p , thickness , poly2);
                 return poly2;
             }
+        }
+        public IEnumerable<PointF> DrawPie(Brush<Representation> p , Point pt , double r , double spanAngle , double startAngle , int thickness)
+        {
+            return DrawPie(p , pt.X , pt.Y , r , spanAngle , startAngle , thickness);
         }
         /// <summary>
         /// Draw pie
@@ -1393,7 +1728,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns>Polygon describing the pie</returns>
         public virtual IEnumerable<PointF> DrawPie(Representation p , int x0 , int y0 , double w , double h , double spanAngle , double startAngle , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 return DrawPie(p , x0 , y0 , w , spanAngle , startAngle);
             else
             {
@@ -1416,7 +1751,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns>Polygon describing the pie</returns>
         public virtual IEnumerable<PointF> DrawPie(Brush<Representation> p , int x0 , int y0 , double w , double h , double spanAngle , double startAngle , int thickness)
         {
-            if ( thickness == 0 )
+            if ( thickness <= 1 )
                 return DrawPie(p , x0 , y0 , w , spanAngle , startAngle);
             else
             {
@@ -1439,6 +1774,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             PointF[ ] poly2 = GetPiePolygon(x0 , y0 , r,r , spanAngle , startAngle);
 
             FillPolygon(p , poly2);
+        }
+        public void FillPie(Representation p , Point pt , double r , double spanAngle , double startAngle)
+        {
+            FillPie(p , pt.X , pt.Y , r , spanAngle , startAngle);
+        }
+        public void FillPie(Brush<Representation> p , Point pt , double r , double spanAngle , double startAngle)
+        {
+            FillPie(p , pt.X , pt.Y , r , spanAngle , startAngle);
         }
         /// <summary>
         /// Fill pie
@@ -1471,6 +1814,22 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             FillPolygon(p , poly2);
         }
+        public void FillPie(Representation p , Point pt , double w , double h , double spanAngle , double startAngle)
+        {
+            FillPie(p , pt.X , pt.Y , w , h , spanAngle , startAngle);
+        }
+        public void FillPie(Representation p , Point pt , SizeF h , double spanAngle , double startAngle)
+        {
+            FillPie(p , pt.X , pt.Y , h.Width,h.Height , spanAngle , startAngle);
+        }
+        public void FillPie(Brush<Representation> p , Point pt , double w , double h , double spanAngle , double startAngle)
+        {
+            FillPie(p , pt.X , pt.Y , w , h , spanAngle , startAngle);
+        }
+        public void FillPie(Brush<Representation> p , Point pt , SizeF h , double spanAngle , double startAngle)
+        {
+            FillPie(p , pt.X , pt.Y , h.Width , h.Height , spanAngle , startAngle);
+        }
         /// <summary>
         /// Fill pie
         /// </summary>
@@ -1487,116 +1846,21 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             FillPolygon(p , poly2);
         }
+
+
         /// <summary>
-        /// Helper to get the polygin describing a Pie
+        /// Set the pixel with specified color
         /// </summary>
-        /// <param name="x0">X center of circle</param>
-        /// <param name="y0">Y center of circle</param>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        /// <param name="spanAngle">Span of angle</param>
-        /// <param name="startAngle">Start angle</param>
-        /// <returns></returns>
-        private PointF[ ] GetPiePolygon(int x0 , int y0 , double w , double h , double spanAngle , double startAngle)
+        /// <param name="p">The color</param>
+        /// <param name="x">X position</param>
+        /// <param name="y">Y position</param>
+        public void SetPixel(Representation p , Point pt)
         {
-            var poly = GetEllipse(x0-(int)w/2 , y0-(int)h/2 , (int)w,(int)h);
-            var count = poly.Length;
-
-            int start = (int)System.Math.Ceiling(startAngle/2/System.Math.PI*count);
-            int take = (int)System.Math.Ceiling(spanAngle/2/System.Math.PI*count+1);
-            var center= new PointF[ ] { new PointF(x0 , y0) };
-            var poly2 = center.Concat(Reduce(new CircularArray<PointF>(poly).Skip(start).Take(take),w)).Concat(center).ToArray();
-
-            return poly2;
+            SetPixel(p , pt.X , pt.Y);
         }
-        /// <summary>
-        /// Helper to get circle
-        /// </summary>
-        /// <param name="x0">X center</param>
-        /// <param name="y0">Y center</param>
-        /// <param name="r">Radius</param>
-        /// <returns></returns>
-        public static PointF[ ] GetCirclePolygon(int x0 , int y0 , double r)
+        public void SetPixel(Brush<Representation> p , Point pt)
         {
-            LinkedList<PointF> points = new LinkedList<PointF>();
-
-            double f = 1 - r;
-            double ddF_x = 1;
-            double ddF_y = -2 * r;
-            double x = 0;
-            double y = r;
-
-            points.AddLast(new PointF(x0 , y0 + r));
-            points.AddLast(new PointF(x0 , y0 - r));
-            points.AddLast(new PointF(x0 + r , y0));
-            points.AddLast(new PointF(x0 - r , y0));
-
-            while ( x < y )
-            {
-                if ( f >= 0 )
-                {
-                    y--;
-                    ddF_y += 2;
-                    f += ddF_y;
-                }
-                x++;
-                ddF_x += 2;
-                f += ddF_x;
-
-                points.AddLast(new PointF(x0 + x , y0 + y));
-                points.AddLast(new PointF(x0 - x , y0 + y));
-                points.AddLast(new PointF(x0 + x , y0 - y));
-                points.AddLast(new PointF(x0 - x , y0 - y));
-                points.AddLast(new PointF(x0 + y , y0 + x));
-                points.AddLast(new PointF(x0 - y , y0 + x));
-                points.AddLast(new PointF(x0 + y , y0 - x));
-                points.AddLast(new PointF(x0 - y , y0 - x));
-            }
-
-            var part1 = (points.Where((p)=>p.Y>y0).OrderBy((p) => p.X));
-            var part2 = (points.Where((p)=>p.Y<=y0).OrderBy((p) => -p.X));
-            var ret = part2.Concat(part1).ToArray();
-
-
-            return ret;
-        }
-        private PointF[ ] GetEllipse(int x , int y , int w , int h)
-        {
-            var min=System.Math.Min(w , h);
-            var points =GetCirclePolygon(w/2 , h/2 , min);
-            for ( var i = 0; i < points.Length; i++ )
-            {
-                points[i].X = points[i].X * w / min;
-                points[i].Y = points[i].Y * h / min;
-                points[i].X += x;
-                points[i].Y += y;
-            }
-            return points;
-        }
-        /// <summary>
-        /// Reduce the number of item from an array using radius
-        /// </summary>
-        /// <typeparam name="T">Type</typeparam>
-        /// <param name="input">input array</param>
-        /// <param name="r">Radius</param>
-        /// <returns>Reduced array</returns>
-        private IEnumerable<T> Reduce<T>(IEnumerable<T> input , double r)
-        {
-            int i=0;
-            r = ( int ) r / 8;
-            int len = input.Count();
-
-            var enumerator = input.GetEnumerator();
-            enumerator.MoveNext();
-            yield return enumerator.Current;
-            i = 1;
-            while ( enumerator.MoveNext() )
-            {
-                var p = enumerator.Current;
-                i++;
-                if ( i == len || i % r == 0 )
-                    yield return p;
-            }
+            SetPixel(p , pt.X , pt.Y);
         }
         /// <summary>
         /// Set the pixel with specified color
@@ -1609,7 +1873,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             var p1 = new PointF(x,y);
             p1 = TransformUsingMatrix(p1);
 
-            SetPixelInternal(p , p1.X , p1.Y);
+            SetPixelWithoutTransform(p , p1.X , p1.Y);
         }
         /// <summary>
         /// Set the pixel with specified color
@@ -1622,7 +1886,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             var p1 = new PointF(x,y);
             p1 = TransformUsingMatrix(p1);
 
-            SetPixelInternal(p.GetColor(( int ) x , ( int ) y) , p1.X , p1.Y);
+            SetPixelWithoutTransform(p.GetColor(( int ) x , ( int ) y) , p1.X , p1.Y);
         }
         /// <summary>
         /// Transform a point using the matrix and get the new point
@@ -1701,7 +1965,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
-        public virtual void DrawString(string str , Representation p , int ox , int oy , Font f , int size , StringFormat sf = null)
+        public void DrawString(string str , Representation p , int ox , int oy , Font f , int size , StringFormat sf = null)
         {
             DrawString(str , p , ox , oy , f , ( float ) size , sf);
         }
@@ -1755,6 +2019,129 @@ namespace MoyskleyTech.ImageProcessing.Image
                 DrawString(str , p , ( int ) x , ( int ) y , f , size);
             }
         }
+        public virtual void DrawString(string text , FontSizeF font , Representation foreColor , Rectangle textBound , StringFormat textAlign)
+        {
+            DrawString(text , font , new SolidBrush<Representation>(foreColor) , textBound , textAlign);
+        }
+        public virtual void DrawString(string text , FontSizeF font , Brush<Representation> color , Rectangle area , StringFormat sf)
+        {
+            var PixelColor = ColorConvert.Convert<Representation,Pixel>(color);
+
+            text = GetTextToDisplayInRect(text , font , sf , area);
+            var textSize = MeasureStringImageProcessing(text,font.Font,font.Size);
+            var oclip = clip;
+            var oclipPolygon = clipPolygon;
+            clip = area;
+            clipPolygon = null;
+            float x = area.X;
+            float y =area.Y;
+            var f= font.Font;
+
+            if ( sf.Alignment == StringAlignment.Center )
+                x = ( int ) ( ( area.X + area.Width / 2 ) - textSize.Width / 2 );
+            else if ( sf.Alignment == StringAlignment.Far )
+                x = ( int ) ( area.Right - textSize.Width );
+
+            if ( sf.LineAlignment == StringAlignment.Center )
+                y = ( int ) ( ( area.Y + area.Height / 2 ) - textSize.Height / 2 );
+            else if ( sf.LineAlignment == StringAlignment.Far )
+                y = ( int ) ( area.Bottom - textSize.Height );
+
+
+            var size = font.Size;
+            float ox=x;
+            float oy=y;
+
+            var lines = text.Split((char)10);
+            foreach ( var line in lines )
+            {
+                var lineMeasure= MeasureStringImageProcessing(line,f,font.Size);
+                x = ox;
+                if ( sf.Alignment == StringAlignment.Center )
+                    x = ( int ) ( ( area.X + area.Width / 2 ) - lineMeasure.Width / 2 );
+                else if ( sf.Alignment == StringAlignment.Far )
+                    x = ( int ) ( area.Right - lineMeasure.Width );
+
+                foreach ( char c in line )
+                {
+                    bool[,] character = f.GetChar(c);
+                    x += DrawFormattedCharInternalF(character , x , y , new Text.FormattedChar() { Color = PixelColor , Size = size });
+                }
+                y += lineMeasure.Height;
+            }
+
+            clip = oclip;
+            clipPolygon = oclipPolygon;
+        }
+        private string GetTextToDisplayInRect(string text , FontSizeF font , StringFormat format , Rectangle area)
+        {
+            if ( text == null )
+                return text;
+            if ( format.EllipsisMode == EllipsisMode.None )
+                return text;
+            if ( format.EllipsisMode == EllipsisMode.Word )
+            {
+                int textPos=0;
+                char separator=' ';
+                char[] separators = new char[]{' ','.',',',';',':','[',']','-','!','+','*','/','\\','<','>','?','\'','"','{','}','~','(',')'};
+                bool endText=false;
+                string token=string.Empty;
+                string getToken()
+                {
+                    token = string.Empty;
+                    while ( textPos < text.Length && !separators.Contains(text[textPos]) )
+                    {
+                        token += text[textPos++];
+                    }
+                    if ( textPos == text.Length )
+                        endText = true;
+                    else
+                        separator = text[textPos++];
+                    return token;
+                }
+                var currentLine="";
+                var line=0;
+                getToken();
+                List<string> lines=new List<string>();
+                if ( endText )
+                    return token;
+                while ( !endText )
+                {
+                    do
+                    {
+                        currentLine += token + separator;
+                        getToken();
+                    } while ( !endText && MeasureStringImageProcessing(currentLine + token + separator , font.Font , font.Size).Width < area.Width );
+                    lines.Add(currentLine);
+                    currentLine = "";
+                    line++;
+                }
+                return string.Join("\r\n" , lines);
+            }
+            else if ( format.EllipsisMode == EllipsisMode.Character )
+            {
+                int textPos=0;
+                var currentLine="";
+                List<string> lines=new List<string>();
+                while ( textPos < text.Length )
+                {
+                    var token= text[textPos++];
+                    if (/*Character fit on line*/MeasureStringImageProcessing(currentLine + token , font.Font , font.Size).Width < area.Width || currentLine.Length <= 1 )
+                    {
+                        currentLine += token;
+                    }
+                    else
+                    {
+                        lines.Add(currentLine);
+                        currentLine = token.ToString();
+                    }
+                }
+                if ( currentLine != null )
+                    lines.Add(currentLine);
+                return string.Join("\r\n" , lines);
+            }
+            return null;
+        }
         /// <summary>
         /// Write specifie text in bitmap
         /// </summary>
@@ -1765,7 +2152,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="f">The Font</param>
         /// <param name="size">The Font Size</param>
         /// <param name="sf">[optional]String format(top left if missing)</param>
-        public virtual void DrawString(string str , Brush<Representation> p , int ox , int oy , Font f , int size , StringFormat sf = null)
+        public void DrawString(string str , Brush<Representation> p , int ox , int oy , Font f , int size , StringFormat sf = null)
         {
             DrawString(str , p , ox , oy , f , ( float ) size , sf);
         }
@@ -1798,7 +2185,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                         mh = 0;
                     }
                     else
-                        x += DrawFormattedCharInternalF(character , x , y , new Text.FormattedChar() { Color = (PixelColor) , Size = size });
+                        x += DrawFormattedCharInternalF(character , x , y , new Text.FormattedChar() { Color = ( PixelColor ) , Size = size });
                 }
             }
             else
@@ -1826,7 +2213,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public virtual void DrawString(string str , FontSize fs , Representation p , int x , int y)
+        public void DrawString(string str , FontSize fs , Representation p , int x , int y)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1840,7 +2227,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public virtual void DrawString(string str , FontSizeF fs , Representation p , int x , int y)
+        public void DrawString(string str , FontSizeF fs , Representation p , int x , int y)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1854,7 +2241,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public virtual void DrawString(string str , FontSize fs , Brush<Representation> p , int x , int y)
+        public void DrawString(string str , FontSize fs , Brush<Representation> p , int x , int y)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1868,7 +2255,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public virtual void DrawString(string str , FontSizeF fs , Brush<Representation> p , int x , int y)
+        public void DrawString(string str , FontSizeF fs , Brush<Representation> p , int x , int y)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1881,7 +2268,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="fs">Font and size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , FontSize fs , Representation p , PointF pt)
+        public void DrawString(string str , FontSize fs , Representation p , PointF pt)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1894,7 +2281,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="fs">Font and size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , FontSizeF fs , Representation p , PointF pt)
+        public void DrawString(string str , FontSizeF fs , Representation p , PointF pt)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1907,7 +2294,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="fs">Font and size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , FontSize fs , Brush<Representation> p , PointF pt)
+        public void DrawString(string str , FontSize fs , Brush<Representation> p , PointF pt)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1920,7 +2307,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="fs">Font and size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , FontSizeF fs , Brush<Representation> p , PointF pt)
+        public void DrawString(string str , FontSizeF fs , Brush<Representation> p , PointF pt)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1934,7 +2321,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
         /// <param name="sf">Stringformat specifing position</param>
-        public virtual void DrawString(string str , FontSize fs , Representation p , PointF pt , StringFormat sf)
+        public void DrawString(string str , FontSize fs , Representation p , PointF pt , StringFormat sf)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1948,7 +2335,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
         /// <param name="sf">Stringformat specifing position</param>
-        public virtual void DrawString(string str , FontSizeF fs , Representation p , PointF pt , StringFormat sf)
+        public void DrawString(string str , FontSizeF fs , Representation p , PointF pt , StringFormat sf)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1962,7 +2349,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
         /// <param name="sf">Stringformat specifing position</param>
-        public virtual void DrawString(string str , FontSize fs , Brush<Representation> p , PointF pt , StringFormat sf)
+        public void DrawString(string str , FontSize fs , Brush<Representation> p , PointF pt , StringFormat sf)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1976,7 +2363,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
         /// <param name="sf">Stringformat specifing position</param>
-        public virtual void DrawString(string str , FontSizeF fs , Brush<Representation> p , PointF pt , StringFormat sf)
+        public void DrawString(string str , FontSizeF fs , Brush<Representation> p , PointF pt , StringFormat sf)
         {
             Font f = fs.Font;
             var size=fs.Size;
@@ -1990,7 +2377,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="size">Font size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , Representation p , PointF pt , Font f , int size)
+        public void DrawString(string str , Representation p , PointF pt , Font f , int size)
         {
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
@@ -2002,7 +2389,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="size">Font size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , Representation p , PointF pt , Font f , float size)
+        public void DrawString(string str , Representation p , PointF pt , Font f , float size)
         {
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
@@ -2014,7 +2401,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="size">Font size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , Brush<Representation> p , PointF pt , Font f , int size)
+        public void DrawString(string str , Brush<Representation> p , PointF pt , Font f , int size)
         {
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
@@ -2026,7 +2413,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="size">Font size</param>
         /// <param name="p">The color</param>
         /// <param name="pt">Origin</param>
-        public virtual void DrawString(string str , Brush<Representation> p , PointF pt , Font f , float size)
+        public void DrawString(string str , Brush<Representation> p , PointF pt , Font f , float size)
         {
             DrawString(str , p , ( int ) pt.X , ( int ) pt.Y , f , size);
         }
@@ -2107,14 +2494,15 @@ namespace MoyskleyTech.ImageProcessing.Image
             transformationMatrix = null;
         }
         /// <summary>
-        /// Struct to represent measure of text
+        /// Measure space used for specified string
         /// </summary>
-        public struct StringMeasurement
+        /// <param name="str">Text</param>
+        /// <param name="f">Font</param>
+        /// <param name="size">Font size</param>
+        /// <returns>Width and Height</returns>
+        public virtual StringMeasurement MeasureString(String str , Font f , float size)
         {
-            /// <summary>
-            /// Measures
-            /// </summary>
-            public float Width,Height;
+            return MeasureStringImageProcessing(str , f , size);
         }
         /// <summary>
         /// Measure space used for specified string
@@ -2123,7 +2511,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="f">Font</param>
         /// <param name="size">Font size</param>
         /// <returns>Width and Height</returns>
-        public virtual StringMeasurement MeasureString(String str , Font f , float size)
+        private static StringMeasurement MeasureStringImageProcessing(string str , Font f , float size)
         {
             float x=0,y=0;
             float mh = 0,mx=0;
@@ -2144,6 +2532,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             mx = System.Math.Max(mx , x);
             return new StringMeasurement() { Height = y + mh * size , Width = mx };
         }
+
         /// <summary>
         /// Draw rotated ellipse
         /// </summary>
@@ -2172,14 +2561,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="angleIncrement"></param>
         public virtual void DrawRotatedEllipse(Brush<Representation> b , double x , double y , double major , double minor , double angle , int thickness = 0 , double angleIncrement = 0)
         {
-            const double D_PI = System.Math.PI*2;
-            if ( angleIncrement == 0 )
-                angleIncrement = D_PI / major / minor;
-            List<PointF> pts = new List<PointF>();
-            for ( var i = 0d; i < D_PI; i += angleIncrement )
-                pts.Add(FindEllipsePoint(major , minor , angle , x , y , i));
+            IEnumerable<PointF> pts = GetRotatedEllipsePolygon(x , y , major , minor , angle , angleIncrement);
             DrawPolygon(b , thickness , pts);
         }
+
+
 
         /// <summary>
         /// Fill rotated ellipse
@@ -2207,24 +2593,138 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="angleIncrement"></param>
         public virtual void FillRotatedEllipse(Brush<Representation> b , double x , double y , double major , double minor , double angle , double angleIncrement = 0)
         {
-            const double D_PI = System.Math.PI*2;
-            if ( angleIncrement == 0 )
-                angleIncrement = D_PI / major / minor;
-            List<PointF> pts = new List<PointF>();
-            for ( var i = 0d; i < D_PI; i += angleIncrement )
-                pts.Add(FindEllipsePoint(major , minor , angle , x , y , i));
+            IEnumerable<PointF> pts = GetRotatedEllipsePolygon(x , y , major , minor , angle , angleIncrement);
             FillPolygon(b , pts.ToArray());
         }
-
-        private static PointF FindEllipsePoint(double a , double b , double theta , double x , double y , double t)
+        #region Rounded Rectangle
+        public void DrawRoundedRectangle(Representation p , double x , double y , double width , double height , double radius)
         {
-            Func<double,double> cos = System.Math.Cos;
-            Func<double,double> sin = System.Math.Sin;
-            double xt = x+ (a*cos(t)*cos(theta)-b*sin(t)*sin(theta));
-            double yt = y+(a*cos(t)*sin(theta)+b*sin(t)*cos(theta));
-
-            return new PointF(xt , yt);
+            DrawPolygon(p , GetRoundedRectanglePolygon(new RectangleF(x , y , width , height) , radius));
         }
+        public void DrawRoundedRectangle(Representation p , int thickness , double x , double y , double width , double height , double radius)
+        {
+            DrawPolygon(p , thickness , GetRoundedRectanglePolygon(new RectangleF(x , y , width , height) , radius));
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , double x , double y , double width , double height , double radius)
+        {
+            DrawPolygon(p , GetRoundedRectanglePolygon(new RectangleF(x , y , width , height) , radius));
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , int thickness , double x , double y , double width , double height , double radius)
+        {
+            DrawPolygon(p , thickness , GetRoundedRectanglePolygon(new RectangleF(x , y , width , height) , radius));
+        }
+        public void FillRoundedRectangle(Representation p , double x , double y , double width , double height , double radius)
+        {
+            FillPolygon(p , GetRoundedRectanglePolygon(new RectangleF(x , y , width , height) , radius));
+        }
+        public void FillRoundedRectangle(Brush<Representation> p , double x , double y , double width , double height , double radius)
+        {
+            FillPolygon(p , GetRoundedRectanglePolygon(new RectangleF(x , y , width , height) , radius));
+        }
+        #endregion
+        #region RoundedPoint
+        public void FillRoundedRectangle(Representation p , PointF pt , double width , double height , double radius)
+        {
+            FillRoundedRectangle(p , pt.X , pt.Y , width , height , radius);
+        }
+        public void FillRoundedRectangle(Brush<Representation> p , PointF pt , double width , double height , double radius)
+        {
+            FillRoundedRectangle(p , pt.X , pt.Y , width , height , radius);
+        }
+        public void DrawRoundedRectangle(Representation p , PointF pt , double width , double height , double radius)
+        {
+            DrawRoundedRectangle(p , pt.X , pt.Y , width , height , radius);
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , PointF pt , double width , double height , double radius)
+        {
+            DrawRoundedRectangle(p , pt.X , pt.Y , width , height , radius);
+        }
+        public void DrawRoundedRectangle(Representation p , int t , PointF pt , double width , double height , double radius)
+        {
+            DrawRoundedRectangle(p , t , pt.X , pt.Y , width , height , radius);
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , int t , PointF pt , double width , double height , double radius)
+        {
+            DrawRoundedRectangle(p , t , pt.X , pt.Y , width , height , radius);
+        }
+        #endregion
+        #region RoundedPoint +Size
+        public void FillRoundedRectangle(Representation p , PointF pt , SizeF s , double radius)
+        {
+            FillRoundedRectangle(p , pt.X , pt.Y , s.Width , s.Height , radius);
+        }
+        public void FillRoundedRectangle(Brush<Representation> p , PointF pt , SizeF s , double radius)
+        {
+            FillRoundedRectangle(p , pt.X , pt.Y , s.Width , s.Height , radius);
+        }
+        public void DrawRoundedRectangle(Representation p , PointF pt , SizeF s , double radius)
+        {
+            DrawRoundedRectangle(p , pt.X , pt.Y , s.Width , s.Height , radius);
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , PointF pt , SizeF s , double radius)
+        {
+            DrawRoundedRectangle(p , pt.X , pt.Y , s.Width , s.Height , radius);
+        }
+        public void DrawRoundedRectangle(Representation p , int t , PointF pt , SizeF s , double radius)
+        {
+            DrawRoundedRectangle(p , t , pt.X , pt.Y , s.Width , s.Height , radius);
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , int t , PointF pt , SizeF s , double radius)
+        {
+            DrawRoundedRectangle(p , t , pt.X , pt.Y , s.Width , s.Height , radius);
+        }
+        #endregion
+        #region Rounded Rectangle
+        public void FillRoundedRectangle(Representation p , RectangleF r , double radius)
+        {
+            FillRoundedRectangle(p , r.X , r.Y , r.Width , r.Height , radius);
+        }
+        public void FillRoundedRectangle(Brush<Representation> p , RectangleF r , double radius)
+        {
+            FillRoundedRectangle(p , r.X , r.Y , r.Width , r.Height , radius);
+        }
+        public void DrawRoundedRectangle(Representation p , RectangleF r , double radius)
+        {
+            DrawRoundedRectangle(p , r.X , r.Y , r.Width , r.Height , radius);
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , RectangleF r , double radius)
+        {
+            DrawRoundedRectangle(p , r.X , r.Y , r.Width , r.Height , radius);
+        }
+        public void DrawRoundedRectangle(Representation p , int t , RectangleF r , double radius)
+        {
+            DrawRoundedRectangle(p , t , r.X , r.Y , r.Width , r.Height , radius);
+        }
+        public void DrawRoundedRectangle(Brush<Representation> p , int t , RectangleF r , double radius)
+        {
+            DrawRoundedRectangle(p , t , r.X , r.Y , r.Width , r.Height , radius);
+        }
+        #endregion
+        public void DrawArc(
+            Representation pen ,
+            double x ,
+            double y ,
+            double width ,
+            double height ,
+            double startAngle ,
+            double sweepAngle
+        )
+        {
+            DrawPath(pen , GetEllipseArcPolygon(new PointF(x + width / 2 , y + height / 2) , width / 2 , height / 2 , startAngle , sweepAngle));
+        }
+        public void DrawArc(
+           Brush<Representation> pen ,
+           double x ,
+           double y ,
+           double width ,
+           double height ,
+           double startAngle ,
+           double sweepAngle
+       )
+        {
+            DrawPath(pen , GetEllipseArcPolygon(new PointF(x + width / 2 , y + height / 2) , width / 2 , height / 2 , startAngle , sweepAngle));
+        }
+
         #region Transform
         /// <summary>
         /// Create matrix to project image from 4 points to 4 points
@@ -2233,6 +2733,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="dst">4 points</param>
         public virtual void ProjectTransform(PointF[ ] src , PointF[ ] dst)
         {
+           
             Matrix A = new Matrix(new double[,]{
                 { src[0].X,src[0].Y,1,0,0,0,-src[0].X*dst[0].X,-src[0].X*dst[0].Y },
                 { 0,0,0,src[0].X,src[0].Y,1,-src[0].Y*dst[0].X,-src[0].Y*dst[0].Y },
@@ -2263,6 +2764,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                     return 0;
                 }
                 double[] h = new double[]{findValue(0),findValue(1),findValue(2),findValue(3),findValue(4),findValue(5),findValue(6),findValue(7)};
+
+              
 
                 var H = new Matrix(3,3).Feed(h);
                 /*H[0 , 0] = h[0];
@@ -2374,27 +2877,67 @@ namespace MoyskleyTech.ImageProcessing.Image
             PreTransformFunction = null;
             PostTransformFunction = null;
         }
+        /// <summary>
+        /// Allow representation as another type
+        /// </summary>
+        /// <typeparam name="NewRepresentation"></typeparam>
+        /// <returns></returns>
+        public TypeProxyGraphics<NewRepresentation , Representation> As<NewRepresentation>() where NewRepresentation : struct
+        {
+            return new TypeProxyGraphics<NewRepresentation , Representation>(this , ColorConvert.GetConversionFrom<NewRepresentation , Representation>());
+        }
+        /// <summary>
+        /// Fill a specified Rectangle
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="r"></param>
+        public void FillRectangle(Brush<Representation> p , RectangleF r)
+        {
+            FillRectangle(p , r.X , r.Y , r.Width , r.Height);
+        }
+        public void FillRectangle(Brush<Representation> p , PointF pt,SizeF s)
+        {
+            FillRectangle(p , pt.X , pt.Y , s.Width , s.Height);
+        }
+        /// <summary>
+        /// Fill a specified Rectangle
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="r"></param>
+        public void FillRectangle(Representation p , RectangleF r)
+        {
+            FillRectangle(p , r.X , r.Y , r.Width , r.Height);
+        }
+        public void FillRectangle(Representation p , PointF pt,SizeF s)
+        {
+            FillRectangle(p , pt.X , pt.Y , s.Width , s.Height);
+        }
         #endregion
         /// <summary>
         /// Allow to obtain Representation as specified position
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        protected Representation this[int m]
+        protected virtual Representation this[int m]
         {
             get
             {
                 if ( bmp != null )
                     return bmp[m];
-                else
+                else if ( proxy != null )
                     return proxy[m];
+                else if ( gProxy != null )
+                    return gProxy[m];
+                return default(Representation);
             }
             set
             {
                 if ( bmp != null )
                     bmp[m] = value;
-                else
+                else if ( proxy != null )
                     proxy[m] = value;
+                else if ( gProxy != null )
+                    gProxy.SetPixelWithoutTransform(value , m % width.Value + this.x.Value , m / width.Value + this.y.Value , false);
             }
         }
         /// <summary>
@@ -2403,14 +2946,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        protected Representation this[int x , int y]
+        protected virtual Representation this[int x , int y]
         {
             get
             {
                 if ( bmp != null )
                     return bmp[x , y];
-                else
+                else if ( proxy != null )
                     return proxy[x , y];
+                else if ( gProxy != null )
+                    return gProxy[x , y];
+                return default(Representation);
             }
             set
             {
@@ -2418,8 +2964,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                     bmp[x , y] = value;
                 else if ( proxy != null )
                     proxy[x , y] = value;
-                else
-                    gProxy.SetPixelInternal(value , x + this.x.Value , y + this.y.Value , false);
+                else if ( gProxy != null )
+                    gProxy.SetPixelWithoutTransform(value , x + this.x.Value , y + this.y.Value , false);
             }
         }
     }

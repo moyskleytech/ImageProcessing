@@ -29,7 +29,6 @@ namespace WinFormDemo_Multiple_Test_
                 bmp = new Bitmap((ofd.FileName));
                 var bmpt = new Bitmap(bmp , imgSrc.Width , imgSrc.Height);
                 bmp.Dispose();
-                bmpt = bmp;
             }
         }
 

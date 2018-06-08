@@ -12,10 +12,17 @@ namespace MoyskleyTech.ImageProcessing.WPF
 {
     public static class BitmapHelper
     {
-        public static BitmapImage ToWPFBitmap(this Bitmap bmp)
+        public static BitmapImage ToWPFBitmap(this Image<Pixel> bmp)
         {
             var stream = new MemoryStream();
-            bmp.Save(stream);
+            if ( bmp is Bitmap b )
+                b.Save(stream);
+            else
+            {
+                var bmpS = (Bitmap)bmp.ConvertTo<Pixel>();
+                bmpS.Save(stream);
+                bmpS.Dispose();
+            }
             stream.Position = 0;
             var bitmap = new BitmapImage();
             bitmap.BeginInit();

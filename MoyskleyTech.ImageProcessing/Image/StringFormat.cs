@@ -14,7 +14,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Position
         /// </summary>
-        public StringAlignment LineAlignment,Alignment;
+        public StringAlignment LineAlignment { get; set; } = StringAlignment.Near;
+        public StringAlignment Alignment { get; set; } = StringAlignment.Near;
+        public EllipsisMode EllipsisMode { get; set; } = EllipsisMode.None;
     }
     /// <summary>
     /// Represent string alignment
@@ -22,6 +24,18 @@ namespace MoyskleyTech.ImageProcessing.Image
     public enum StringAlignment
     {
 #pragma warning disable CS1591
-        Near,Center,Far
+        Near, Center, Far
+#pragma warning restore CS1591
     }
+    /// <summary>
+    /// Represent string alignment
+    /// </summary>
+    public enum EllipsisMode
+    {
+#pragma warning disable CS1591
+        Character, Word, None
+#pragma warning restore CS1591
+
+    }
+
 }

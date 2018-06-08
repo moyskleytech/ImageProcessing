@@ -925,4 +925,49 @@ namespace MoyskleyTech.ImageProcessing.Image
             return ( ushort ) ( 0.21 * R + 0.72 * G + 0.07 * B );
         }
     }
+
+    /// <summary>
+    /// Struct to store RGBA
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RGBA
+    {
+        /// <summary>
+        /// Color components
+        /// </summary>
+        public byte R,G,B,A;
+    }
+    /// <summary>
+    /// Struct to store RGBA
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BGRA
+    {
+        /// <summary>
+        /// Color components
+        /// </summary>
+        public byte B,G,R,A;
+    }
+    /// <summary>
+    /// Struct to store RGBA
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ARGB
+    {
+        /// <summary>
+        /// Color components
+        /// </summary>
+        public byte A,R,G,B;
+    }
+    /// <summary>
+    /// Struct to store RGBA
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ABGR
+    {
+        /// <summary>
+        /// Color components
+        /// </summary>
+        public byte A,B,G,R;
+    }
 }

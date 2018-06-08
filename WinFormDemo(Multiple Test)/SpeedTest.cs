@@ -54,6 +54,12 @@ namespace WinFormDemo_Multiple_Test_
             TimeSpan timeConvertedBrush = DateTime.Now-begin;
             label1.Text += "Time To Clear PixelImage using ConvertedBrush " + timeConvertedBrush + "\r\n";
 
+            begin = DateTime.Now;
+            var RGBAImage = pxlImage.ConvertBufferTo<RGBA>();
+            TimeSpan timeConvertAndKeepBuffer = DateTime.Now-begin;
+            label1.Text += "Time To Transform from pixel to RGBA(Same buffer)" + timeConvertAndKeepBuffer + "\r\n";
+            label1.Text += "Conversion " + (( RGBAImage.DataPointer == pxlImage.DataPointer ) ? "Sucess(Same buffer)" : "Fail(New buffer)");
+
         }
     }
 }

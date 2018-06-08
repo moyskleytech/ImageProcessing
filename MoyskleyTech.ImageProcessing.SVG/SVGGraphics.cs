@@ -262,7 +262,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
-        protected override void SetPixelInternal(Pixel p , double px , double py,bool alpha)
+        public override void SetPixelWithoutTransform(Pixel p , double px , double py,bool alpha)
         {
             FillRectangle(p , px , py , 1 , 1);
         }

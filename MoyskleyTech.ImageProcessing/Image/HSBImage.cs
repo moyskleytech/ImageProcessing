@@ -27,7 +27,19 @@ namespace MoyskleyTech.ImageProcessing.Image
             width = w;
             height = h;
         }
-
+        /// <summary>
+        /// Create a bitmap using Width and Height
+        /// </summary>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <param name="p">Height</param>
+        public HSBImage(IntPtr p , int w , int h) : base(p,w , h)
+        {
+            //Allocate
+            pxls = ( HSB* ) raw.ToPointer();
+            width = w;
+            height = h;
+        }
         /// <summary>
         /// Destrop bitmap
         /// </summary>
