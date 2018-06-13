@@ -14,11 +14,11 @@ namespace MoyskleyTech.ImageProcessing.Video
     public class ColorVideoReader
     {
         private Stream s;
-        private OneBandImage r,g,b;
+        private Image<byte> r,g,b;
         /// <summary>
         /// Current frame
         /// </summary>
-        public Bitmap Frame { get; set; }
+        public Image<BGR> Frame { get; set; }
         /// <summary>
         /// Create a reader on stream
         /// </summary>
@@ -52,14 +52,11 @@ namespace MoyskleyTech.ImageProcessing.Video
                     return false;
                 int h = BitConverter.ToInt32(new byte[ ] { (byte)b1 , ( byte ) b2 , ( byte ) b3 , ( byte ) b4 } , 0);
 
-                Frame = new Bitmap(w , h);
-                Graphics.FromImage(Frame).Clear(Pixels.Black);
-                r = new OneBandImage(w , h);
-                r.Clear(0);
-                g = new OneBandImage(w , h);
-                g.Clear(0);
-                b = new OneBandImage(w , h);
-                b.Clear(0);
+                Frame = Image<BGR>.Create(w , h);
+                Graphics<BGR>.FromImage(Frame).Clear(Pixels.Black.ToBGR());
+                r = Image<byte>.FilledWith(w,h,0);
+                g = Image<byte>.FilledWith(w , h , 0);
+                b = Image<byte>.FilledWith(w , h , 0);
             }
             if ( OneBandVideoReader.ReadBand(r , s) && OneBandVideoReader.ReadBand(g , s) && OneBandVideoReader.ReadBand(b , s) )
             {

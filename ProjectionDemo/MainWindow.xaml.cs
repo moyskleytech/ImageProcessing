@@ -69,7 +69,7 @@ namespace ProjectionDemo
             {
                 bmp = new BitmapImage(new Uri(ofd.FileName));
                 var mbmp = bmp.ToBitmap();
-                mbmp = mbmp.Rescale(width , height , ScalingMode.AverageInterpolate);
+                mbmp = (Bitmap)mbmp.Rescale(width , height , ScalingMode.AverageInterpolate);
                 bmp = mbmp.ToWPFBitmap();
                 imgSrc.Source = bmp;
             }

@@ -31,7 +31,7 @@ namespace AllBPPDemo
             var files = (from x in names select System.IO.File.Open(x, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite)).ToArray();
 
             codec.Save(bmp , files[0] , CreatePalette(colors , 2));
-            codec.SaveOptimized(bmp , files[5]);
+            codec.SaveOptimized<Pixel>(bmp , files[5]);
 
             for ( var i = 1; i < colors.Length; i++ )
             {
@@ -39,20 +39,20 @@ namespace AllBPPDemo
                 if ( i == 3 )
                 {
                     codec.Save(bmp , files[1] , CreatePalette(colors , 4));
-                    codec.SaveOptimized(bmp , files[6]);
+                    codec.SaveOptimized<Pixel>(bmp , files[6]);
                 }
                 else if ( i == 15 )
                 {
                     codec.Save(bmp , files[2] , CreatePalette(colors , 16));
-                    codec.SaveOptimized(bmp , files[7]);
+                    codec.SaveOptimized<Pixel>(bmp , files[7]);
                 }
                 else if ( i == colors.Length-1 )
                 {
                     codec.Save(bmp , files[3] , CreatePalette(colors , colors.Length));
-                    codec.SaveOptimized(bmp , files[8]);
+                    codec.SaveOptimized<Pixel>(bmp , files[8]);
                 }
             }
-            codec.Save(bmp , files[4]);
+            codec.Save<Pixel>(bmp , files[4]);
 
             files[1].Seek(0 , SeekOrigin.Begin);
             var bmp2 = codec.DecodeStream(files[1]);

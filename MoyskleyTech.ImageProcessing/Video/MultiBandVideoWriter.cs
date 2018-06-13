@@ -14,7 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Video
     public class MultiBandVideoWriter
     {
         private Stream s;
-        private OneBandImage[] bands;
+        private Image<byte>[] bands;
         /// <summary>
         /// Minimum difference to write
         /// </summary>
@@ -33,7 +33,7 @@ namespace MoyskleyTech.ImageProcessing.Video
         /// Write a frame to the stream
         /// </summary>
         /// <param name="img"></param>
-        public void WriteFrame(OneBandImage[] img)
+        public void WriteFrame(Image<byte>[ ] img)
         {
             if ( bands == null )
             {
@@ -45,11 +45,10 @@ namespace MoyskleyTech.ImageProcessing.Video
                 else
                     s.Write(new byte[ ] { 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 } , 0 , 8);
                 s.Write(BitConverter.GetBytes(img.Length) , 0 , 4);
-                bands = new OneBandImage[img.Length];
+                bands = new Image<byte>[img.Length];
                 for ( var i = 0; i < bands.Length; i++ )
                 {
-                    bands[i] = new OneBandImage(img[0].Width , img[0].Height);
-                    bands[i].Clear(0);
+                    bands[i] = Image<byte>.FilledWith(img[0].Width , img[0].Height,0);
                 }
             }
             for ( var i = 0; i < bands.Length; i++ )

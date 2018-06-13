@@ -14,11 +14,11 @@ namespace MoyskleyTech.ImageProcessing.Video
     public class OneBandVideoReader
     {
         private Stream s;
-        private OneBandImage f;
+        private Image<byte> f;
         /// <summary>
         /// Current frame
         /// </summary>
-        public OneBandImage Frame { get; set; }
+        public Image<byte> Frame { get; set; }
         /// <summary>
         /// Create a reader on the stream
         /// </summary>
@@ -52,13 +52,12 @@ namespace MoyskleyTech.ImageProcessing.Video
                     return false;
                 int h = BitConverter.ToInt32(new byte[ ] { (byte)b1 , ( byte ) b2 , ( byte ) b3 , ( byte ) b4 } , 0);
 
-                Frame = new OneBandImage(w , h);
-                f = new OneBandImage(w , h);
-                f.Clear(0);
+                Frame = new Image<byte>(w , h);
+                f = Image<byte>.FilledWith(w , h,0);
             }
             if ( ReadBand(f , s) )
             {
-                f.CopyTo(Frame);
+                f.CopyTo(Frame.DataPointer);
                 return true;
             }
             return false;
@@ -69,7 +68,7 @@ namespace MoyskleyTech.ImageProcessing.Video
         /// <param name="f">Band to read</param>
         /// <param name="s">SourceStream</param>
         /// <returns>Complete frame(false = error)</returns>
-        public static bool ReadBand(OneBandImage f , Stream s)
+        public static bool ReadBand(Image<byte> f , Stream s)
         {
             var pt = f.Width*f.Height;
             var octet = s.ReadByte();

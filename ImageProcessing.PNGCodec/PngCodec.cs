@@ -49,8 +49,10 @@ namespace ImageProcessing.PNGCodec
             return decoder.ReadBitmap(); 
         }
 
-        public unsafe void Save(Bitmap bmp , Stream s)
+        public unsafe void Save<T>(ImageProxy<T> bmp , Stream s)
+            where T:struct
         {
+            var converter= ColorConvert.GetConversionFrom<T,Pixel>();
             PngWriter pngw = new PngWriter(s, new ImageInfo(bmp.Width,bmp.Height,8,true,false,false));
             pngw.SetUseUnPackedMode(true);
             for ( var r = 0; r < bmp.Height; r++ )
@@ -61,7 +63,7 @@ namespace ImageProcessing.PNGCodec
                     COMP4* ptr = (COMP4*)tab;
                     for ( var c = 0; c < bmp.Width; c++ )
                     {
-                        var pixel = bmp[c,r];
+                        var pixel = converter(bmp[c,r]);
                         ptr->D = pixel.A;
                         ptr->A = pixel.R;
                         ptr->B = pixel.G;
@@ -73,6 +75,19 @@ namespace ImageProcessing.PNGCodec
             }
             pngw.End();
         }
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : struct
+        {
+            var converter = ColorConvert.GetConversionFrom<Pixel,T>();
+            using (var bmp = DecodeStream(s) )
+                return from x in Enumerable.Range(0 , bmp.Width)
+                       from y in Enumerable.Range(0 , bmp.Height)
+                       select new ColorPoint<T>(x , y , converter(bmp[x , y]));
+        }
+
+        public Image<T> ReadImage<T>(Stream s) where T : struct
+        {
+            return DecodeStream(s).ConvertBufferTo<T>();
+        }
     }
 
     internal class PngDecoder : IBitmapDecoder
@@ -81,7 +96,11 @@ namespace ImageProcessing.PNGCodec
         public PngDecoder()
         {
         }
-      
+
+        public int Height => 0;
+
+        public int Width => 0;
+
         public unsafe Bitmap ReadBitmap()
         {
             PngReader pngr = new PngReader(s);
@@ -117,6 +136,15 @@ namespace ImageProcessing.PNGCodec
                 }
             }
             return bmp;
+        }
+
+        public IEnumerable<ColorPoint<T>> ReadData<T>() where T : struct
+        {
+            var converter = ColorConvert.GetConversionFrom<Pixel,T>();
+            using ( var bmp = ReadBitmap() )
+                return from x in Enumerable.Range(0 , bmp.Width)
+                       from y in Enumerable.Range(0 , bmp.Height)
+                       select new ColorPoint<T>(x , y , converter(bmp[x , y]));
         }
 
         public bool ReadHeader()

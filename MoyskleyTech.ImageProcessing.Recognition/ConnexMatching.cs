@@ -86,7 +86,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition
         }
 
 
-        public static void Match4Connex<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition , Action<Point , Representation> action)
+        public static void Match4Connex<Representation>(this ImageProxy<Representation> bmp , int x , int y , Func<Representation , bool> condition , Action<Point , Representation> action)
             where Representation:struct
         {
             Stack<Point> points = new Stack<Point>();
@@ -114,7 +114,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition
                 }
             }
         }
-        public static void Match8Connex<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition , Action<Point , Representation> action)
+        public static void Match8Connex<Representation>(this ImageProxy<Representation> bmp , int x , int y , Func<Representation , bool> condition , Action<Point , Representation> action)
             where Representation:struct
         {
             Stack<Point> points = new Stack<Point>();
@@ -152,20 +152,117 @@ namespace MoyskleyTech.ImageProcessing.Recognition
                 }
             }
         }
-        public static List<Point> Match4ConnexList<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition)
+        public static List<Point> Match4ConnexList<Representation>(this ImageProxy<Representation> bmp , int x , int y , Func<Representation , bool> condition)
             where Representation:struct
         {
             List<Point> output = new List<Point>();
             bmp.Match4Connex(x , y , condition , (pt , px) => { output.Add(pt); });
             return output;
         }
-        public static List<Point> Match8ConnexList<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition)
+        public static List<Point> Match8ConnexList<Representation>(this ImageProxy<Representation> bmp , int x , int y , Func<Representation , bool> condition)
             where Representation:struct
         {
             List<Point> output = new List<Point>();
             bmp.Match8Connex(x , y , condition , (pt , px) => { output.Add(pt); });
             return output;
         }
+        public static void Match4ConnexMultiplePoints<Representation>(this ImageProxy<Representation> bmp , Point[ ] startPoints , Func<Representation , bool> condition , Action<Point , Representation> action)
+       where Representation : struct
+        {
+            Queue<Point> points = new Queue<Point>(startPoints);
+            
+            HashSet<Point> visited = new HashSet<Point>();
+            while ( points.Any() )
+            {
+                Point p = points.Dequeue();
+                if ( !visited.Contains(p) )
+                {
+                    visited.Add(p);
+                    var px=bmp[p.X,p.Y];
+                    if ( condition(px) )
+                    {
+                        action(p , px);
+                        if ( p.X > 0 )
+                            points.Enqueue(new Point(p.X - 1 , p.Y));
+                        if ( p.Y > 0 )
+                            points.Enqueue(new Point(p.X , p.Y - 1));
+                        if ( p.X < bmp.Width - 1 )
+                            points.Enqueue(new Point(p.X + 1 , p.Y));
+                        if ( p.Y < bmp.Height - 1 )
+                            points.Enqueue(new Point(p.X , p.Y + 1));
+                    }
+                }
+            }
+        }
+        public static void Match8ConnexMultiplePoints<Representation>(this ImageProxy<Representation> bmp , Point[] startPoints , Func<Representation , bool> condition , Action<Point , Representation> action)
+            where Representation : struct
+        {
+            Queue<Point> points = new Queue<Point>(startPoints);
+            HashSet<Point> visited = new HashSet<Point>();
+            while ( points.Any() )
+            {
+                Point p = points.Dequeue();
+                if ( !visited.Contains(p) )
+                {
+                    visited.Add(p);
+                    var px=bmp[p.X,p.Y];
+                    if ( condition(px) )
+                    {
+                        action(p , px);
+                        if ( p.X > 0 )
+                            points.Enqueue(new Point(p.X - 1 , p.Y));
+                        if ( p.Y > 0 )
+                            points.Enqueue(new Point(p.X , p.Y - 1));
+                        if ( p.X < bmp.Width - 1 )
+                            points.Enqueue(new Point(p.X + 1 , p.Y));
+                        if ( p.Y < bmp.Height - 1 )
+                            points.Enqueue(new Point(p.X , p.Y + 1));
+
+                        if ( p.X > 0 && p.Y > 0 )
+                            points.Enqueue(new Point(p.X - 1 , p.Y - 1));
+                        if ( p.X < bmp.Width - 1 && p.Y > 0 )
+                            points.Enqueue(new Point(p.X + 1 , p.Y - 1));
+
+                        if ( p.X > 0 && p.Y < bmp.Height - 1 )
+                            points.Enqueue(new Point(p.X - 1 , p.Y + 1));
+                        if ( p.X < bmp.Width - 1 && p.Y < bmp.Height - 1 )
+                            points.Enqueue(new Point(p.X + 1 , p.Y + 1));
+                    }
+                }
+            }
+        }
+
+        public static void Match4Connex<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition , Action<Point , Representation> action)
+            where Representation : struct
+        {
+            Match4Connex(( ImageProxy<Representation> ) bmp , x , y , condition , action);
+        }
+        public static void Match8Connex<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition , Action<Point , Representation> action)
+            where Representation : struct
+        {
+            Match8Connex(( ImageProxy<Representation> ) bmp , x , y , condition , action);
+        }
+        public static List<Point> Match4ConnexList<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition)
+            where Representation : struct
+        {
+            return Match4ConnexList(( ImageProxy<Representation> ) bmp , x , y , condition );
+        }
+        public static List<Point> Match8ConnexList<Representation>(this Image<Representation> bmp , int x , int y , Func<Representation , bool> condition)
+            where Representation : struct
+        {
+            return Match4ConnexList(( ImageProxy<Representation> ) bmp , x , y , condition );
+        }
+        public static void Match4ConnexMultiplePoints<Representation>(this Image<Representation> bmp , Point[ ] startPoints , Func<Representation , bool> condition , Action<Point , Representation> action)
+       where Representation : struct
+        {
+            Match4ConnexMultiplePoints(( ImageProxy<Representation> ) bmp , startPoints , condition , action);
+        }
+        public static void Match8ConnexMultiplePoints<Representation>(this Image<Representation> bmp , Point[ ] startPoints , Func<Representation , bool> condition , Action<Point , Representation> action)
+            where Representation : struct
+        {
+            Match8ConnexMultiplePoints(( ImageProxy<Representation> ) bmp , startPoints , condition , action);
+        }
+
 
         public static void Match8Connex(this bool[,] bmp , int x , int y , Action<Point> action)
         {

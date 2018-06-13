@@ -32,12 +32,12 @@ namespace SobelExample
                     double ratio = (double)bmp.Width/bmp.Height;
                     var new_w = 800*ratio;
                     if ( new_w <= 800 )
-                        bmp2 = bmp.Resize((int)new_w , 800 , ScalingMode.AverageInterpolate);
+                        bmp2 = (Bitmap)bmp.Resize((int)new_w , 800 , ScalingMode.AverageInterpolate);
                     else
                     {
                         ratio = ( double ) bmp.Height / bmp.Width;
                         var new_h = 800*ratio;
-                        bmp2 = bmp.Resize(800 , ( int ) new_h , ScalingMode.AverageInterpolate);
+                        bmp2 = ( Bitmap ) bmp.Resize(800 , ( int ) new_h , ScalingMode.AverageInterpolate);
                     }
                 }
                 if ( bmp2 != bmp )

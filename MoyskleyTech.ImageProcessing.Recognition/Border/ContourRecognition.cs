@@ -93,7 +93,6 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
         {
             HashSet<Point> visited=new HashSet<Point>();
             List<Contour< Representation >> contours = new List<Contour<Representation>>();
-            var work = bmp.ToImage();
             for ( var y = 0; y < bmp.Height; y++ )
             {
                 for ( var x = 0; x < bmp.Width; x++ )
@@ -101,17 +100,17 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     Contour< Representation> contour = new Contour<Representation>();
                     if ( !visited.Contains(new Point(x , y)) )
                     {
-                        var px = work[x,y];
+                        var px = bmp[x,y];
                         if ( condition(px) )
                         {
                             if ( mode == ContourRecognitionMode.EightConnex )
-                                work.Match8Connex(x , y , condition , (pt , pxl) =>
+                                bmp.Match8Connex(x , y , condition , (pt , pxl) =>
                                 {
                                     contour.Points.Add(pt);
                                     visited.Add(pt);
                                 });
                             else if ( mode == ContourRecognitionMode.FourConnex )
-                                work.Match4Connex(x , y , condition , (pt , pxl) =>
+                                bmp.Match4Connex(x , y , condition , (pt , pxl) =>
                                 {
                                     contour.Points.Add(pt);
                                     visited.Add(pt);
@@ -133,7 +132,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
         {
             HashSet<Point> visited=new HashSet<Point>();
             List<Contour<Representation>> contours = new List<Contour<Representation>>();
-            var work = bmp.ToImage();
+            
             foreach ( var sp in pts )
             {
                 var x = sp.X;
@@ -141,17 +140,17 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                 Contour<Representation> contour = new Contour<Representation>();
                 if ( !visited.Contains(sp) )
                 {
-                    var px = work[x,y];
+                    var px = bmp[x,y];
                     if ( condition(px) )
                     {
                         if ( mode == ContourRecognitionMode.EightConnex )
-                            work.Match8Connex(x , y , condition , (pt , pxl) =>
+                            bmp.Match8Connex(x , y , condition , (pt , pxl) =>
                             {
                                 contour.Points.Add(pt);
                                 visited.Add(pt);
                             });
                         else if ( mode == ContourRecognitionMode.FourConnex )
-                            work.Match4Connex(x , y , condition , (pt , pxl) =>
+                            bmp.Match4Connex(x , y , condition , (pt , pxl) =>
                             {
                                 contour.Points.Add(pt);
                                 visited.Add(pt);

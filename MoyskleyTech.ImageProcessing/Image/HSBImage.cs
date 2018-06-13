@@ -5,110 +5,46 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using MoyskleyTech.ImageProcessing.Image;
 
-namespace MoyskleyTech.ImageProcessing.Image
+namespace MoyskleyTech.ImageProcessing
 {
     /// <summary>
     /// Represent a Bitmap (Array of Pixel)
     /// </summary>
     [NotSerialized]
-    public unsafe class HSBImage : Image<HSB>
+    public static unsafe class HSBImage 
     {
-        private readonly HSB* pxls;
         private const uint VERSION=1;
-        /// <summary>
-        /// Allocate it using width and height
-        /// </summary>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        public HSBImage(int w , int h) : base(w , h)
-        {
-            pxls = ( HSB* ) dataPointer;
-            width = w;
-            height = h;
-        }
-        /// <summary>
-        /// Create a bitmap using Width and Height
-        /// </summary>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        /// <param name="p">Height</param>
-        public HSBImage(IntPtr p , int w , int h) : base(p,w , h)
-        {
-            //Allocate
-            pxls = ( HSB* ) raw.ToPointer();
-            width = w;
-            height = h;
-        }
-        /// <summary>
-        /// Destrop bitmap
-        /// </summary>
-        ~HSBImage()
-        {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Source to edit or copy
-        /// </summary>
-        public HSB* Source { get { return pxls; } }
        
-        /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="pos">As 1 dim array</param>
-        /// <returns>Pixel</returns>
-        public override HSB this[int pos]
-        {
-            get
-            {
-                if ( pos > 0 && pos < width * height )
-                    return pxls[pos];
-                else
-                    return new HSB();
-            }
-            set
-            {
-                if ( pos > 0 && pos < width * height )
-                    pxls[pos] = value;
-            }
-        }
         /// <summary>
         /// Convert to Bitmap
         /// </summary>
         /// <returns></returns>
-        public Bitmap ToRGB()
+        public static Image<Pixel> ToRGB(this Image<HSB> image)
         {
-            Bitmap img = new Bitmap(width,height);
-            Pixel* dest=img.Source;
-            HSB* src = Source;
-            int max = width*height;
-            for ( var i = 0; i < max; i++ )
-            {
-                *dest++ = ( src++ )->ToRGB();
-            }
-            return img;
+            return image.ConvertTo<Pixel>();
         }
         /// <summary>
         /// Allow saving to disk
         /// </summary>
         /// <param name="s"></param>
         /// <param name="format"></param>
-        public void Save(Stream s , HSBSaveFormat format = HSBSaveFormat.HSB888)
+        public static void Save(this Image<HSB> image,Stream s , HSBSaveFormat format = HSBSaveFormat.HSB888)
         {
             s.WriteByte(( byte ) 'H');
             s.WriteByte(( byte ) 'S');
             s.WriteByte(( byte ) 'B');
             s.WriteByte(( byte ) format);
             s.Write(BitConverter.GetBytes(VERSION) , 0 , 4);
-            s.Write(BitConverter.GetBytes(width) , 0 , 4);
-            s.Write(BitConverter.GetBytes(height) , 0 , 4);
-            HSB* ptr = pxls;
+            s.Write(BitConverter.GetBytes(image.Width) , 0 , 4);
+            s.Write(BitConverter.GetBytes(image.Height) , 0 , 4);
+            HSB* ptr = image.Source;
             unchecked
             {
-                for ( var x = 0; x < width; x++ )
+                for ( var x = 0; x < image.Width; x++ )
                 {
-                    for ( var y = 0; y < height; y++ )
+                    for ( var y = 0; y < image.Height; y++ )
                     {
                         HSB* pixel = ptr++;
                         s.WriteByte(pixel->H);
@@ -131,7 +67,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static HSBImage Load(Stream s)
+        public static Image<HSB> Load(Stream s)
         {
             byte read=0;
             read = ( byte ) s.ReadByte();
@@ -155,8 +91,8 @@ namespace MoyskleyTech.ImageProcessing.Image
             int width = BitConverter.ToInt32(array,0);
             s.Read(array , 0 , 4);
             int height = BitConverter.ToInt32(array,0);
-            HSBImage img = new HSBImage(width,height);
-            HSB* ptr = img.pxls;
+            Image<HSB> img = Image<HSB>.Create(width,height);
+            HSB* ptr = img.Source;
             unchecked
             {
                 for ( var x = 0; x < width; x++ )

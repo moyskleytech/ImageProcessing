@@ -15,9 +15,8 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <typeparam name="Representation"></typeparam>
     [NotSerialized]
     public unsafe partial class Image<Representation>
-        where Representation : struct
+        where Representation : unmanaged
     {
-        private bool disposed=false;
         /// <summary>
         /// size of image
         /// </summary>
@@ -25,7 +24,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Pointer for data
         /// </summary>
-        protected byte* dataPointer;
+        protected Representation* dataPointer;
         /// <summary>
         /// Lenght of an item(sizeof(Representation))
         /// </summary>
@@ -38,6 +37,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Flag to delete or not pointer when disposing
         /// </summary>
         protected bool deleteOnDispose=true;
+
+        private Func<Func<int,int,Representation>,Size,double,double,Representation> getter;
+        private Func<Func<int,int,Representation>,double,double,double,double,Representation> averager;
+
         /// <summary>
         /// Allocate it using width and height
         /// </summary>
@@ -55,15 +58,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="h"></param>
         protected Image(IntPtr ptr , int w , int h)
         {
-            lengthOfItem = Marshal.SizeOf(default(Representation));
+            lengthOfItem = sizeof(Representation);
             if ( ptr == IntPtr.Zero )
                 raw = Marshal.AllocHGlobal(w * h * lengthOfItem);
             else
                 raw = ptr;
-            dataPointer = ( byte* ) raw.ToPointer();
+            dataPointer = ( Representation* ) raw.ToPointer();
             width = w;
             height = h;
             deleteOnDispose = ptr == IntPtr.Zero;
+            getter = Image.GetGetterFunction<Representation>();
+            averager = Image.GetAverageFunction<Representation>();
         }
         /// <summary>
         /// Create an image without allocating new memory
@@ -78,15 +83,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Width of bitmap
         /// </summary>
-        public int Width { get { return width; } }
+        public int Width => width;
         /// <summary>
         /// Height of bitmap
         /// </summary>
-        public int Height { get { return height; } }
+        public int Height => height;
         /// <summary>
         /// Return if the image has been destroyed
         /// </summary>
-        public bool Disposed { get { return disposed; } }
+        public bool Disposed { get; private set; } = false;
+
+        public Size Size => new Size(width , height);
         /// <summary>
         /// Destrop bitmap
         /// </summary>
@@ -104,15 +111,25 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return this[x , y];
         }
+
+
+        public virtual ref Representation GetRef(int x , int y)
+        {
+            return ref dataPointer[y * width + x];
+        }
+        public virtual ref Representation GetRef(int i)
+        {
+            return ref dataPointer[i];
+        }
         /// <summary>
         /// Dispose the bitmap and release memory
         /// </summary>
         public void Dispose()
         {
-            if ( deleteOnDispose && !disposed )
+            if ( deleteOnDispose && !Disposed )
             {
                 Marshal.FreeHGlobal(raw);
-                disposed = true;
+                Disposed = true;
             }
             GC.SuppressFinalize(this);
         }
@@ -120,6 +137,36 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Source to edit or copy
         /// </summary>
         public IntPtr DataPointer { get { return raw; } }
+        /// <summary>
+        /// Source to edit or copy
+        /// </summary>
+        public Representation* Source { get { return dataPointer; } }
+        public Representation this[Point pt]
+        {
+            get => this[pt.X , pt.Y];
+            set => this[pt.X , pt.Y] = value;
+        }
+        /// <summary>
+        /// Proxy an image easy
+        /// </summary>
+        /// <param name="rec"></param>
+        /// <returns></returns>
+        public ImageProxy<Representation> this[Rectangle rec]
+        {
+            get
+            {
+                return this.Proxy(rec);
+            }
+        }
+        /// <summary>
+        /// Serialize bitmap to stream
+        /// </summary>
+        /// <param name="s">Destination</param>
+        public static Image<Pixel> FromStream(Stream s)
+        {
+            return new BitmapCodec().DecodeStream(s);
+            //return new BitmapFactory().Decode(s);
+        }
         /// <summary>
         /// Get pixel from coordinate
         /// </summary>
@@ -149,9 +196,9 @@ namespace MoyskleyTech.ImageProcessing.Image
                 //return ( Representation ) Marshal.PtrToStructure(this[y * width + x] , typeof(Representation));
 
                 if ( pos > 0 && pos < width * height )
-                    return ( Representation ) Marshal.PtrToStructure(raw + ( pos * lengthOfItem ) , typeof(Representation));
+                    return dataPointer[pos];
                 else
-                    return default(Representation);
+                    return default;
             }
             set
             {
@@ -165,8 +212,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="dst"></param>
         public void CopyTo(IntPtr dst)
         {
-            byte* src = dataPointer;
-            byte* dest = (byte*)dst.ToPointer();
+            Representation* src = dataPointer;
+            Representation* dest = (Representation*)dst.ToPointer();
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
         }
@@ -176,8 +223,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="dst"></param>
         public void CopyFrom(IntPtr dst)
         {
-            byte* src = (byte*)dst.ToPointer();
-            byte* dest = dataPointer;
+            Representation* src = (Representation*)dst.ToPointer();
+            Representation* dest = dataPointer;
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
         }
@@ -185,10 +232,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Copy data to another pointer
         /// </summary>
         /// <param name="dst"></param>
-        public void CopyTo(byte* dst)
+        public void CopyTo(void* dst)
         {
-            byte* src = dataPointer;
-            byte* dest = (byte*)dst;
+            Representation* src = dataPointer;
+            Representation* dest = (Representation*)dst;
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
         }
@@ -196,10 +243,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Copy data from another pointer
         /// </summary>
         /// <param name="dst"></param>
-        public void CopyFrom(byte* dst)
+        public void CopyFrom(void* dst)
         {
-            byte* src = (byte*)dst;
-            byte* dest = dataPointer;
+            Representation* src = (Representation*)dst;
+            Representation* dest = dataPointer;
             for ( var i = 0; i < width * height * lengthOfItem; i++ )
                 *dest++ = *src++;
         }
@@ -209,7 +256,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <typeparam name="NewRepresentation"></typeparam>
         /// <returns></returns>
         public Image<NewRepresentation> ConvertTo<NewRepresentation>()
-            where NewRepresentation : struct
+            where NewRepresentation : unmanaged
         {
             Image<NewRepresentation> image = Image<NewRepresentation>.Create(width,height);
 
@@ -230,7 +277,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <typeparam name="NewRepresentation"></typeparam>
         /// <returns></returns>
         public Image<NewRepresentation> ConvertBufferTo<NewRepresentation>()
-            where NewRepresentation : struct
+            where NewRepresentation : unmanaged
         {
             Image<NewRepresentation> ret=null;
             var szN = Marshal.SizeOf(typeof(NewRepresentation));
@@ -285,8 +332,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
                 deleteOnDispose = false;
             }
-            this.dataPointer = ret.dataPointer;
-            disposed = true;
+            this.dataPointer = ( Representation* ) ret.dataPointer;
+            Disposed = true;
             return ret;
         }
         /// <summary>
@@ -296,7 +343,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="converter"></param>
         /// <returns></returns>
         public Image<NewRepresentation> ConvertUsing<NewRepresentation>(Func<Representation , NewRepresentation> converter)
-          where NewRepresentation : struct
+          where NewRepresentation : unmanaged
         {
             Image<NewRepresentation> image = Image<NewRepresentation>.Create(width,height);
 
@@ -348,7 +395,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Image<byte> GetByteBand(int no)
         {
             Image<byte> img = Image<byte>.Create(width,height);
-            byte* src = dataPointer;
+            byte* src = (byte*)dataPointer;
             byte* dest = (byte*)img.DataPointer.ToPointer();
             for ( var i = 0; i < width * height; i++ )
             {
@@ -365,7 +412,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void SetByteBand(Image<byte> band , int no)
         {
             byte* src = (byte*)band.DataPointer.ToPointer();
-            byte* dest = dataPointer;
+            byte* dest = (byte*)dataPointer;
             for ( var i = 0; i < width * height; i++ )
             {
                 *dest = *src;
@@ -383,7 +430,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( no < lengthOfItem )
             {
                 Image<float> img = Image<float>.Create(width,height);
-                byte* src = dataPointer+no;
+                byte* src = (byte*)dataPointer+no;
                 float* dest = (float*)img.DataPointer.ToPointer();
                 for ( var i = 0; i < width * height; i++ )
                 {
@@ -404,7 +451,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( ( no + 1 ) * sizeof(float) <= lengthOfItem )
             {
                 float* src = (float*)band.DataPointer.ToPointer();
-                byte* dest = dataPointer+no*sizeof(float);
+                byte* dest = (byte*)dataPointer+no*sizeof(float);
                 for ( var i = 0; i < width * height; i++ )
                 {
                     *( ( float* ) dest ) = *src;
@@ -446,50 +493,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             if ( data == null )
                 data = IntPtr.Zero;
+
             if ( typeof(Representation) == typeof(Pixel) )
                 return ( Image<Representation> ) ( object ) new Bitmap(data.Value , width , height);
-            if ( typeof(Representation) == typeof(ARGB_Float) )
-                return ( Image<Representation> ) ( object ) new SuperHighRangeImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(ARGB_16bit) )
-                return ( Image<Representation> ) ( object ) new HighRangeImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(bool) )
-                return ( Image<Representation> ) ( object ) new BoolImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(byte) )
-                return ( Image<Representation> ) ( object ) new OneBandImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(float) )
-                return ( Image<Representation> ) ( object ) new OneBandFloatImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(HSB) )
-                return ( Image<Representation> ) ( object ) new HSBImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(HSBA) )
-                return ( Image<Representation> ) ( object ) new HSBAImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(_1555) )
-                return ( Image<Representation> ) ( object ) new _1555Image(data.Value , width , height);
-            if ( typeof(Representation) == typeof(_555) )
-                return ( Image<Representation> ) ( object ) new _555Image(data.Value , width , height);
-            if ( typeof(Representation) == typeof(_565) )
-                return ( Image<Representation> ) ( object ) new _565Image(data.Value , width , height);
-            if ( typeof(Representation) == typeof(CYMK) )
-                return ( Image<Representation> ) ( object ) new CYMKImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(_332) )
-                return ( Image<Representation> ) ( object ) new _332Image(data.Value , width , height);
-            if ( typeof(Representation) == typeof(HSB_Float) )
-                return ( Image<Representation> ) ( object ) new HSB_FloatImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(RGB) )
-                return ( Image<Representation> ) ( object ) new RGBImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(BGR) )
-                return ( Image<Representation> ) ( object ) new BGRImage(data.Value , width , height);
-
-            if ( typeof(Representation) == typeof(RGBA) )
-                return ( Image<Representation> ) ( object ) new RGBAImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(BGRA) )
-                return ( Image<Representation> ) ( object ) new BGRAImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(ARGB) )
-                return ( Image<Representation> ) ( object ) new ARGBImage(data.Value , width , height);
-            if ( typeof(Representation) == typeof(ABGR) )
-                return ( Image<Representation> ) ( object ) new ABGRImage(data.Value , width , height);
-
-            if ( typeof(Representation) == typeof(HSL) )
-                return ( Image<Representation> ) ( object ) new HSLImage(data.Value , width , height);
 
             return new Image<Representation>(width , height);
         }
@@ -591,7 +597,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Clone an image(Will choose acording to optimized constructor, custom types will not be considered)
         /// </summary>
         /// <returns></returns>
-        public Image<Representation> Clone()
+        public virtual Image<Representation> Clone()
         {
             Image<Representation> dest = Create(width,height);
             dest.CopyFrom(dataPointer);
@@ -599,10 +605,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public virtual Representation Get(double x , double y)
         {
+            if ( getter != null )
+                return getter(Get , Size , x , y);
             return Get(( int ) x , ( int ) y);
         }
-        public virtual Representation Average(double x,double y,double w,double h)
+        public virtual Representation Average(double x , double y , double w , double h)
         {
+            if ( averager != null )
+                return averager(Get , x , y , w , h);
             return Get(x + w / 2 , y + w / 2);
         }
         public Representation Get(PointF pt)
@@ -611,38 +621,92 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public Representation Average(RectangleF r)
         {
-            return Average(r.X,r.Y,r.Width,r.Height);
+            return Average(r.X , r.Y , r.Width , r.Height);
         }
+        
     }
-    /// <summary>
-    /// Optimized image for ARGB_16bit
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class HighRangeImage : Image<ARGB_16bit>
-    {
-        ARGB_16bit* ptr;
-        /// <summary>
-        /// Optimized image for ARGB_16bit
-        /// </summary>
-        public HighRangeImage(int w , int h) : base(w , h)
-        {
-            ptr = ( ARGB_16bit* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for ARGB_16bit
-        /// </summary>
-        public HighRangeImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( ARGB_16bit* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override ARGB_16bit this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
 
-        public override ARGB_16bit Get(double x , double y)
+    public static class Image
+    {
+        public static Dictionary<Type , Func<Func<int,int,object>,Size,double , double , object>> GetFunctions = new Dictionary<Type, Func<Func<int,int,object>,Size,double, double, object>>();
+        public static Dictionary<Type , Func<Func<int,int,object>,double,double, double , double , object>> AverageFunctions = new Dictionary<Type, Func<Func<int,int,object>,double, double,double, double, object>>();
+
+        public static Func<Func<int , int , T> , Size , double , double , T> GetGetterFunction<T>()
+            where T : unmanaged
+        {
+            var t = typeof(T);
+            if ( !GetFunctions.ContainsKey(t) )
+                RegisterGetFunction<T>(Get);
+            return (g , s , x , y) => ( T ) GetFunctions[t]((x2 , y2) => g(x2 , y2) , s , x , y);
+        }
+        public static Func<Func<int , int , T> , double , double , double , double , T> GetAverageFunction<T>()
+            where T : unmanaged
+        {
+            var t = typeof(T);
+            if ( !AverageFunctions.ContainsKey(t) )
+                RegisterAverageFunction<T>(Average);
+            return (g , x , y , z , w) => ( T ) AverageFunctions[t]((x2 , y2) => g(x2 , y2) , x , y , z , w);
+        }
+        public static void RegisterGetFunction<T>(Func<Func<int , int , T> , Size , double , double , T> func)
+            where T : unmanaged
+        {
+            var t = typeof(T);
+            GetFunctions[t] = (g , s , x , y) => func((x2 , y2) => ( T ) g(x2 , y2) , s , x , y);
+        }
+        public static void RegisterAverageFunction<T>(Func<Func<int , int , T> , double , double , double , double , T> func)
+            where T : unmanaged
+        {
+            var t = typeof(T);
+            AverageFunctions[t] = (g , x , y , z , w) => func((x2 , y2) => ( T ) g(x2 , y2) , x , y , z , w);
+        }
+
+        static Image()
+        {
+            RegisterGetFunction<ARGB_16bit>(Get);
+            RegisterGetFunction<ARGB_Float>(Get);
+            RegisterGetFunction<float>(Get);
+            RegisterAverageFunction<ARGB_16bit>(Average);
+            RegisterAverageFunction<ARGB_Float>(Average);
+            RegisterAverageFunction<float>(Average);
+
+            //Autogenerated
+            RegisterGetFunction<BGR>(Get);
+            RegisterGetFunction<BGRA>(Get);
+            RegisterGetFunction<RGB>(Get);
+            RegisterGetFunction<RGBA>(Get);
+            RegisterGetFunction<ABGR>(Get);
+            RegisterGetFunction<ARGB>(Get);
+
+            RegisterGetFunction<_1555>(Get);
+            RegisterGetFunction<_332>(Get);
+            RegisterGetFunction<_555>(Get);
+            RegisterGetFunction<_565>(Get);
+
+            RegisterGetFunction<HSB>(Get);
+            RegisterGetFunction<HSL>(Get);
+            RegisterGetFunction<HSBA>(Get);
+            RegisterGetFunction<HSB_Float>(Get);
+            RegisterGetFunction<CYMK>(Get);
+
+            RegisterAverageFunction<BGR>(Average);
+            RegisterAverageFunction<BGRA>(Average);
+            RegisterAverageFunction<RGB>(Average);
+            RegisterAverageFunction<RGBA>(Average);
+            RegisterAverageFunction<ABGR>(Average);
+            RegisterAverageFunction<ARGB>(Average);
+
+            RegisterAverageFunction<_1555>(Average);
+            RegisterAverageFunction<_332>(Average);
+            RegisterAverageFunction<_555>(Average);
+            RegisterAverageFunction<_565>(Average);
+
+            RegisterAverageFunction<HSB>(Average);
+            RegisterAverageFunction<HSL>(Average);
+            RegisterAverageFunction<HSBA>(Average);
+            RegisterAverageFunction<HSB_Float>(Average);
+            RegisterAverageFunction<CYMK>(Average);
+        }
+        public static ARGB_16bit Get(Func<int , int , ARGB_16bit> getter , Size size , double x , double y)
         {
             var ix = (int)x;
             var iy = (int)y;
@@ -650,17 +714,17 @@ namespace MoyskleyTech.ImageProcessing.Image
             var dy = y-iy;
 
             if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
+                return getter(ix , iy);
 
             var dx2 = 1-dx;
             var dy2 = 1-dy;
 
-            var ipx = this[ix,iy];
+            var ipx = getter(ix,iy);
 
             double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
             if ( ix > 0 )
             {
-                var px = this[ix , iy];
+                var px = getter(ix , iy);
                 sa += px.A * dx2;
                 sr += px.R * dx2;
                 sg += px.G * dx2;
@@ -668,23 +732,23 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             if ( iy > 0 )
             {
-                var px=this[ix , iy];
+                var px=getter(ix , iy);
                 sa += px.A * dy2;
                 sr += px.R * dy2;
                 sg += px.G * dy2;
                 sb += px.B * dy2;
             }
-            if ( ix < width - 1 )
+            if ( ix < size.Width - 1 )
             {
-                var px = this[ix + 1 , iy];
+                var px = getter(ix + 1 , iy);
                 sa += px.A * dx;
                 sr += px.R * dx;
                 sg += px.G * dx;
                 sb += px.B * dx;
             }
-            if ( iy < height - 1 )
+            if ( iy < size.Height - 1 )
             {
-                var px = this[ix,iy+1];
+                var px = getter(ix,iy+1);
                 sa += px.A * dy;
                 sr += px.R * dy;
                 sg += px.G * dy;
@@ -699,7 +763,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             };
             return destinationpx;
         }
-        public override ARGB_16bit Average(double x , double y , double w , double h)
+        public static ARGB_16bit Average(Func<int , int , ARGB_16bit> getter , double x , double y , double w , double h)
         {
             var sex = x+w;
             var sey = y+w;
@@ -714,7 +778,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 for ( var j = sy; j < sey; j++ )
                 {
                     count++;
-                    ARGB_16bit source = this[i,j];
+                    ARGB_16bit source = getter(i,j);
                     acount += source.A;
                     sa += source.A;
                     sr += source.R;
@@ -734,36 +798,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return destinationpx;
         }
-    }
-    /// <summary>
-    /// Optimized image for ARGB_Float
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class SuperHighRangeImage : Image<ARGB_Float>
-    {
-        ARGB_Float* ptr;
-        /// <summary>
-        /// Optimized image for ARGB_Float
-        /// </summary>
-        public SuperHighRangeImage(int w , int h) : base(w , h)
-        {
-            ptr = ( ARGB_Float* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for ARGB_Float
-        /// </summary>
-        public SuperHighRangeImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( ARGB_Float* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override ARGB_Float this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-        public override ARGB_Float Get(double x , double y)
+        public static ARGB_Float Get(Func<int , int , ARGB_Float> getter , Size size , double x , double y)
         {
             var ix = (int)x;
             var iy = (int)y;
@@ -771,17 +806,17 @@ namespace MoyskleyTech.ImageProcessing.Image
             var dy = y-iy;
 
             if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
+                return getter(ix , iy);
 
             var dx2 = 1-dx;
             var dy2 = 1-dy;
 
-            var ipx = this[ix,iy];
+            var ipx = getter(ix,iy);
 
             double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
             if ( ix > 0 )
             {
-                var px = this[ix , iy];
+                var px = getter(ix , iy);
                 sa += px.A * dx2;
                 sr += px.R * dx2;
                 sg += px.G * dx2;
@@ -789,23 +824,23 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             if ( iy > 0 )
             {
-                var px=this[ix , iy];
+                var px=getter(ix , iy);
                 sa += px.A * dy2;
                 sr += px.R * dy2;
                 sg += px.G * dy2;
                 sb += px.B * dy2;
             }
-            if ( ix < width - 1 )
+            if ( ix < size.Width - 1 )
             {
-                var px = this[ix + 1 , iy];
+                var px = getter(ix + 1 , iy);
                 sa += px.A * dx;
                 sr += px.R * dx;
                 sg += px.G * dx;
                 sb += px.B * dx;
             }
-            if ( iy < height - 1 )
+            if ( iy < size.Height - 1 )
             {
-                var px = this[ix,iy+1];
+                var px = getter(ix,iy+1);
                 sa += px.A * dy;
                 sr += px.R * dy;
                 sg += px.G * dy;
@@ -820,7 +855,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             };
             return destinationpx;
         }
-        public override ARGB_Float Average(double x , double y , double w , double h)
+        public static ARGB_Float Average(Func<int , int , ARGB_Float> getter , double x , double y , double w , double h)
         {
             var sex = x+w;
             var sey = y+w;
@@ -835,7 +870,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 for ( var j = sy; j < sey; j++ )
                 {
                     count++;
-                    ARGB_Float source = this[i,j];
+                    ARGB_Float source = getter(i,j);
                     acount += source.A;
                     sa += source.A;
                     sr += source.R;
@@ -849,42 +884,13 @@ namespace MoyskleyTech.ImageProcessing.Image
             };
             if ( acount > 0 )
             {
-                destinationpx.R = ( float ) ( sr  / acount );
-                destinationpx.G = ( float ) ( sg  / acount );
-                destinationpx.B = ( float ) ( sb  / acount );
+                destinationpx.R = ( float ) ( sr / acount );
+                destinationpx.G = ( float ) ( sg / acount );
+                destinationpx.B = ( float ) ( sb / acount );
             }
             return destinationpx;
         }
-    }
-    /// <summary>
-    /// Optimized image for float
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class OneBandFloatImage : Image<float>
-    {
-        float* ptr;
-        /// <summary>
-        /// Optimized image for float
-        /// </summary>
-        public OneBandFloatImage(int w , int h) : base(w , h)
-        {
-            ptr = ( float* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for float
-        /// </summary>
-        public OneBandFloatImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( float* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override float this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-        public override float Get(double x , double y)
+        public static float Get(Func<int , int , float> getter , Size size , double x , double y)
         {
             var ix = (int)x;
             var iy = (int)y;
@@ -892,37 +898,37 @@ namespace MoyskleyTech.ImageProcessing.Image
             var dy = y-iy;
 
             if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
+                return getter(ix , iy);
 
             var dx2 = 1-dx;
             var dy2 = 1-dy;
 
-            var ipx = this[ix,iy];
+            var ipx = getter(ix,iy);
 
             double sa=ipx;
             if ( ix > 0 )
             {
-                var px = this[ix , iy];
+                var px = getter(ix , iy);
                 sa += px * dx2;
             }
             if ( iy > 0 )
             {
-                var px=this[ix , iy];
+                var px=getter(ix , iy);
                 sa += px * dy2;
             }
-            if ( ix < width - 1 )
+            if ( ix < size.Width - 1 )
             {
-                var px = this[ix + 1 , iy];
+                var px = getter(ix + 1 , iy);
                 sa += px * dx;
             }
-            if ( iy < height - 1 )
+            if ( iy < size.Height - 1 )
             {
-                var px = this[ix,iy+1];
+                var px = getter(ix,iy+1);
                 sa += px * dy;
             }
-            return (float)sa/3;
+            return ( float ) sa / 3;
         }
-        public override float Average(double x , double y , double w , double h)
+        public static float Average(Func<int , int , float> getter , double x , double y , double w , double h)
         {
             var sex = x+w;
             var sey = y+w;
@@ -936,970 +942,26 @@ namespace MoyskleyTech.ImageProcessing.Image
                 for ( var j = sy; j < sey; j++ )
                 {
                     count++;
-                    float source = this[i,j];
+                    float source = getter(i,j);
                     acount += source;
                 }
             }
-            
-            return (float)acount/count;
-        }
-    }
-    /// <summary>
-    /// Optimized image for _1555
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class _1555Image : Image<_1555>
-    {
-        _1555* ptr;
-        /// <summary>
-        /// Optimized image for _1555
-        /// </summary>
-        public _1555Image(int w , int h) : base(w , h)
-        {
-            ptr = ( _1555* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for _1555
-        /// </summary>
-        public _1555Image(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( _1555* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override _1555 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for _555
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class _555Image : Image<_555>
-    {
-        _555* ptr;
-        /// <summary>
-        /// Optimized image for _555
-        /// </summary>
-        public _555Image(int w , int h) : base(w , h)
-        {
-            ptr = ( _555* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for _555
-        /// </summary>
-        public _555Image(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( _555* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override _555 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for _565
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class _565Image : Image<_565>
-    {
-        _565* ptr;
-        /// <summary>
-        /// Optimized image for _565
-        /// </summary>
-        public _565Image(int w , int h) : base(w , h)
-        {
-            ptr = ( _565* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for _565
-        /// </summary>
-        public _565Image(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( _565* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override _565 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for HSBA
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class HSBAImage : Image<HSBA>
-    {
-        HSBA* ptr;
-        /// <summary>
-        /// Optimized image for HSBA
-        /// </summary>
-        public HSBAImage(int w , int h) : base(w , h)
-        {
-            ptr = ( HSBA* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for HSBA
-        /// </summary>
-        public HSBAImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( HSBA* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override HSBA this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for CYMK
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class CYMKImage : Image<CYMK>
-    {
-        CYMK* ptr;
-        /// <summary>
-        /// Optimized image for CYMK
-        /// </summary>
-        public CYMKImage(int w , int h) : base(w , h)
-        {
-            ptr = ( CYMK* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for CYMK
-        /// </summary>
-        public CYMKImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( CYMK* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override CYMK this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for HSL
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class HSLImage : Image<HSL>
-    {
-        HSL* ptr;
-        /// <summary>
-        /// Optimized image for HSL
-        /// </summary>
-        public HSLImage(int w , int h) : base(w , h)
-        {
-            ptr = ( HSL* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for HSL
-        /// </summary>
-        public HSLImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( HSL* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override HSL this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for HSB_Float
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class HSB_FloatImage : Image<HSB_Float>
-    {
-        HSB_Float* ptr;
-        /// <summary>
-        /// Optimized image for HSB_Float
-        /// </summary>
-        public HSB_FloatImage(int w , int h) : base(w , h)
-        {
-            ptr = ( HSB_Float* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for HSB_Float
-        /// </summary>
-        public HSB_FloatImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( HSB_Float* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override HSB_Float this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for BGR
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class BGRImage : Image<BGR>
-    {
-        BGR* ptr;
-        /// <summary>
-        /// Optimized image for BGR
-        /// </summary>
-        public BGRImage(int w , int h) : base(w , h)
-        {
-            ptr = ( BGR* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for BGR
-        /// </summary>
-        public BGRImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( BGR* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override BGR this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
 
-
-        public override BGR Get(double x , double y)
-        {
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x-ix;
-            var dy = y-iy;
-
-            if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
-
-            var dx2 = 1-dx;
-            var dy2 = 1-dy;
-
-            var ipx = this[ix,iy];
-
-            double sr=ipx.R,sg=ipx.G,sb=ipx.B;
-            if ( ix > 0 )
-            {
-                var px = this[ix , iy];
-                sr += px.R * dx2;
-                sg += px.G * dx2;
-                sb += px.B * dx2;
-            }
-            if ( iy > 0 )
-            {
-                var px=this[ix , iy];
-                sr += px.R * dy2;
-                sg += px.G * dy2;
-                sb += px.B * dy2;
-            }
-            if ( ix < width - 1 )
-            {
-                var px = this[ix + 1 , iy];
-                sr += px.R * dx;
-                sg += px.G * dx;
-                sb += px.B * dx;
-            }
-            if ( iy < height - 1 )
-            {
-                var px = this[ix,iy+1];
-                sr += px.R * dy;
-                sg += px.G * dy;
-                sb += px.B * dy;
-            }
-            BGR destinationpx = new BGR()
-            {
-                R = ( byte ) ( sr / 3 ),
-                G = ( byte ) ( sg / 3 ),
-                B = ( byte ) ( sb / 3 )
-            };
-            return destinationpx;
+            return ( float ) acount / count;
         }
-        public override BGR Average(double x , double y , double w , double h)
+        public static T Get<T>(Func<int , int , T> getter , Size size , double x , double y)
+            where T : unmanaged
         {
-            var sex = x+w;
-            var sey = y+w;
-            var sx = (int)x;
-            var sy = (int)y;
-
-            ulong count=0;
-            ulong sa=0,sr=0,sg=0,sb=0;
-            for ( var i = sx; i < sex; i++ )
-            {
-                for ( var j = sy; j < sey; j++ )
-                {
-                    count++;
-                    BGR source = this[i,j];
-                    sr += source.R;
-                    sg += source.G;
-                    sb += source.B;
-                }
-            }
-            BGR destinationpx = new BGR
-            {
-                B = ( byte ) ( sr / count ),
-                G = ( byte ) ( sr / count ),
-                R = ( byte ) ( sr / count )
-            };
-            return destinationpx;
+            var converter1 = ColorConvert.GetConversionFrom<T,ARGB_Float>();
+            var converter2 = ColorConvert.GetConversionFrom<ARGB_Float,T>();
+            return converter2(Get((x2 , y2) => converter1(getter(x2 , y2)) , size , x , y));
         }
-    }
-    /// <summary>
-    /// Optimized image for RGB
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class RGBImage : Image<RGB>
-    {
-        RGB* ptr;
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public RGBImage(int w , int h) : base(w , h)
+        public static T Average<T>(Func<int , int , T> getter , double x , double y , double w , double h)
+            where T : unmanaged
         {
-            ptr = ( RGB* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public RGBImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( RGB* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override RGB this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-
-        public override RGB Get(double x , double y)
-        {
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x-ix;
-            var dy = y-iy;
-
-            if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
-
-            var dx2 = 1-dx;
-            var dy2 = 1-dy;
-
-            var ipx = this[ix,iy];
-
-            double sr=ipx.R,sg=ipx.G,sb=ipx.B;
-            if ( ix > 0 )
-            {
-                var px = this[ix , iy];
-                sr += px.R * dx2;
-                sg += px.G * dx2;
-                sb += px.B * dx2;
-            }
-            if ( iy > 0 )
-            {
-                var px=this[ix , iy];
-                sr += px.R * dy2;
-                sg += px.G * dy2;
-                sb += px.B * dy2;
-            }
-            if ( ix < width - 1 )
-            {
-                var px = this[ix + 1 , iy];
-                sr += px.R * dx;
-                sg += px.G * dx;
-                sb += px.B * dx;
-            }
-            if ( iy < height - 1 )
-            {
-                var px = this[ix,iy+1];
-                sr += px.R * dy;
-                sg += px.G * dy;
-                sb += px.B * dy;
-            }
-            RGB destinationpx = new RGB()
-            {
-                R = ( byte ) ( sr / 3 ),
-                G = ( byte ) ( sg / 3 ),
-                B = ( byte ) ( sb / 3 )
-            };
-            return destinationpx;
-        }
-        public override RGB Average(double x , double y , double w , double h)
-        {
-            var sex = x+w;
-            var sey = y+w;
-            var sx = (int)x;
-            var sy = (int)y;
-
-            ulong count=0;
-            ulong sa=0,sr=0,sg=0,sb=0;
-            for ( var i = sx; i < sex; i++ )
-            {
-                for ( var j = sy; j < sey; j++ )
-                {
-                    count++;
-                    RGB source = this[i,j];
-                    sr += source.R;
-                    sg += source.G;
-                    sb += source.B;
-                }
-            }
-            RGB destinationpx = new RGB
-            {
-                B = ( byte ) ( sr / count ),
-                G = ( byte ) ( sr / count ),
-                R = ( byte ) ( sr / count )
-            };
-            return destinationpx;
-        }
-    }
-    /// <summary>
-    /// Optimized image for _332
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class _332Image : Image<_332>
-    {
-        _332* ptr;
-        /// <summary>
-        /// Optimized image for _332
-        /// </summary>
-        public _332Image(int w , int h) : base(w , h)
-        {
-            ptr = ( _332* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for _332
-        /// </summary>
-        public _332Image(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( _332* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override _332 this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-    /// <summary>
-    /// Optimized image for Bool
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class BoolImage : Image<bool>
-    {
-        bool* ptr;
-        /// <summary>
-        /// Optimized image for Bool
-        /// </summary>
-        public BoolImage(int w , int h) : base(w , h)
-        {
-            ptr = ( bool* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for bool
-        /// </summary>
-        public BoolImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( bool* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override bool this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-    }
-
-
-    /// <summary>
-    /// Optimized image for RGB
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class RGBAImage : Image<RGBA>
-    {
-        RGBA* ptr;
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public RGBAImage(int w , int h) : base(w , h)
-        {
-            ptr = ( RGBA* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public RGBAImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( RGBA* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override RGBA this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-        public override RGBA Get(double x , double y)
-        {
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x-ix;
-            var dy = y-iy;
-
-            if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
-
-            var dx2 = 1-dx;
-            var dy2 = 1-dy;
-
-            var ipx = this[ix,iy];
-
-            double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
-            if ( ix > 0 )
-            {
-                var px = this[ix , iy];
-                sa += px.A * dx2;
-                sr += px.R * dx2;
-                sg += px.G * dx2;
-                sb += px.B * dx2;
-            }
-            if ( iy > 0 )
-            {
-                var px=this[ix , iy];
-                sa += px.A * dy2;
-                sr += px.R * dy2;
-                sg += px.G * dy2;
-                sb += px.B * dy2;
-            }
-            if ( ix < width - 1 )
-            {
-                var px = this[ix + 1 , iy];
-                sa += px.A * dx;
-                sr += px.R * dx;
-                sg += px.G * dx;
-                sb += px.B * dx;
-            }
-            if ( iy < height - 1 )
-            {
-                var px = this[ix,iy+1];
-                sa += px.A * dy;
-                sr += px.R * dy;
-                sg += px.G * dy;
-                sb += px.B * dy;
-            }
-            RGBA destinationpx = new RGBA()
-            {
-                R = ( byte ) ( sr / 3 ),
-                G = ( byte ) ( sg / 3 ),
-                B = ( byte ) ( sb / 3 ),
-                A = ( byte ) ( sa / 3 )
-            };
-            return destinationpx;
-        }
-        public override RGBA Average(double x , double y , double w , double h)
-        {
-            var sex = x+w;
-            var sey = y+w;
-            var sx = (int)x;
-            var sy = (int)y;
-
-            ulong count=0;
-            ulong acount=0;
-            ulong sa=0,sr=0,sg=0,sb=0;
-            for ( var i = sx; i < sex; i++ )
-            {
-                for ( var j = sy; j < sey; j++ )
-                {
-                    count++;
-                    RGBA source = this[i,j];
-                    acount += source.A;
-                    sa += source.A;
-                    sr += source.R;
-                    sg += source.G;
-                    sb += source.B;
-                }
-            }
-            RGBA destinationpx = new RGBA
-            {
-                A = ( byte ) ( sa / count )
-            };
-            if ( acount > 0 )
-            {
-                destinationpx.R = ( byte ) ( sr * 255 / acount );
-                destinationpx.G = ( byte ) ( sg * 255 / acount );
-                destinationpx.B = ( byte ) ( sb * 255 / acount );
-            }
-            return destinationpx;
-        }
-    }
-    /// <summary>
-    /// Optimized image for RGB
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class ARGBImage : Image<ARGB>
-    {
-        ARGB* ptr;
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public ARGBImage(int w , int h) : base(w , h)
-        {
-            ptr = ( ARGB* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public ARGBImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( ARGB* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override ARGB this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-        public override ARGB Get(double x , double y)
-        {
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x-ix;
-            var dy = y-iy;
-
-            if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
-
-            var dx2 = 1-dx;
-            var dy2 = 1-dy;
-
-            var ipx = this[ix,iy];
-
-            double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
-            if ( ix > 0 )
-            {
-                var px = this[ix , iy];
-                sa += px.A * dx2;
-                sr += px.R * dx2;
-                sg += px.G * dx2;
-                sb += px.B * dx2;
-            }
-            if ( iy > 0 )
-            {
-                var px=this[ix , iy];
-                sa += px.A * dy2;
-                sr += px.R * dy2;
-                sg += px.G * dy2;
-                sb += px.B * dy2;
-            }
-            if ( ix < width - 1 )
-            {
-                var px = this[ix + 1 , iy];
-                sa += px.A * dx;
-                sr += px.R * dx;
-                sg += px.G * dx;
-                sb += px.B * dx;
-            }
-            if ( iy < height - 1 )
-            {
-                var px = this[ix,iy+1];
-                sa += px.A * dy;
-                sr += px.R * dy;
-                sg += px.G * dy;
-                sb += px.B * dy;
-            }
-            ARGB destinationpx = new ARGB()
-            {
-                R = ( byte ) ( sr / 3 ),
-                G = ( byte ) ( sg / 3 ),
-                B = ( byte ) ( sb / 3 ),
-                A = ( byte ) ( sa / 3 )
-            };
-            return destinationpx;
-        }
-        public override ARGB Average(double x , double y , double w , double h)
-        {
-            var sex = x+w;
-            var sey = y+w;
-            var sx = (int)x;
-            var sy = (int)y;
-
-            ulong count=0;
-            ulong acount=0;
-            ulong sa=0,sr=0,sg=0,sb=0;
-            for ( var i = sx; i < sex; i++ )
-            {
-                for ( var j = sy; j < sey; j++ )
-                {
-                    count++;
-                    ARGB source = this[i,j];
-                    acount += source.A;
-                    sa += source.A;
-                    sr += source.R;
-                    sg += source.G;
-                    sb += source.B;
-                }
-            }
-            ARGB destinationpx = new ARGB
-            {
-                A = ( byte ) ( sa / count )
-            };
-            if ( acount > 0 )
-            {
-                destinationpx.R = ( byte ) ( sr * 255 / acount );
-                destinationpx.G = ( byte ) ( sg * 255 / acount );
-                destinationpx.B = ( byte ) ( sb * 255 / acount );
-            }
-            return destinationpx;
-        }
-    }
-    /// <summary>
-    /// Optimized image for RGB
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class ABGRImage : Image<ABGR>
-    {
-        ABGR* ptr;
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public ABGRImage(int w , int h) : base(w , h)
-        {
-            ptr = ( ABGR* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public ABGRImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( ABGR* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override ABGR this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-        public override ABGR Get(double x , double y)
-        {
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x-ix;
-            var dy = y-iy;
-
-            if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
-
-            var dx2 = 1-dx;
-            var dy2 = 1-dy;
-
-            var ipx = this[ix,iy];
-
-            double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
-            if ( ix > 0 )
-            {
-                var px = this[ix , iy];
-                sa += px.A * dx2;
-                sr += px.R * dx2;
-                sg += px.G * dx2;
-                sb += px.B * dx2;
-            }
-            if ( iy > 0 )
-            {
-                var px=this[ix , iy];
-                sa += px.A * dy2;
-                sr += px.R * dy2;
-                sg += px.G * dy2;
-                sb += px.B * dy2;
-            }
-            if ( ix < width - 1 )
-            {
-                var px = this[ix + 1 , iy];
-                sa += px.A * dx;
-                sr += px.R * dx;
-                sg += px.G * dx;
-                sb += px.B * dx;
-            }
-            if ( iy < height - 1 )
-            {
-                var px = this[ix,iy+1];
-                sa += px.A * dy;
-                sr += px.R * dy;
-                sg += px.G * dy;
-                sb += px.B * dy;
-            }
-            ABGR destinationpx = new ABGR()
-            {
-                R = ( byte ) ( sr / 3 ),
-                G = ( byte ) ( sg / 3 ),
-                B = ( byte ) ( sb / 3 ),
-                A = ( byte ) ( sa / 3 )
-            };
-            return destinationpx;
-        }
-        public override ABGR Average(double x , double y , double w , double h)
-        {
-            var sex = x+w;
-            var sey = y+w;
-            var sx = (int)x;
-            var sy = (int)y;
-
-            ulong count=0;
-            ulong acount=0;
-            ulong sa=0,sr=0,sg=0,sb=0;
-            for ( var i = sx; i < sex; i++ )
-            {
-                for ( var j = sy; j < sey; j++ )
-                {
-                    count++;
-                    ABGR source = this[i,j];
-                    acount += source.A;
-                    sa += source.A;
-                    sr += source.R;
-                    sg += source.G;
-                    sb += source.B;
-                }
-            }
-            ABGR destinationpx = new ABGR
-            {
-                A = ( byte ) ( sa / count )
-            };
-            if ( acount > 0 )
-            {
-                destinationpx.R = ( byte ) ( sr * 255 / acount );
-                destinationpx.G = ( byte ) ( sg * 255 / acount );
-                destinationpx.B = ( byte ) ( sb * 255 / acount );
-            }
-            return destinationpx;
-        }
-    }
-    /// <summary>
-    /// Optimized image for RGB
-    /// </summary>
-    [NotSerialized]
-    public unsafe partial class BGRAImage : Image<BGRA>
-    {
-        BGRA* ptr;
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public BGRAImage(int w , int h) : base(w , h)
-        {
-            ptr = ( BGRA* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Optimized image for RGB
-        /// </summary>
-        public BGRAImage(IntPtr data , int w , int h) : base(data , w , h)
-        {
-            ptr = ( BGRA* ) base.dataPointer;
-        }
-        /// <summary>
-        /// Accessor
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public override BGRA this[int pos] { get => ptr[pos]; set => ptr[pos] = value; }
-
-        public override BGRA Get(double x , double y)
-        {
-            var ix = (int)x;
-            var iy = (int)y;
-            var dx = x-ix;
-            var dy = y-iy;
-
-            if ( dx == 0 && dy == 0 )
-                return Get(ix , iy);
-
-            var dx2 = 1-dx;
-            var dy2 = 1-dy;
-
-            var ipx = this[ix,iy];
-
-            double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
-            if ( ix > 0 )
-            {
-                var px = this[ix , iy];
-                sa += px.A * dx2;
-                sr += px.R * dx2;
-                sg += px.G * dx2;
-                sb += px.B * dx2;
-            }
-            if ( iy > 0 )
-            {
-                var px=this[ix , iy];
-                sa += px.A * dy2;
-                sr += px.R * dy2;
-                sg += px.G * dy2;
-                sb += px.B * dy2;
-            }
-            if ( ix < width - 1 )
-            {
-                var px = this[ix + 1 , iy];
-                sa += px.A * dx;
-                sr += px.R * dx;
-                sg += px.G * dx;
-                sb += px.B * dx;
-            }
-            if ( iy < height - 1 )
-            {
-                var px = this[ix,iy+1];
-                sa += px.A * dy;
-                sr += px.R * dy;
-                sg += px.G * dy;
-                sb += px.B * dy;
-            }
-            BGRA destinationpx = new BGRA()
-            {
-                R = ( byte ) ( sr / 3 ),
-                G = ( byte ) ( sg / 3 ),
-                B = ( byte ) ( sb / 3 ),
-                A = ( byte ) ( sa / 3 )
-            };
-            return destinationpx;
-        }
-        public override BGRA Average(double x , double y , double w , double h)
-        {
-            var sex = x+w;
-            var sey = y+w;
-            var sx = (int)x;
-            var sy = (int)y;
-
-            ulong count=0;
-            ulong acount=0;
-            ulong sa=0,sr=0,sg=0,sb=0;
-            for ( var i = sx; i < sex; i++ )
-            {
-                for ( var j = sy; j < sey; j++ )
-                {
-                    count++;
-                    BGRA source = this[i,j];
-                    acount += source.A;
-                    sa += source.A;
-                    sr += source.R;
-                    sg += source.G;
-                    sb += source.B;
-                }
-            }
-            BGRA destinationpx = new BGRA
-            {
-                A = ( byte ) ( sa / count )
-            };
-            if ( acount > 0 )
-            {
-                destinationpx.R = ( byte ) ( sr * 255 / acount );
-                destinationpx.G = ( byte ) ( sg * 255 / acount );
-                destinationpx.B = ( byte ) ( sb * 255 / acount );
-            }
-            return destinationpx;
+            var converter1 = ColorConvert.GetConversionFrom<T,ARGB_Float>();
+            var converter2 = ColorConvert.GetConversionFrom<ARGB_Float,T>();
+            return converter2(Average((x2 , y2) => converter1(getter(x2 , y2)) , x , y , w , h));
         }
     }
 }

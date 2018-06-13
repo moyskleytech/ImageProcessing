@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MoyskleyTech.ImageProcessing.Image
 {
@@ -23,13 +25,17 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="bmp">Bitmap to save</param>
         /// <param name="s">Destination</param>
-        void Save(Bitmap bmp,Stream s);
+        void Save<T>(ImageProxy<T> bmp , Stream s)
+            where T : unmanaged;
         /// <summary>
         /// Create a bitmap from a stream using the codec
         /// </summary>
         /// <param name="s">Source</param>
         /// <returns></returns>
-        Bitmap DecodeStream(Stream s);
+        Image<Pixel> DecodeStream(Stream s);
+        IEnumerable<ColorPoint<T>> ReadData<T>(Stream s)
+            where T : unmanaged;
+        Image<T> ReadImage<T>(Stream s) where T : unmanaged;
     }
     /// <summary>
     /// Base interface for decoding, should be used inside of Codec only
@@ -50,7 +56,12 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Read the data
         /// </summary>
         /// <returns></returns>
-        Bitmap ReadBitmap();
+        Image<Pixel> ReadBitmap();
+
+        IEnumerable<ColorPoint<T>> ReadData<T>()
+            where T : struct;
+        int Height { get; }
+        int Width { get; }
     }
     
 }

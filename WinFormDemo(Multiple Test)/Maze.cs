@@ -209,7 +209,6 @@ namespace WinFormDemo_Multiple_Test_
         private void InitialFill(int left , int top , int cellCountH , int cellCountV)
         {
             const int mx=BASE_CLOCK/CELL_WIDTH;
-            int ct=mx;
             List<Point> C = new List<Point>();
             if ( moved || modified )
                 C.AddRange(

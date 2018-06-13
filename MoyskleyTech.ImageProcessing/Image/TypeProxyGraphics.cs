@@ -11,8 +11,8 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="V"></typeparam>
     public class TypeProxyGraphics<T,V> : Graphics<T>
-        where T:struct
-        where V:struct
+        where T: unmanaged
+        where V: unmanaged
     {
         private Graphics<V> graphics;
         private Func<T , V> func;
@@ -107,10 +107,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             graphics.DrawFormattedString(str , func(p) , x , y , f , size);
         }
-        public override void DrawImage(Image<T> source , int x , int y)
+        public override void DrawImage(ImageProxy<T> source , int x , int y)
         {
-            var tmp=source.ConvertTo<V>();
+            var tmp=source.ToImage<V>();
             graphics.DrawImage(tmp , x , y);
+            tmp.Dispose();
+        }
+        public override void DrawImage(ImageProxy<T> source , int x , int y , int width , int height)
+        {
+            var tmp=source.ToImage<V>();
+            graphics.DrawImage(tmp , x , y,width,height);
             tmp.Dispose();
         }
         public override void DrawLine(Brush<T> p , double x , double y , double x2 , double y2)
@@ -331,5 +337,29 @@ namespace MoyskleyTech.ImageProcessing.Image
             graphics.TranslateTransform(x , y);
         }
         public override int Width { get => base.Width; set => base.Width = value; }
+        public override void DrawPath(Brush<T> p , int thickness , params PointF[ ] points)
+        {
+            graphics.DrawPath(funcB(p) , thickness , points);
+        }
+        public override void DrawPath(Brush<T> p , params PointF[ ] points)
+        {
+            graphics.DrawPath(funcB(p) , points);
+        }
+        public override void DrawPath(T p , int thickness , params PointF[ ] points)
+        {
+            graphics.DrawPath(func(p) , thickness , points);
+        }
+        public override void DrawPath(T p , params PointF[ ] points)
+        {
+            graphics.DrawPath(func(p) , points);
+        }
+        public override void DrawString(string text , FontSizeF font , T foreColor , Rectangle textBound , StringFormat textAlign)
+        {
+            graphics.DrawString(text , font , func(foreColor) , textBound , textAlign);
+        }
+        public override void DrawString(string text , FontSizeF font , Brush<T> color , Rectangle area , StringFormat sf)
+        {
+            graphics.DrawString(text , font , funcB(color) , area , sf);
+        }
     }
 }

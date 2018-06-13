@@ -14,7 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Video
     public class ColorVideoWriter
     {
         private Stream s;
-        private OneBandImage r,g,b;
+        private Image<byte> r,g,b;
         int ct;
         /// <summary>
         /// Minimum difference to write, 0 = best quality, 255 = 1 frame only
@@ -34,18 +34,15 @@ namespace MoyskleyTech.ImageProcessing.Video
         /// Write a frame to the video
         /// </summary>
         /// <param name="img"></param>
-        public void WriteFrame(Bitmap img)
+        public void WriteFrame(Image<BGR> img)
         {
             if ( r == null )
             {
                 s.Write(BitConverter.GetBytes(img.Width) , 0 , 4);
                 s.Write(BitConverter.GetBytes(img.Height) , 0 , 4);
-                r = new OneBandImage(img.Width , img.Height);
-                r.Clear(0);
-                g = new OneBandImage(img.Width , img.Height);
-                g.Clear(0);
-                b = new OneBandImage(img.Width , img.Height);
-                b.Clear(0);
+                r = Image<byte>.FilledWith(img.Width , img.Height,0);
+                g = Image<byte>.FilledWith(img.Width , img.Height , 0);
+                b = Image<byte>.FilledWith(img.Width , img.Height , 0);
                 ct = r.Height * r.Width;
             }
             WriteBand(r , img.GetRedBandImage() , Quality , s);
@@ -53,7 +50,7 @@ namespace MoyskleyTech.ImageProcessing.Video
             WriteBand(b , img.GetBlueBandImage() , Quality , s);
         }
 
-        private void WriteBand(OneBandImage r , OneBandImage img , byte quality , Stream s)
+        private void WriteBand(Image<byte> r , Image<byte> img , byte quality , Stream s)
         {
             var band=img;
             OneBandVideoWriter.WriteBand(r , img , Quality , s);

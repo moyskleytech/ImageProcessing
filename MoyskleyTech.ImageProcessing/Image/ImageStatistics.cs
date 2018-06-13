@@ -70,7 +70,29 @@ namespace MoyskleyTech.ImageProcessing.Image
             Saturation = new BandStatistics(from x in numberSelector select hsb[x].S , Band.Saturation);
             Brightness = new BandStatistics(from x in numberSelector select hsb[x].B , Band.Brightness);
             hsb.Dispose();
+        }
+        /// <summary>
+        /// Create the statistics from imageproxy
+        /// </summary>
+        /// <param name="bmp"></param>
+        public ImageStatistics(ImageProxy<HSB> hsb)
+        {
+            int ct = hsb.Width*hsb.Height;
 
+            var bmp = hsb.As<Pixel>();
+
+            var numberSelector = from x in Enumerable.Range(0 , ct) select x;
+            Alpha = new BandStatistics(from x in numberSelector select bmp[x].A , Band.Alpha);
+            Red = new BandStatistics(from x in numberSelector select bmp[x].R , Band.Red);
+            Green = new BandStatistics(from x in numberSelector select bmp[x].G , Band.Green);
+            Blue = new BandStatistics(from x in numberSelector select bmp[x].B , Band.Blue);
+            GrayTone = new BandStatistics(from x in numberSelector select bmp[x].GetGrayTone() , Band.Gray);
+
+            ColorStatistics = new ColorStatistics(from x in numberSelector select bmp[x]);
+
+            Hue = new BandStatistics(from x in numberSelector select hsb[x].H , Band.Hue);
+            Saturation = new BandStatistics(from x in numberSelector select hsb[x].S , Band.Saturation);
+            Brightness = new BandStatistics(from x in numberSelector select hsb[x].B , Band.Brightness);
         }
     }
     /// <summary>

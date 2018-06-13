@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using MoyskleyTech.ImageProcessing;
 namespace WinFormDemo_Multiple_Test_
 {
     public partial class SpeedTest : Form
@@ -24,7 +24,7 @@ namespace WinFormDemo_Multiple_Test_
             Image<Pixel> pxlImage = (Image<Pixel>)bitmap;
 
             DateTime begin=DateTime.Now;
-            HSBImage hsbImage = bitmap.ToHSB();
+            Image<HSB> hsbImage = bitmap.ToHSB();
             TimeSpan timeBMPtoHSB = DateTime.Now-begin;
             label1.Text  += "Bitmap to HSBImage "+timeBMPtoHSB+"\r\n";
             begin = DateTime.Now;

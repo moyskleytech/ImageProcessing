@@ -7,7 +7,7 @@ using MoyskleyTech.ImageProcessing.Image;
 
 namespace ImageProcessing.TGACodec
 {
-    public class TGACodec : MoyskleyTech.ImageProcessing.Image.IBitmapCodec
+    public class TGACodec : IBitmapCodec
     {
         public int SignatureLength
         {
@@ -25,6 +25,20 @@ namespace ImageProcessing.TGACodec
         public Bitmap DecodeStream(Stream s)
         {
             return TgaReader.Load(s);
+        }
+
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : struct
+        {
+            var converter = ColorConvert.GetConversionFrom<Pixel,T>();
+            var bmp=DecodeStream(s);
+            return from x in Enumerable.Range(0 , bmp.Width)
+                   from y in Enumerable.Range(0 , bmp.Height)
+                   select new ColorPoint<T>(x , y , converter(bmp[x , y]));
+        }
+
+        public Image<T> ReadImage<T>(Stream s) where T : struct
+        {
+            return DecodeStream(s).ConvertBufferTo<T>();
         }
 
         public void Save(Bitmap bmp , Stream s)
@@ -66,6 +80,11 @@ namespace ImageProcessing.TGACodec
                     s.WriteByte(px.R);
                     s.WriteByte(px.A);
                 }
+        }
+
+        public void Save<T>(ImageProxy<T> bmp , Stream s) where T : struct
+        {
+            throw new NotImplementedException();
         }
 
         private byte[ ] LittleEndian(ushort width)

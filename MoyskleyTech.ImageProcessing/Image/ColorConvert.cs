@@ -115,16 +115,16 @@ namespace MoyskleyTech.ImageProcessing.Image
             return (x) => b(a(( T ) x));
         }
         public static Brush<V> Convert<T, V>(Brush<T> b)
-            where T:struct
-            where V:struct
+            where T: unmanaged
+            where V: unmanaged
         {
             if ( b is SolidBrush<T> a )
                 return a.As<V>();
             return new ConvertedBrush<T,V>() { Brush = b , Converter = GetConversionFrom<T , V>() };
         }
         public static Image<V> Convert<T, V>(Image<T> b)
-           where T : struct
-           where V : struct
+           where T : unmanaged
+           where V : unmanaged
         {
             return b.ConvertTo<V>();
         }

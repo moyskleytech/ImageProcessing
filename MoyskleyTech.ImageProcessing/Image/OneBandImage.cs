@@ -5,99 +5,36 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Threading.Tasks;
-
-namespace MoyskleyTech.ImageProcessing.Image
+using MoyskleyTech.ImageProcessing.Image;
+namespace MoyskleyTech.ImageProcessing
 {
     /// <summary>
     /// Represent a Bitmap (Array of Pixel)
     /// </summary>
     [NotSerialized]
-    public unsafe partial class OneBandImage : Image<byte>, IDisposable
+    public static unsafe class OneBandImage 
     {
-        /// <summary>
-        /// Same as DataPointer
-        /// </summary>
-        public byte* Source { get => dataPointer; }
-        /// <summary>
-        /// Create a bitmap using Width and Height
-        /// </summary>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        public OneBandImage(int w , int h):base(w,h)
-        {
-        }
-        /// <summary>
-        /// Create a bitmap using Width and Height
-        /// </summary>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        /// <param name="p">Height</param>
-        public OneBandImage(IntPtr p , int w , int h) : base(p,w , h)
-        {
-            
-        }
-        /// <summary>
-        /// Create a bitmap using Width and Height and source from RGBA format
-        /// </summary>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        /// <param name="raw">Source to copy</param>
-        public OneBandImage(int w , int h , byte[ ] raw):base(w,h)
-        {
-            //Allocate
-            Marshal.Copy(raw , 0 , this.raw , w * h * sizeof(byte));
-        }
-               
-        /// <summary>
-        /// Destrop bitmap
-        /// </summary>
-        ~OneBandImage()
-        {
-            Dispose();
-        }
-       
-        /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="pos">As 1 dim array</param>
-        /// <returns>Pixel</returns>
-        public override byte this[int pos]
-        {
-            get
-            {
-                if ( pos >= 0 && pos < width * height )
-                    return dataPointer[pos];
-                else
-                    return new byte();
-            }
-            set
-            {
-                if ( pos >= 0 && pos < width * height )
-                    dataPointer[pos] = value;
-            }
-        }
-       
         /// <summary>
         /// Serialize bitmap to stream
         /// </summary>
         /// <param name="s">Destination</param>
-        public void ToStream(Stream s)
+        public static void ToStream(this Image<byte> image,Stream s)
         {
-            Save(s);
+            image.Save(s);
         }
         /// <summary>
         /// Write bitmap to stream
         /// </summary>
         /// <param name="s">Destination</param>
         ///  /// <param name="palette">Color</param>
-        public void Save(Stream s , BitmapPalette8bpp palette = null)
+        public static void Save(this Image<byte> image , Stream s , BitmapPalette8bpp palette = null)
         {
             palette = palette ?? BitmapPalette8bpp.Grayscale;
             s.WriteByte(( byte ) 'B');//0
             s.WriteByte(( byte ) 'M');//1
 
             const int sizeOfPalette = 256*4;
-            var size = (int)(System.Math.Ceiling(width/4d)*4*height+54+(sizeOfPalette));
+            var size = (int)(System.Math.Ceiling(image.Width/4d)*4*image.Height+54+(sizeOfPalette));
             var sizeAsByte = BitConverter.GetBytes(size);
 
             s.Write(sizeAsByte , 0 , 4);//2-5
@@ -111,8 +48,8 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             s.Write(BitConverter.GetBytes(40) , 0 , 4);//14-17
 
-            s.Write(BitConverter.GetBytes(width) , 0 , 4);//18-21
-            s.Write(BitConverter.GetBytes(height) , 0 , 4);//22-25
+            s.Write(BitConverter.GetBytes(image.Width) , 0 , 4);//18-21
+            s.Write(BitConverter.GetBytes(image.Height) , 0 , 4);//22-25
 
             s.Write(BitConverter.GetBytes(( short ) 1) , 0 , 2);//26-27
             s.Write(BitConverter.GetBytes(( short ) 8) , 0 , 2);//28-29
@@ -136,16 +73,16 @@ namespace MoyskleyTech.ImageProcessing.Image
                 s.WriteByte(pi.A);
             }
             s.Flush();
-            for ( var i = height - 1; i >= 0; i-- )
+            for ( var i = image.Height - 1; i >= 0; i-- )
             {
-                byte* ptr = dataPointer + i * width;
+                byte* ptr = image.Source + i * image.Width;
 
-                for ( var j = 0; j < width; j++ )
+                for ( var j = 0; j < image.Width; j++ )
                 {
                     s.WriteByte(*ptr);
                     ptr++;
                 }
-                for ( var j = width; j % 4 != 0; j++ )
+                for ( var j = image.Width; j % 4 != 0; j++ )
                 {
                     s.WriteByte(0);
                 }
@@ -156,10 +93,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Copy image from raw Grayscale
         /// </summary>
         /// <param name="raw">Input data</param>
-        public void CopyFromRawGrayscale(byte[ ] raw)
+        public static void CopyFromRawGrayscale(this Image<byte> image,byte[ ] raw)
         {
-            int size = width*height;
-            byte*ptr = dataPointer;
+            int size = image.Width*image.Height;
+            byte*ptr = image.Source;
             for ( var i = 0; i < size; i++ )
             {
                 *ptr++ = raw[i];
@@ -169,11 +106,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Create raw 8 bit per pixel array for specified image
         /// </summary>
         /// <returns>Monoscale raw bitmap</returns>
-        public byte[ ] CreateRaw8bppArray()
+        public static byte[ ] CreateRaw8bppArray(this Image<byte> image)
         {
             MemoryStream ms = new MemoryStream();
-            int size = width*height;
-            byte*ptr = dataPointer;
+            int size = image.Width*image.Height;
+            byte*ptr = image.Source;
             for ( var i = 0; i < size; i++ )
             {
                 ms.WriteByte(*ptr);
@@ -188,23 +125,23 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="blurSize">Size of blur</param>
         /// <returns>this</returns>
-        public OneBandImage Blur(byte blurSize)
+        public static Image<byte> Blur(this Image<byte> image,byte blurSize)
         {
             ValidateBlurSize(blurSize);
 
-            byte* debut = dataPointer;
+            byte* debut = image.Source;
             byte* ptr=debut;
-            byte*[] lines  = new byte*[height];
+            byte*[] lines  = new byte*[image.Height];
 
-            for ( var i = 0; i < height; i++ )
-                lines[i] = debut + width * i;
+            for ( var i = 0; i < image.Height; i++ )
+                lines[i] = debut + image.Width * i;
 
-            for ( var i = 0; i < height; i++ )
+            for ( var i = 0; i < image.Height; i++ )
             {
-                BlurLine(lines , i , blurSize);
+                BlurLine(image,lines , i , blurSize);
             }
 
-            return this;
+            return image;
         }
 
         private static void ValidateBlurSize(byte blurSize)
@@ -224,26 +161,26 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="blurSize">Size of blur</param>
         /// <returns>this</returns>
-        public Task BlurAsync(byte blurSize)
+        public static Task BlurAsync(this Image<byte> image,byte blurSize)
         {
             return Task.Run(() =>
             {
-                Blur(blurSize);
+                Blur(image,blurSize);
             });
         }
      
-        private void BlurLine(byte*[ ] lines , int line , int blurSize)
+        private static void BlurLine(this Image<byte> image,byte*[ ] lines , int line , int blurSize)
         {
             var debVertical =System.Math.Max(line-blurSize,0);
-            var endVertical =System.Math.Min(line+blurSize,height);
+            var endVertical =System.Math.Min(line+blurSize,image.Height);
             uint a,r,g,b,count;
             ulong acount=0;
-            for ( var c = 0; c < width; c++ )
+            for ( var c = 0; c < image.Width; c++ )
             {
                 acount = a = r = g = b = count = 0;
 
                 var debHorizontal=System.Math.Max(c - blurSize , 0);
-                var endHorizontal=System.Math.Min(c + blurSize , width);
+                var endHorizontal=System.Math.Min(c + blurSize , image.Width);
 
                 for ( var x = debHorizontal; x < endHorizontal; x++ )
                     for ( var i = debVertical; i < endVertical; i++ )
@@ -273,9 +210,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="G"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static Bitmap MixBands(Image<byte> A , Image<byte> R , Image<byte> G , Image<byte> B)
+        public static Image<Pixel> MixBands(Image<byte> A , Image<byte> R , Image<byte> G , Image<byte> B)
         {
-            Bitmap bmp = new Bitmap(A.Width,A.Height);
+            Image<Pixel> bmp = Image<Pixel>.Create(A.Width,A.Height);
             byte* a=(byte*)A.DataPointer.ToPointer();
             byte* r=(byte*)R.DataPointer.ToPointer();
             byte* g=(byte*)G.DataPointer.ToPointer();
@@ -299,9 +236,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="G"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static Bitmap MixBands(Image<byte> R , Image<byte> G , Image<byte> B)
+        public static Image<Pixel> MixBands(Image<byte> R , Image<byte> G , Image<byte> B)
         {
-            Bitmap bmp = new Bitmap(R.Width,R.Height);
+            Image<Pixel> bmp = Image<Pixel>.Create(R.Width,R.Height);
             byte* r=(byte*)R.DataPointer.ToPointer();
             byte* g=(byte*)G.DataPointer.ToPointer();
             byte* b=(byte*)B.DataPointer.ToPointer();
@@ -316,25 +253,6 @@ namespace MoyskleyTech.ImageProcessing.Image
                 dest++;
             }
             return bmp;
-        }
-        /// <summary>
-        /// Allow copy of OneBandImage
-        /// </summary>
-        /// <param name="other"></param>
-        public void CopyTo(OneBandImage other)
-        {
-            other.CopyFromRawGrayscale(this.CreateRaw8bppArray());
-        }
-        /// <summary>
-        /// Clear the whole band with this byte
-        /// </summary>
-        /// <param name="b"></param>
-        public void Clear(byte b)
-        {
-            byte* r=dataPointer;
-            var pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-                *r++ = b;
         }
     }
 }

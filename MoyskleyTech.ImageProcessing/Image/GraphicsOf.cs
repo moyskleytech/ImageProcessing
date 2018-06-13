@@ -7,13 +7,13 @@ using MoyskleyTech.Mathematics;
 using MoyskleyTech.ImageProcessing.Image.Helper;
 using System.Reflection;
 using static MoyskleyTech.ImageProcessing.Image.GraphicsHelper;
-
+using MoyskleyTech.ImageProcessing;
 namespace MoyskleyTech.ImageProcessing.Image
 {
     /// <summary>
     /// PCL Portability to System.Drawing.Graphics
     /// </summary>
-    public partial class Graphics<Representation> : IDisposable where Representation : struct
+    public partial class Graphics<Representation> : IDisposable where Representation : unmanaged
     {
         /// <summary>
         /// The bitmap where to draw(null if proxy)
@@ -707,7 +707,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="source">Source</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public virtual void DrawImage(Image<Representation> source , int x , int y)
+        public virtual void DrawImage(ImageProxy<Representation> source , int x , int y)
         {
             int sw=source.Width,sh=source.Height;
             for ( var i = 0; i < sw; i++ )
@@ -724,9 +724,36 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="source">Source</param>
         /// <param name="x">X origin</param>
         /// <param name="y">Y origin</param>
-        public void DrawImage(Image<Representation> source , Point pt)
+        public virtual void DrawImage(ImageProxy<Representation> source , int x , int y,int width,int height)
+        {
+            if ( source.Width != width || source.Height != height )
+            {
+                var d = source.ToImage().Rescale(width,height, ScalingMode.AverageInterpolate);
+                DrawImage(d , x , y);
+                d.Dispose();
+            }
+            else
+                DrawImage(source , x , y);
+        }
+        /// <summary>
+        /// Draw image in bitmap
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public void DrawImage(ImageProxy<Representation> source , Point pt)
         {
             DrawImage(source , pt.X , pt.Y);
+        }
+        /// <summary>
+        /// Draw image in bitmap
+        /// </summary>
+        /// <param name="source">Source</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        public void DrawImage(ImageProxy<Representation> source , Rectangle pt)
+        {
+            DrawImage(source , pt.X , pt.Y,pt.Width,pt.Height);
         }
 
         /// <summary>
@@ -2882,7 +2909,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <typeparam name="NewRepresentation"></typeparam>
         /// <returns></returns>
-        public TypeProxyGraphics<NewRepresentation , Representation> As<NewRepresentation>() where NewRepresentation : struct
+        public TypeProxyGraphics<NewRepresentation , Representation> As<NewRepresentation>() where NewRepresentation : unmanaged
         {
             return new TypeProxyGraphics<NewRepresentation , Representation>(this , ColorConvert.GetConversionFrom<NewRepresentation , Representation>());
         }

@@ -28,6 +28,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Blue
         /// </summary>
         public byte B;
+
+
         /// <summary>
         /// ARGB int representation
         /// </summary>
@@ -93,7 +95,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns></returns>
         public static Pixel FromArgb(byte a , byte r , byte g , byte b)
         {
-            return new Image.Pixel() { A = a , R = r , G = g , B = b };
+            return new Pixel() { A = a , R = r , G = g , B = b };
         }
         /// <summary>
         /// Get Pixel from name
@@ -930,7 +932,7 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// Struct to store RGBA
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RGBA
+    public struct RGBA 
     {
         /// <summary>
         /// Color components
@@ -941,7 +943,7 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// Struct to store RGBA
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct BGRA
+    public struct BGRA 
     {
         /// <summary>
         /// Color components

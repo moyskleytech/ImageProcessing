@@ -30,6 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -82,6 +83,7 @@
     <Compile Include="Image\BitmapSubstract.cs" />
     <Compile Include="Image\ClipState.cs" />
     <Compile Include="Image\ColorConvert.cs" />
+    <Compile Include="Image\ColorPoint.cs" />
     <Compile Include="Image\ConvertedBrush.cs" />
     <Compile Include="Image\Filters\Filters.cs" />
     <Compile Include="Image\FormattedTextGraphicsOf.cs" />
@@ -90,7 +92,6 @@
     <Compile Include="Image\Image.cs" />
     <Compile Include="Image\ImageProxy.cs" />
     <Compile Include="Image\ImageStatistics.cs" />
-    <Compile Include="Image\OneBandImageScaling.cs" />
     <Compile Include="Image\OneBandImage.cs" />
     <Compile Include="Image\Bitmap.cs" />
     <Compile Include="Image\BitmapCodec.cs" />

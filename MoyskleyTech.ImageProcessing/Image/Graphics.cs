@@ -33,21 +33,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             instance.ResetClip();
             return instance;
         }
-        /// <summary>
-        /// Create a Graphics object from image
-        /// </summary>
-        /// <param name="bmp">The bitmap where to Draw</param>
-        /// <returns>Return null if not applicable</returns>
-        public static Graphics FromProxy(ImageProxy bmp)
-        {
-            Graphics instance;
-            instance = new Graphics(1)
-            {
-                proxy = bmp
-            };
-            instance.ResetClip();
-            return instance;
-        }
+        
         private Graphics(int u):base(u)
         {
         }

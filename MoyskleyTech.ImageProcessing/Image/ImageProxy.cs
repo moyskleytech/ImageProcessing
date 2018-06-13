@@ -9,76 +9,8 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// <summary>
     /// Main use is ROI
     /// </summary>
-    public class ImageProxy:ImageProxy<Pixel>
-    {
-        /// <summary>
-        /// Compatibility
-        /// </summary>
-        /// <param name="bitmap"></param>
-        /// <param name="rectangle"></param>
-        public ImageProxy(Bitmap bitmap , Rectangle rectangle):base((Image<Pixel>)bitmap,rectangle)
-        {
-          
-        }
-        /// <summary>
-        /// Compatibility
-        /// </summary>
-        /// <param name="prx"></param>
-        /// <param name="rectangle"></param>
-        public ImageProxy(ImageProxy prx , Rectangle rectangle) : base((ImageProxy<Pixel>)prx , rectangle)
-        {
-        }
-        
-        /// <summary>
-        /// Create bitmap
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap ToBitmap()
-        {
-            Bitmap image = new Bitmap(rct.Width,rct.Height);
-            for ( var x = 0; x < Width; x++ )
-                for ( var y = 0; y < Width; y++ )
-                    image[x , y] = (this[x , y]);
-            return image;
-        }
-        /// <summary>
-        /// Create image converting to new representation
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public Image<T> ToImage<T>()
-           where T : struct
-        {
-            var converter = ColorConvert.GetConversionFrom<Pixel,T>();
-            Image<T> image = Image<T>.Create(rct.Width,rct.Height);
-            for ( var x = 0; x < Width; x++ )
-                for ( var y = 0; y < Width; y++ )
-                    image[x , y] = converter(this[x , y]);
-            return image;
-        }
-        /// <summary>
-        /// Convert proxy to bitmap
-        /// </summary>
-        /// <param name="ip"></param>
-        public static implicit operator Bitmap(ImageProxy ip)
-        {
-            return ip.ToBitmap();
-        }
-        /// <summary>
-        /// Convert bitmap to proxy
-        /// </summary>
-        /// <param name="ip"></param>
-        public static implicit operator ImageProxy(Bitmap ip)
-        {
-            return new ImageProxy(ip,new Rectangle(0,0,ip.Width,ip.Height));
-        }
-    }
-
-    /// <summary>
-    /// Main use is ROI
-    /// </summary>
     public class ImageProxy<Representation>
-        where Representation:struct
+        where Representation : unmanaged
     {
         /// <summary>
         /// The proxying image
@@ -88,6 +20,11 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Area rectangle
         /// </summary>
         protected Rectangle rct;
+        internal virtual Rectangle Rect
+        {
+            get { return rct; }
+            set { rct = value; }
+        }
         /// <summary>
         /// Create a empty proxy
         /// </summary>
@@ -103,7 +40,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public ImageProxy(Image<Representation> bitmap , Rectangle rectangle)
         {
             this.img = bitmap;
-            this.rct = rectangle;
+            this.Rect = rectangle;
         }
         /// <summary>
         /// Create a proxy using another proxy
@@ -113,54 +50,54 @@ namespace MoyskleyTech.ImageProcessing.Image
         public ImageProxy(ImageProxy<Representation> prx , Rectangle rectangle)
         {
             this.img = prx.img;
-            this.rct = new Rectangle(rectangle.X + prx.Rectangle.X , rectangle.Y + prx.Rectangle.Y , rectangle.Width , rectangle.Height);
+            this.Rect = new Rectangle(rectangle.X + prx.Rectangle.X , rectangle.Y + prx.Rectangle.Y , rectangle.Width , rectangle.Height);
         }
         /// <summary>
         /// Left of area
         /// </summary>
-        public int Left => rct.Left;
+        public int Left => Rect.Left;
         /// <summary>
         /// Top of area
         /// </summary>
-        public int Top => rct.Top;
+        public int Top => Rect.Top;
         /// <summary>
         /// Left of area
         /// </summary>
-        public int X => rct.X;
+        public int X => Rect.X;
         /// <summary>
         /// Top of area
         /// </summary>
-        public int Y => rct.Y;
+        public int Y => Rect.Y;
         /// <summary>
         /// Right of area
         /// </summary>
-        public int Right => rct.Right;
+        public int Right => Rect.Right;
         /// <summary>
         /// Bottom of area
         /// </summary>
-        public int Bottom => rct.Bottom;
+        public int Bottom => Rect.Bottom;
         /// <summary>
         /// Width of area
         /// </summary>
-        public int Width => rct.Width;
+        public int Width => Rect.Width;
         /// <summary>
         /// Height of area
         /// </summary>
-        public int Height => rct.Height;
+        public int Height => Rect.Height;
         /// <summary>
         /// Area rectangle
         /// </summary>
-        public Rectangle Rectangle => rct;
+        public Rectangle Rectangle => Rect;
         /// <summary>
         /// Convert to image
         /// </summary>
         /// <returns></returns>
         public virtual Image<Representation> ToImage()
         {
-            Image<Representation> image = Image<Representation>.Create(rct.Width,rct.Height);
+            Image<Representation> image = Image<Representation>.Create(Rect.Width,Rect.Height);
             for ( var x = 0; x < Width; x++ )
-                for ( var y = 0; y < Width; y++ )
-                    image[x , y] = (this[x , y]);
+                for ( var y = 0; y < Height; y++ )
+                    image[x , y] = ( this[x , y] );
             return image;
         }
         /// <summary>
@@ -169,12 +106,14 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <typeparam name="T"></typeparam>
         /// <param name="converter"></param>
         /// <returns></returns>
-        public virtual Image<T> ToImage<T>(Func<Representation,T> converter)
-            where T:struct
+        public virtual Image<T> ToImage<T>(Func<Representation , T> converter=null)
+            where T : unmanaged
         {
-            Image<T> image = Image<T>.Create(rct.Width,rct.Height);
+            if ( converter == null )
+                converter = ColorConvert.GetConversionFrom<Representation , T>();
+            Image<T> image = Image<T>.Create(Rect.Width,Rect.Height);
             for ( var x = 0; x < Width; x++ )
-                for ( var y = 0; y < Width; y++ )
+                for ( var y = 0; y < Height; y++ )
                     image[x , y] = converter(this[x , y]);
             return image;
         }
@@ -208,13 +147,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             get
             {
-                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
+                if ( x < Rect.Width && x >= 0 && y < Rect.Height && y >= 0 )
                     return img[x + rct.X , y + rct.Y];
                 return default(Representation);
             }
             set
             {
-                if ( x < rct.Width && x >= 0 && y < rct.Height && y >= 0 )
+                if ( x < Rect.Width && x >= 0 && y < Rect.Height && y >= 0 )
                     img[x + rct.X , y + rct.Y] = value;
             }
         }
@@ -222,7 +161,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Convert to image
         /// </summary>
         /// <param name="ip"></param>
-        public static implicit operator Image<Representation>(ImageProxy<Representation> ip)
+        public static explicit operator Image<Representation>(ImageProxy<Representation> ip)
         {
             return ip.ToImage();
         }
@@ -244,5 +183,62 @@ namespace MoyskleyTech.ImageProcessing.Image
                 for ( var x = 0; x < Width; x++ )
                     this[x , y] = func(this[x , y] , new Point(x , y));
         }
+
+        public ImageProxy<B> As<B>()
+            where B: unmanaged
+        {
+            ImageTypeProxy<Representation,B> proxy = new ImageTypeProxy<Representation, B>(this);
+            return proxy;
+        }
+    }
+    /// <summary>
+    /// Main use is ROI
+    /// </summary>
+    public class ImageTypeProxy<RepresentationA, RepresentationB> : ImageProxy<RepresentationB>
+        where RepresentationA : unmanaged
+        where RepresentationB : unmanaged
+    {
+        /// <summary>
+        /// The proxying image
+        /// </summary>
+        protected ImageProxy<RepresentationA> imgP;
+
+        Func<RepresentationA,RepresentationB> converter;
+        Func<RepresentationB,RepresentationA> converter2;
+
+        internal override Rectangle Rect { get => imgP.Rect; set => imgP.Rect = value; }
+        /// <summary>
+        /// Create a empty proxy
+        /// </summary>
+        protected ImageTypeProxy()
+        {
+            converter = ColorConvert.GetConversionFrom<RepresentationA , RepresentationB>();
+            converter2 = ColorConvert.GetConversionFrom<RepresentationB , RepresentationA>();
+        }
+
+        public ImageTypeProxy(ImageProxy<RepresentationA> t):this()
+        {
+            imgP = t;
+        }
+
+
+        /// <summary>
+        /// Get a pixel from image
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public override RepresentationB this[int x , int y]
+        {
+            get
+            {
+                return converter(imgP[x + rct.X , y + rct.Y]);
+            }
+            set
+            {
+                imgP[x + rct.X , y + rct.Y] = converter2(value);
+            }
+        }
+
     }
 }

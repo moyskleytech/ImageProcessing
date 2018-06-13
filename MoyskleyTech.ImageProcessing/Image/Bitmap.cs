@@ -74,22 +74,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Dispose();
         }
-        /// <summary>
-        /// Source to edit or copy
-        /// </summary>
-        public Pixel* Source { get { return data; } }
-       /// <summary>
-       /// Proxy an image easy
-       /// </summary>
-       /// <param name="rec"></param>
-       /// <returns></returns>
-        public ImageProxy this[Rectangle rec]
-        {
-            get
-            {
-                return this.Proxy(rec);
-            }
-        }
+      
         /// <summary>
         /// Get pixel from coordinate
         /// </summary>
@@ -317,145 +302,6 @@ namespace MoyskleyTech.ImageProcessing.Image
                     iptr++;
                 }
         }
-        /// <summary>
-        /// Serialize bitmap to stream
-        /// </summary>
-        /// <param name="s">Destination</param>
-        public void ToStream(Stream s)
-        {
-            Save(s);
-        }
-        /// <summary>
-        /// Serialize bitmap to stream
-        /// </summary>
-        /// <param name="s">Destination</param>
-        public static Bitmap FromStream(Stream s)
-        {
-            return new BitmapCodec().DecodeStream(s);
-            //return new BitmapFactory().Decode(s);
-        }
-
-        /// <summary>
-        /// Write bitmap to stream
-        /// </summary>
-        /// <param name="s">Destination</param>
-        public void Save(Stream s)
-        {
-            s.WriteByte(( byte ) 'B');//0
-            s.WriteByte(( byte ) 'M');//1
-
-
-            var size = width*height*4+54;
-            var sizeAsByte = BitConverter.GetBytes(size);
-
-            s.Write(sizeAsByte , 0 , 4);//2-5
-
-            s.WriteByte(0);//6
-            s.WriteByte(0);//7
-            s.WriteByte(0);//8
-            s.WriteByte(0);//9
-
-            s.Write(BitConverter.GetBytes(54) , 0 , 4);//10-13
-
-            s.Write(BitConverter.GetBytes(40) , 0 , 4);//14-17
-
-            s.Write(BitConverter.GetBytes(width) , 0 , 4);//18-21
-            s.Write(BitConverter.GetBytes(height) , 0 , 4);//22-25
-
-            s.Write(BitConverter.GetBytes(( short ) 1) , 0 , 2);//26-27
-            s.Write(BitConverter.GetBytes(( short ) 32) , 0 , 2);//28-29
-
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//30-33
-
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//imagesize
-
-            s.Write(BitConverter.GetBytes(unchecked(( int ) 0x00000EC4)) , 0 , 4);
-            s.Write(BitConverter.GetBytes(unchecked(( int ) 0x00000EC4)) , 0 , 4);
-
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//numcolorspalette
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//mostimpcolor
-
-
-            for ( var i = height - 1; i >= 0; i-- )
-            {
-                Pixel* ptr = data + i * width;
-
-                for ( var j = 0; j < width; j++ )
-                {
-                    s.WriteByte(ptr->B);
-                    s.WriteByte(ptr->G);
-                    s.WriteByte(ptr->R);
-                    s.WriteByte(ptr->A);
-                    ptr++;
-                }
-            }
-        }
-        /// <summary>
-        /// Write bitmap to stream
-        /// </summary>
-        /// <param name="s">Destination</param>
-        /// <param name="palette">Palette to use in the stream(null=Grayscale)</param>
-        public void Save8Bpp(Stream s , BitmapPalette8bpp palette = null)
-        {
-            palette = palette ?? BitmapPalette8bpp.Grayscale;
-            s.WriteByte(( byte ) 'B');//0
-            s.WriteByte(( byte ) 'M');//1
-
-            const int sizeOfPalette = 256*4;
-            var size = (int)(System.Math.Ceiling(width/4d)*4*height+54+(sizeOfPalette));
-            var sizeAsByte = BitConverter.GetBytes(size);
-
-            s.Write(sizeAsByte , 0 , 4);//2-5
-
-            s.WriteByte(0);//6
-            s.WriteByte(0);//7
-            s.WriteByte(0);//8
-            s.WriteByte(0);//9
-
-            s.Write(BitConverter.GetBytes(54) , 0 , 4);//10-13
-
-            s.Write(BitConverter.GetBytes(40) , 0 , 4);//14-17
-
-            s.Write(BitConverter.GetBytes(width) , 0 , 4);//18-21
-            s.Write(BitConverter.GetBytes(height) , 0 , 4);//22-25
-
-            s.Write(BitConverter.GetBytes(( short ) 1) , 0 , 2);//26-27
-            s.Write(BitConverter.GetBytes(( short ) 8) , 0 , 2);//28-29
-
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//30-33
-
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//imagesize
-
-            s.Write(BitConverter.GetBytes(unchecked(( int ) 0x00000EC4)) , 0 , 4);
-            s.Write(BitConverter.GetBytes(unchecked(( int ) 0x00000EC4)) , 0 , 4);
-
-            s.Write(BitConverter.GetBytes(256) , 0 , 4);//numcolorspalette
-            s.Write(BitConverter.GetBytes(0) , 0 , 4);//mostimpcolor
-            s.Flush();
-            for ( int i = 0; i < 256; i++ )
-            {
-                Pixel pi = palette[i];
-                s.WriteByte(pi.B);
-                s.WriteByte(pi.G);
-                s.WriteByte(pi.R);
-                s.WriteByte(pi.A);
-            }
-            s.Flush();
-            for ( var i = height - 1; i >= 0; i-- )
-            {
-                Pixel* ptr = data + i * width;
-
-                for ( var j = 0; j < width; j++ )
-                {
-                    s.WriteByte(ptr->GetGrayTone());
-                    ptr++;
-                }
-                for ( var j = width; j % 4 != 0; j++ )
-                {
-                    s.WriteByte(0);
-                }
-            }
-        }
        
         /// <summary>
         /// Copy to pointer using ARGB pattern for bytes
@@ -558,13 +404,13 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="dest">Color</param>
         /// <returns>this</returns>
-        public Bitmap Colorize(Pixel dest)
+        public Image<Pixel> Colorize(Pixel dest)
         {
-            Bitmap bmpdest = new Bitmap(width,height);
+            Image<Pixel> bmpdest = Image<Pixel>.Create(width,height);
             bmpdest.CopyFromARGB(this.dataPointer);
 
             int count = 0;
-            Pixel* ptr = bmpdest.data;
+            Pixel* ptr = bmpdest.Source;
             {
                 while ( count < width * height )
                 {
@@ -583,7 +429,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Colorize as Red
         /// </summary>
         /// <returns>this</returns>
-        public Bitmap ColorizeRed()
+        public Image<Pixel> ColorizeRed()
         {
             return this.Colorize(Pixels.Red);
         }
@@ -591,7 +437,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Colorize as Green
         /// </summary>
         /// <returns>this</returns>
-        public Bitmap ColorizeGreen()
+        public Image<Pixel> ColorizeGreen()
         {
             return this.Colorize(Pixels.Green);
         }
@@ -599,7 +445,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Colorize as Blue
         /// </summary>
         /// <returns>this</returns>
-        public Bitmap ColorizeBlue()
+        public Image<Pixel> ColorizeBlue()
         {
             return this.Colorize(Pixels.Blue);
         }
@@ -607,7 +453,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Colorize as White
         /// </summary>
         /// <returns>this</returns>
-        public Bitmap ColorizeWhite()
+        public Image<Pixel> ColorizeWhite()
         {
             return this.Colorize(Pixels.White);
         }
@@ -615,7 +461,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Colorize as Black
         /// </summary>
         /// <returns>this</returns>
-        public Bitmap ColorizeBlack()
+        public Image<Pixel> ColorizeBlack()
         {
             return this.Colorize(Pixels.Black);
         }
@@ -652,473 +498,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
 
 
-        /// <summary>
-        /// Blur the image
-        /// </summary>
-        /// <param name="blurSize">Size of blur</param>
-        /// <returns>Copy of Image</returns>
-        public Bitmap GenerateBlurred(byte blurSize)
-        {
-            Bitmap blurred = new Bitmap(width , height);
-            blurred.CopyFromARGB(this.dataPointer);
-
-            return blurred.Blur(blurSize);
-        }
-        /// <summary>
-        /// Blur the image
-        /// </summary>
-        /// <param name="blurSize">Size of blur</param>
-        /// <returns>Copy of Image</returns>
-        public Task<Bitmap> GenerateBlurredAsync(byte blurSize)
-        {
-            return Task.Run(() =>
-            {
-                Bitmap blurred = new Bitmap(width , height);
-                blurred.CopyFromARGB(this.dataPointer);
-                return blurred.Blur(blurSize);
-            });
-        }
-        /// <summary>
-        /// Blur the image
-        /// </summary>
-        /// <param name="blurSize">Size of blur</param>
-        /// <returns>this</returns>
-        public Bitmap Blur(byte blurSize)
-        {
-            ValidateBlurSize(blurSize);
-
-            Pixel* debut = data;
-            Pixel* ptr=debut;
-            Pixel*[] lines  = new Pixel*[height];
-
-            for ( var i = 0; i < height; i++ )
-                lines[i] = debut + width * i;
-
-            for ( var i = 0; i < height; i++ )
-            {
-                BlurLine(lines , i , blurSize);
-            }
-
-            return this;
-        }
-
-        private static void ValidateBlurSize(byte blurSize)
-        {
-            if ( blurSize > 32 )
-            {
-                throw new ArgumentException("Blur size cannot be more than 32");
-            }
-            else if ( blurSize <= 0 )
-            {
-                throw new ArgumentException("Blur size cannot be less than 1");
-            }
-        }
-
-        /// <summary>
-        /// Blur the image
-        /// </summary>
-        /// <param name="blurSize">Size of blur</param>
-        /// <returns>this</returns>
-        public Task BlurAsync(byte blurSize)
-        {
-            return Task.Run(() =>
-            {
-                Blur(blurSize);
-            });
-        }
-        /// <summary>
-        /// Create a monoscale copy
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap GenerateMonoscale(BitmapPalette8bpp palette)
-        {
-            Bitmap blurred = new Bitmap(width , height);
-            blurred.CopyFromARGB(this.dataPointer);
-            blurred.SetMonoscale(palette);
-            return blurred;
-        }
-        /// <summary>
-        /// Create a grayscale copy
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap GenerateGrayscale()
-        {
-            Bitmap blurred = new Bitmap(width , height);
-            blurred.CopyFromARGB(this.dataPointer);
-            blurred.SetGrayscale();
-            return blurred;
-        }
-        /// <summary>
-        /// Create a grayscale copy async
-        /// </summary>
-        /// <returns></returns>
-        public Task<Bitmap> GenerateGrayscaleAsync()
-        {
-            return Task.Run(() =>
-            {
-                Bitmap blurred = new Bitmap(width , height);
-                blurred.CopyFromARGB(this.dataPointer);
-                blurred.SetGrayscale();
-                return blurred;
-            });
-        }
-        
-        /// <summary>
-        /// Create a monoscale copy async
-        /// </summary>
-        /// <returns></returns>
-        public Task<Bitmap> GenerateMonoscaleAsync(BitmapPalette8bpp palette)
-        {
-            return Task.Run(() =>
-            {
-                Bitmap blurred = new Bitmap(width , height);
-                blurred.CopyFromARGB(this.dataPointer);
-                blurred.SetMonoscale(palette);
-                return blurred;
-            });
-        }
-        /// <summary>
-        /// Modify the image to grayscale
-        /// </summary>
-        public void SetGrayscale()
-        {
-            unsafe
-            {
-                Pixel* debut = data;
-                Pixel* current =debut;
-                for ( var l = 0; l < height; l++ )
-                {
-                    for ( var c = 0; c < width; c++ )
-                    {
-                        byte d = current->GetGrayTone() ;
-                        current->R = d;
-                        current->G = d;
-                        current->B = d;
-                        current++;
-                    }
-                }
-            }
-        }
-        /// <summary>
-        /// Modify the image to grayscale
-        /// </summary>
-        public void SetMonoscale(BitmapPalette8bpp palette)
-        {
-            unsafe
-            {
-                Pixel* debut = data;
-                Pixel* current =debut;
-                for ( var l = 0; l < height; l++ )
-                {
-                    for ( var c = 0; c < width; c++ )
-                    {
-                        byte d = current->GetGrayTone() ;
-                        Pixel pi = palette[d];
-                        current->R = pi.R;
-                        current->G = pi.G;
-                        current->B = pi.B;
-                        current++;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Modify the image to grayscale
-        /// </summary>
-        public void SetMonochrome(Pixel? light = null , Pixel? shadow = null , int threshold = 128)
-        {
-            Pixel lightp = light ?? Pixels.White;
-            Pixel shadowp = shadow ?? Pixels.Black;
-            unsafe
-            {
-                Pixel* debut = data;
-                Pixel* current =debut;
-                for ( var l = 0; l < height; l++ )
-                {
-                    for ( var c = 0; c < width; c++ )
-                    {
-                        byte d = current->GetGrayTone() ;
-                        if ( d > threshold )
-                        {
-                            current->R = lightp.R;
-                            current->G = lightp.G;
-                            current->B = lightp.B;
-                            current->A = lightp.A;
-                        }
-                        else
-                        {
-                            current->R = shadowp.R;
-                            current->G = shadowp.G;
-                            current->B = shadowp.B;
-                            current->A = shadowp.A;
-                        }
-                        current++;
-                    }
-                }
-            }
-        }
-        /// <summary>
-        /// Modify the image to monochrome async
-        /// </summary>
-        public Task SetMonochromeAsync(Pixel? light = null , Pixel? shadow = null , int threshold = 128)
-        {
-            return Task.Run(() => { SetMonochrome(light , shadow , threshold); });
-        }
-        /// <summary>
-        /// Modify the image to grayscale async
-        /// </summary>
-        public Task SetGrayscaleAsync()
-        {
-            return Task.Run(( Action ) SetGrayscale);
-        }
-        /// <summary>
-        /// Modify the image to monoscale async
-        /// </summary>
-        public Task SetMonoscaleAsync(BitmapPalette8bpp palette)
-        {
-            return Task.Run(() => { SetMonoscale(palette); });
-        }
-        private void BlurLine(Pixel*[ ] lines , int line , int blurSize)
-        {
-            var debVertical =System.Math.Max(line-blurSize,0);
-            var endVertical =System.Math.Min(line+blurSize,height);
-            uint a,r,g,b,count;
-            ulong acount=0;
-            for ( var c = 0; c < width; c++ )
-            {
-                acount = a = r = g = b = count = 0;
-
-                var debHorizontal=System.Math.Max(c - blurSize , 0);
-                var endHorizontal=System.Math.Min(c + blurSize , width);
-
-                for ( var x = debHorizontal; x < endHorizontal; x++ )
-                    for ( var i = debVertical; i < endVertical; i++ )
-                    {
-                        Pixel* p = lines[i]+x;
-                        a += p->A;
-                        r += ( uint ) ( p->R * ( p->A / 255d ) );
-                        g += ( uint ) ( p->G * ( p->A / 255d ) );
-                        b += ( uint ) ( p->B * ( p->A / 255d ) );
-                        acount += p->A;
-                        count++;
-                    }
-
-                Pixel* current = lines[line]+c;
-                current->A = ( byte ) ( a / count );
-                if ( acount > 0 )
-                {
-                    current->R = ( byte ) ( r * 255 / acount );
-                    current->G = ( byte ) ( g * 255 / acount );
-                    current->B = ( byte ) ( b * 255 / acount );
-                }
-                else
-                {
-                    current->R = 0;
-                    current->G = 0;
-                    current->B = 0;
-                }
-            }
-        }
-        /// <summary>
-        /// Conversion to HSB colorspace
-        /// </summary>
-        /// <returns></returns>
-        public HSBImage ToHSB()
-        {
-            HSBImage img = new HSBImage(width,height);
-            HSB* dest=img.Source;
-            Pixel* src = Source;
-            int max = width*height;
-            for ( var i = 0; i < max; i++ )
-            {
-                *dest++ = ( src++ )->ToHSB();
-            }
-            return img;
-        }
-        /// <summary>
-        /// Get a band image for alpha
-        /// </summary>
-        /// <returns></returns>
-        public OneBandImage GetAlphaBandImage()
-        {
-            OneBandImage img = new OneBandImage(width,height);
-            Pixel* p = data;
-            byte* dest = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                *dest++ = p++->A;
-            }
-            return img;
-        }
-        /// <summary>
-        /// Get a band image for red
-        /// </summary>
-        /// <returns></returns>
-        public OneBandImage GetRedBandImage()
-        {
-            OneBandImage img = new OneBandImage(width,height);
-            Pixel* p = data;
-            byte* dest = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                *dest++ = p++->R;
-            }
-            return img;
-        }
-        /// <summary>
-        /// Get a band image for green
-        /// </summary>
-        /// <returns></returns>
-        public OneBandImage GetGreenBandImage()
-        {
-            OneBandImage img = new OneBandImage(width,height);
-            Pixel* p = data;
-            byte* dest = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                *dest++ = p++->G;
-            }
-            return img;
-        }
-        /// <summary>
-        /// Get a band image for blue
-        /// </summary>
-        /// <returns></returns>
-        public OneBandImage GetBlueBandImage()
-        {
-            OneBandImage img = new OneBandImage(width,height);
-            Pixel* p = data;
-            byte* dest = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                *dest++ = p++->B;
-            }
-            return img;
-        }
-        /// <summary>
-        /// Get a grayscale version(compacted)
-        /// </summary>
-        /// <returns></returns>
-        public OneBandImage GetGrayBandImage()
-        {
-            OneBandImage img = new OneBandImage(width,height);
-            Pixel* p = data;
-            byte* dest = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                *dest++ = p++->GetGrayTone();
-            }
-            return img;
-        }
-
-        /// <summary>
-        /// Allow replace of a color band
-        /// </summary>
-        /// <param name="img"></param>
-        public void ReplaceAlphaBand(OneBandImage img)
-        {
-            Pixel* o = data;
-            byte* inp = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                o++->A = *inp++ ;
-            }
-        }
-        /// <summary>
-        /// Allow replace of a color band
-        /// </summary>
-        /// <param name="img"></param>
-        public void ReplaceRedBand(OneBandImage img)
-        {
-            Pixel* o = data;
-            byte* inp = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                o++->R = *inp++;
-            }
-        }
-        /// <summary>
-        /// Allow replace of a color band
-        /// </summary>
-        /// <param name="img"></param>
-        public void ReplaceGreenBand(OneBandImage img)
-        {
-            Pixel* o = data;
-            byte* inp = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                o++->G = *inp++;
-            }
-        }
-        /// <summary>
-        /// Allow replace of a color band
-        /// </summary>
-        /// <param name="img"></param>
-        public void ReplaceBlueBand(OneBandImage img)
-        {
-            Pixel* o = data;
-            byte* inp = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                o++->B = *inp++;
-            }
-        }
-        /// <summary>
-        /// Allow replace of a color band
-        /// </summary>
-        /// <param name="img"></param>
-        public void ReplaceGrayBand(OneBandImage img)
-        {
-            Pixel* o = data;
-            byte* inp = img.Source;
-            int pt = width*height;
-            for ( var i = 0; i < pt; i++ )
-            {
-                var d = *inp++;
-                o++->R = d;
-                o++->G = d;
-                o++->B = d;
-            }
-        }
-        /// <summary>
-        /// Allow extraction of statistics from bitmap
-        /// </summary>
-        /// <returns></returns>
-        public ImageStatistics GetStatistics()
-        {
-            return new ImageStatistics(this);
-        }
-        /// <summary>
-        /// Allow extraction of statistics from Bitmap using ROI
-        /// </summary>
-        /// <returns></returns>
-        public ImageStatistics GetStatistics(Rectangle rectangle)
-        {
-            var cropped = this.Crop(rectangle);
-            var stats= new ImageStatistics(cropped);
-            cropped.Dispose();
-            return stats;
-        }
-
-        /// <summary>
-        /// Allow proxying of bitmap
-        /// </summary>
-        /// <param name="rectangle"></param>
-        /// <returns></returns>
-        public new ImageProxy Proxy(Rectangle rectangle)
-        {
-            return new ImageProxy(this , rectangle);
-        }
         /// <summary>
         /// Allow bitmap subtraction
         /// </summary>

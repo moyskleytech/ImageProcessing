@@ -82,7 +82,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
             FillCircle(new SolidBrush(p) , x0 , y0 , r);
         }
        
-        public override void DrawImage(MoyskleyTech.ImageProcessing.Image.Bitmap source , int x , int y)
+        public override void DrawImage(MoyskleyTech.ImageProcessing.Image.Image<Pixel> source , int x , int y)
         {
             root.Attributes["xmlns:xlink"] = "http://www.w3.org/1999/xlink";
             XMLNode image = new XMLNode() { Name="image" };
@@ -117,22 +117,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
             line.Attributes["stroke-width"] = thickness;
             root.Children.Add(line);
         }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Pixel p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , 1);
-        }
-        public override void DrawLine(Brush<Pixel> p , MoyskleyTech.ImageProcessing.Image.PointF p1 , MoyskleyTech.ImageProcessing.Image.PointF p2 , int thickness)
-        {
-            DrawLine(p , p1.X , p1.Y , p2.X , p2.Y , thickness);
-        }
+       
         public override void FillPolygon(Brush<Pixel> p , params MoyskleyTech.ImageProcessing.Image.PointF[ ] points)
         {
             XMLNode polygon = new XMLNode() { Name="polygon" };
@@ -207,11 +192,8 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             DrawPolygon(p , 1 , points);
         }
-        public override void DrawString(string str , Pixel p , int x , int y , Font f , int size , StringFormat sf = null)
-        {
-            DrawString(str , new SolidBrush(p) , x , y , f , size , sf);
-        }
-        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , int size , StringFormat sf = null)
+      
+        public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , float size , StringFormat sf = null)
         {
             if ( sf == null )
                 sf = new StringFormat() { Alignment = StringAlignment.Near , LineAlignment = StringAlignment.Near };
@@ -266,10 +248,10 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             FillRectangle(p , px , py , 1 , 1);
         }
-        public string Convert(Bitmap bmp)
+        public string Convert(Image<Pixel> bmp)
         {
             MemoryStream ms = new MemoryStream();
-            bmp.Save(ms);
+            ((Bitmap)bmp).Save(ms);
             ms.Position = 0;
             byte[] array = ms.ToArray();
             ms.Dispose();

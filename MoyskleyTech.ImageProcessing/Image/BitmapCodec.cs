@@ -47,29 +47,43 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public Bitmap DecodeStream(Stream s)
+        public Image<Pixel> DecodeStream(Stream s)
         {
             BitmapDecoder decoder = new BitmapDecoder();
             decoder.SetStream(new BufferedStream(s , new byte[0]));
             decoder.ReadHeader();
             return decoder.ReadBitmap();
         }
-        /// <summary>
-        /// Save bitmap to stream
-        /// </summary>
-        /// <param name="bmp"></param>
-        /// <param name="s"></param>
-        public void Save(Bitmap bmp , Stream s)
+
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : unmanaged
         {
-            bmp.Save(s);
+            BitmapDecoder decoder = new BitmapDecoder();
+            decoder.SetStream(new BufferedStream(s , new byte[0]));
+            decoder.ReadHeader();
+            return decoder.ReadData<T>();
         }
+
+        public Image<T> ReadImage<T>(Stream s) where T : unmanaged
+        {
+            BitmapDecoder decoder = new BitmapDecoder();
+            decoder.SetStream(new BufferedStream(s , new byte[0]));
+            decoder.ReadHeader();
+            var img = Image<T>.Create(decoder.Width , decoder.Height);
+            foreach ( var px in decoder.ReadData<T>() )
+            {
+                img[px.Point] = px.Color;
+            }
+            return img;
+        }
+
         /// <summary>
         /// Save bitmap to stream
         /// </summary>
         /// <param name="bmp"></param>
         /// <param name="s"></param>
         /// /// <param name="palette"></param>
-        public void Save(Bitmap bmp , Stream s , BitmapPalette8bpp palette)
+        public void Save<T>(ImageProxy<T> bmp , Stream s , BitmapPalette8bpp palette)
+            where T : unmanaged
         {
             SaveStream(bmp , s , palette);
         }
@@ -79,7 +93,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="bmp"></param>
         /// <param name="s"></param>
         /// /// <param name="palette"></param>
-        public void Save(Bitmap bmp , Stream s , BitmapPalette4bpp palette)
+        public void Save<T>(ImageProxy<T> bmp , Stream s , BitmapPalette4bpp palette)
+            where T : unmanaged
         {
             SaveStream(bmp , s , palette);
         }
@@ -89,7 +104,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="bmp"></param>
         /// <param name="s"></param>
         /// /// <param name="palette"></param>
-        public void Save(Bitmap bmp , Stream s , BitmapPalette2bpp palette)
+        public void Save<T>(ImageProxy<T> bmp , Stream s , BitmapPalette2bpp palette)
+            where T : unmanaged
         {
             SaveStream(bmp , s , palette);
         }
@@ -99,9 +115,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="bmp"></param>
         /// <param name="s"></param>
         /// /// <param name="palette"></param>
-        public void Save(Bitmap bmp , Stream s , BitmapPalette1bpp palette)
+        public void Save<T>(ImageProxy<T> bmp , Stream s , BitmapPalette1bpp palette)
+            where T : unmanaged
         {
-            SaveStream(bmp,s , palette);
+            SaveStream(bmp , s , palette);
         }
         /// <summary>
         /// Save the bitmap as optimized size
@@ -112,21 +129,22 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="allow2bpp">Allow 2bpp bitmap</param>
         /// <param name="allow4bpp">Allow 4bpp bitmap</param>
         /// <param name="allow8bpp">Allow 8bpp bitmap</param>
-        public void SaveOptimized(Bitmap bmp , Stream s,bool allow1bpp=true, bool allow2bpp = false ,bool allow4bpp = true , bool allow8bpp = true)
+        public void SaveOptimized<T>(ImageProxy<T> bmp , Stream s , bool allow1bpp = true , bool allow2bpp = false , bool allow4bpp = true , bool allow8bpp = true)
+            where T : unmanaged
         {
-            var stats = new ImageStatistics(bmp);
+            var stats = new ImageStatistics(bmp.As<Pixel>());
             var dom = stats.ColorStatistics.Dominance;
-            if(dom.Count <=2 && allow1bpp)
+            if ( dom.Count <= 2 && allow1bpp )
                 SaveStream(bmp , s , CreatePalette1(dom));
-            else if(dom.Count <= 4 && allow2bpp )
+            else if ( dom.Count <= 4 && allow2bpp )
                 SaveStream(bmp , s , CreatePalette2(dom));
-            else if(dom.Count <= 16 && allow4bpp )
+            else if ( dom.Count <= 16 && allow4bpp )
                 SaveStream(bmp , s , CreatePalette4(dom));
-            else if(dom.Count <= 256 && allow8bpp )
+            else if ( dom.Count <= 256 && allow8bpp )
                 SaveStream(bmp , s , CreatePalette8(dom));
             else
-                bmp.Save(s);
-            
+                Save(bmp , s);
+
         }
         /// <summary>
         /// Create palette of 8bpp
@@ -180,7 +198,63 @@ namespace MoyskleyTech.ImageProcessing.Image
                 palette[i] = keys[i];
             return palette;
         }
-        private unsafe void SaveStream(Bitmap bmp , Stream s , BitmapPalette8bpp palette)
+        /// <summary>
+        /// Write bitmap to stream
+        /// </summary>
+        /// <param name="s">Destination</param>
+        public unsafe void Save<T>(ImageProxy<T> bmp , Stream s)
+            where T : unmanaged
+        {
+            s.WriteByte(( byte ) 'B');//0
+            s.WriteByte(( byte ) 'M');//1
+
+
+            var size = bmp.Width*bmp.Height*4+54;
+            var sizeAsByte = BitConverter.GetBytes(size);
+
+            s.Write(sizeAsByte , 0 , 4);//2-5
+
+            s.WriteByte(0);//6
+            s.WriteByte(0);//7
+            s.WriteByte(0);//8
+            s.WriteByte(0);//9
+
+            s.Write(BitConverter.GetBytes(54) , 0 , 4);//10-13
+
+            s.Write(BitConverter.GetBytes(40) , 0 , 4);//14-17
+
+            s.Write(BitConverter.GetBytes(bmp.Width) , 0 , 4);//18-21
+            s.Write(BitConverter.GetBytes(bmp.Height) , 0 , 4);//22-25
+
+            s.Write(BitConverter.GetBytes(( short ) 1) , 0 , 2);//26-27
+            s.Write(BitConverter.GetBytes(( short ) 32) , 0 , 2);//28-29
+
+            s.Write(BitConverter.GetBytes(0) , 0 , 4);//30-33
+
+            s.Write(BitConverter.GetBytes(0) , 0 , 4);//imagesize
+
+            s.Write(BitConverter.GetBytes(unchecked(( int ) 0x00000EC4)) , 0 , 4);
+            s.Write(BitConverter.GetBytes(unchecked(( int ) 0x00000EC4)) , 0 , 4);
+
+            s.Write(BitConverter.GetBytes(0) , 0 , 4);//numcolorspalette
+            s.Write(BitConverter.GetBytes(0) , 0 , 4);//mostimpcolor
+
+
+            var converter = ColorConvert.GetConversionFrom<T,Pixel>();
+            for ( var i = bmp.Height - 1; i >= 0; i-- )
+            {
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    var ptr = converter(bmp[j,i]);
+                    s.WriteByte(ptr.B);
+                    s.WriteByte(ptr.G);
+                    s.WriteByte(ptr.R);
+                    s.WriteByte(ptr.A);
+                }
+            }
+        }
+        private unsafe void SaveStream<T>(ImageProxy<T> bmp , Stream s , BitmapPalette8bpp palette)
+            where T : unmanaged
         {
             palette = palette ?? BitmapPalette8bpp.Grayscale;
             s.WriteByte(( byte ) 'B');//0
@@ -226,17 +300,15 @@ namespace MoyskleyTech.ImageProcessing.Image
                 s.WriteByte(pi.A);
             }
             s.Flush();
+            var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             for ( var i = bmp.Height - 1; i >= 0; i-- )
             {
-                Pixel* ptr = bmp.Source + i * bmp.Width;
-
                 for ( var j = 0; j < bmp.Width; j++ )
                 {
-                    var idx = palette[*ptr];
+                    var idx = palette[converter(bmp[j,i])];
                     if ( idx < 0 )
                         throw new ArgumentException("Bitmap has color not in palette, please reduce first");
                     s.WriteByte(( byte ) idx);
-                    ptr++;
                 }
                 for ( var j = bmp.Width; j % 4 != 0; j++ )
                 {
@@ -244,7 +316,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
-        private unsafe void SaveStream(Bitmap bmp , Stream s , BitmapPalette4bpp palette)
+        private unsafe void SaveStream<T>(ImageProxy<T> bmp , Stream s , BitmapPalette4bpp palette)
+            where T : unmanaged
         {
             s.WriteByte(( byte ) 'B');//0
             s.WriteByte(( byte ) 'M');//1
@@ -289,26 +362,25 @@ namespace MoyskleyTech.ImageProcessing.Image
                 s.WriteByte(pi.A);
             }
             s.Flush();
+            var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             for ( var i = bmp.Height - 1; i >= 0; i-- )
             {
-                Pixel* ptr = bmp.Source + i * bmp.Width;
 
                 byte actual=0;
                 for ( var j = 0; j < bmp.Width; j++ )
                 {
-                    var idx1 = palette[*ptr];
+                    var idx1 = palette[converter(bmp[j,i])];
                     if ( idx1 < 0 )
                         throw new ArgumentException("Bitmap has color not in palette, please reduce first");
                     if ( ( j & 1 ) == 0 )
                     {
-                        actual = ( byte ) (idx1 <<4);
+                        actual = ( byte ) ( idx1 << 4 );
                     }
                     else
                     {
-                        actual |= ( byte ) ( idx1  );
+                        actual |= ( byte ) ( idx1 );
                         s.WriteByte(actual);
                     }
-                    ptr++;
                 }
                 if ( ( bmp.Width & 1 ) == 1 )
                     s.WriteByte(actual);
@@ -318,7 +390,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
-        private unsafe void SaveStream(Bitmap bmp , Stream s , BitmapPalette2bpp palette)
+        private unsafe void SaveStream<T>(ImageProxy<T> bmp , Stream s , BitmapPalette2bpp palette)
+            where T : unmanaged
         {
             s.WriteByte(( byte ) 'B');//0
             s.WriteByte(( byte ) 'M');//1
@@ -363,20 +436,19 @@ namespace MoyskleyTech.ImageProcessing.Image
                 s.WriteByte(pi.A);
             }
             s.Flush();
+            var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             for ( var i = bmp.Height - 1; i >= 0; i-- )
             {
-                Pixel* ptr = bmp.Source + i * bmp.Width;
-
                 byte actual=0;
                 for ( var j = 0; j < bmp.Width; j++ )
                 {
-                    var idx1 = palette[*ptr];
+                    var idx1 = palette[converter(bmp[j,i])];
                     if ( idx1 < 0 )
                         throw new ArgumentException("Bitmap has color not in palette, please reduce first");
                     var mod=j%4;
-                    if ( mod==0 )
+                    if ( mod == 0 )
                     {
-                        actual = ( byte ) (idx1 << 6 );
+                        actual = ( byte ) ( idx1 << 6 );
                     }
                     else if ( mod == 1 )
                     {
@@ -388,12 +460,11 @@ namespace MoyskleyTech.ImageProcessing.Image
                     }
                     else if ( mod == 3 )
                     {
-                        actual |= ( byte ) ( idx1 <<0 );
+                        actual |= ( byte ) ( idx1 << 0 );
                         s.WriteByte(actual);
                     }
-                    ptr++;
                 }
-                if ( bmp.Width %4 != 0 )
+                if ( bmp.Width % 4 != 0 )
                     s.WriteByte(actual);
                 for ( var j = System.Math.Ceiling(bmp.Width / 4d); j % 4 != 0; j++ )
                 {
@@ -401,7 +472,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             }
         }
-        private unsafe void SaveStream(Bitmap bmp , Stream s , BitmapPalette1bpp palette)
+        private unsafe void SaveStream<T>(ImageProxy<T> bmp , Stream s , BitmapPalette1bpp palette)
+            where T : unmanaged
         {
             s.WriteByte(( byte ) 'B');//0
             s.WriteByte(( byte ) 'M');//1
@@ -446,14 +518,14 @@ namespace MoyskleyTech.ImageProcessing.Image
                 s.WriteByte(pi.A);
             }
             s.Flush();
+            var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             for ( var i = bmp.Height - 1; i >= 0; i-- )
             {
-                Pixel* ptr = bmp.Source + i * bmp.Width;
 
                 byte actual=0;
                 for ( var j = 0; j < bmp.Width; j++ )
                 {
-                    var idx1 = palette[*ptr];
+                    var idx1 = palette[converter(bmp[j,i])];
                     if ( idx1 < 0 )
                         throw new ArgumentException("Bitmap has color not in palette, please reduce first");
                     var mod=j%8;
@@ -470,16 +542,17 @@ namespace MoyskleyTech.ImageProcessing.Image
                         actual |= ( byte ) ( idx1 << 7 );
                         s.WriteByte(actual);
                     }
-                    ptr++;
                 }
                 if ( bmp.Width % 8 != 0 )
                     s.WriteByte(actual);
-                for ( var j = System.Math.Ceiling(bmp.Width/8d); j % 4 != 0; j++ )
+                for ( var j = System.Math.Ceiling(bmp.Width / 8d); j % 4 != 0; j++ )
                 {
                     s.WriteByte(0);
                 }
             }
         }
+
+
     }
     internal class BitmapDecoder : IBitmapDecoder
     {
@@ -509,14 +582,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         BitmapPalette2bpp palette2bpp;
         BitmapPalette1bpp palette1bpp;
         int index;
+
+        public int Height => System.Math.Abs(header.height);
+
+        public int Width => header.width;
+
         private byte Read()
         {
             index++;
             return s.Read();
         }
-        public unsafe Bitmap ReadBitmap()
+        public unsafe Image<Pixel> ReadBitmap()
         {
-            Bitmap bmp = new Bitmap(header.width,System.Math.Abs(header.height));
+            Image<Pixel> bmp = Image<Pixel>.Create(header.width,System.Math.Abs(header.height));
             if ( header.numberOfBitPerPixel == 8 )
                 palette8bpp = ReadPalette();
             if ( header.numberOfBitPerPixel == 4 )
@@ -550,7 +628,39 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
             return bmp;
         }
+        public IEnumerable<ColorPoint<T>> ReadData<T>()
+            where T:struct
+        {
+            if ( header.numberOfBitPerPixel == 8 )
+                palette8bpp = ReadPalette();
+            if ( header.numberOfBitPerPixel == 4 )
+                palette4bpp = Read4BppPalette();
+            if ( header.numberOfBitPerPixel == 2 )
+                palette2bpp = Read2BppPalette();
+            if ( header.numberOfBitPerPixel == 1 )
+                palette1bpp = Read1BppPalette();
+            palette8bpp?.CheckIfAlphaZero();
+            palette4bpp?.CheckIfAlphaZero();
+            palette2bpp?.CheckIfAlphaZero();
+            palette1bpp?.CheckIfAlphaZero();
+            while ( index < header.bitmapOffset )
+                Read();
 
+            if ( header.height > 0 )
+                for ( var r = header.height - 1; r >= 0; r-- )
+                {
+                    foreach ( var px in ReadRow<T>(header.width,r) )
+                        yield return px;
+                    SkipPadding(header.width);
+                }
+            else
+                for ( var r = 0; r <= -header.height; r++ )
+                {
+                    foreach ( var px in ReadRow<T>(header.width , r) )
+                        yield return px;
+                    SkipPadding(header.width);
+                }
+        }
         private BitmapPalette4bpp Read4BppPalette()
         {
             BitmapPalette4bpp palette = new BitmapPalette4bpp();
@@ -603,6 +713,63 @@ namespace MoyskleyTech.ImageProcessing.Image
                 palette[i] = Pixel.FromArgb(a , r , g , b);
             }
             return palette;
+        }
+        private IEnumerable<ColorPoint<T>> ReadRow<T>(int count,int y)
+            where T:struct
+        {
+            var pxToT = ColorConvert.GetConversionFrom<Pixel,T>();
+            for ( var i = 0; i < count; i++ )
+            {
+                byte a,r,g,b;
+                switch ( header.numberOfBitPerPixel )
+                {
+                    case 1:
+                        b = Read();
+                        for ( var j = 0; j < 8 && i < count; j++ )
+                        {
+                            yield return new ColorPoint<T>(i , y , pxToT(palette1bpp[( b >> ( 7 - j ) ) & 0x1]));
+                            i++;
+                        }
+                        i--;
+                        break;
+                    case 2:
+                        b = Read();
+                        for ( var j = 0; j < 4 && i < count; j++ )
+                        {
+                            yield return new ColorPoint<T>(i , y , pxToT(palette2bpp[( b >> ( 7 - j * 2 ) ) & 0x3]));
+                            i++;
+                        }
+                        i--;
+                        break;
+                    case 4:
+                        b = Read();
+                        var pixel2= palette4bpp[b >> 4];
+                        var pixel1 =palette4bpp[b &0xF];
+                        yield return new ColorPoint<T>(i , y , pxToT(pixel2));
+                        i++;
+                        if ( i < count )
+                            yield return new ColorPoint<T>(i , y , pxToT(pixel1));
+                        break;
+                    case 8:
+                        b = Read();
+                        yield return new ColorPoint<T>(i , y , pxToT(palette8bpp[b]));
+                        break;
+                    case 24:
+                        a = 255;
+                        b = Read();
+                        g = Read();
+                        r = Read();
+                        yield return new ColorPoint<T>(i , y , pxToT(Pixel.FromArgb(a , r , g , b)));
+                        break;
+                    case 32:
+                        b = Read();
+                        g = Read();
+                        r = Read();
+                        a = Read();
+                        yield return new ColorPoint<T>(i , y , pxToT(Pixel.FromArgb(a , r , g , b)));
+                        break;
+                }
+            }
         }
         private Pixel[ ] ReadPixels(int count)
         {

@@ -14,11 +14,11 @@ namespace MoyskleyTech.ImageProcessing.Video
     public class MultiBandVideoReader
     {
         private Stream s;
-        private OneBandImage[] bands;
+        private Image<byte>[] bands;
         /// <summary>
         /// Current frame
         /// </summary>
-        public OneBandImage[] Frame { get; set; }
+        public Image<byte>[ ] Frame { get; set; }
         /// <summary>
         /// Create a reader using a stream
         /// </summary>
@@ -61,21 +61,20 @@ namespace MoyskleyTech.ImageProcessing.Video
                     return false;
                 int b = BitConverter.ToInt32(new byte[ ] { (byte)b1 , ( byte ) b2 , ( byte ) b3 , ( byte ) b4 } , 0);
 
-                Frame = new OneBandImage[b];
-                bands = new OneBandImage[b];
+                Frame = new Image<byte>[b];
+                bands = new Image<byte>[b];
                 for ( var i = 0; i < b; i++ )
                 {
-                    var band=new OneBandImage(w , h);
-                    band.Clear(0);
+                    var band=Image<byte>.FilledWith(w , h,0);
                     bands[i] = band;
-                    Frame[i] = new OneBandImage(w , h);
+                    Frame[i] = Image<byte>.Create(w,h);
                 }
             }
             for ( var i = 0; i < bands.Length; i++ )
             {
                 if ( !OneBandVideoReader.ReadBand(bands[i] , s) )
                     return false;
-                bands[i].CopyTo(Frame[i]);
+                bands[i].CopyTo(Frame[i].DataPointer);
             }
             return true;
         }

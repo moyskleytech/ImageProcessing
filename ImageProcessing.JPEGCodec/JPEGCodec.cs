@@ -46,8 +46,10 @@ namespace ImageProcessing.JPEGCodec
             return null;
         }
 
-        public unsafe void Save(Bitmap bmp , Stream s)
+        public unsafe void Save<T>(ImageProxy<T> bmp , Stream s)
+            where T : struct
         {
+            var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             SampleRow[] rows = new SampleRow[bmp.Height];
             Pixel black = Pixels.Black;
             for ( var r = 0; r < bmp.Height; r++ )
@@ -58,7 +60,7 @@ namespace ImageProcessing.JPEGCodec
                     COMP3* ptr = (COMP3*)tab;
                     for ( var c = 0; c < bmp.Width; c++ )
                     {
-                        var pixel = bmp[c,r];
+                        var pixel = converter(bmp[c,r]);
                         pixel = pixel.Over(black);
                         ptr->A = pixel.R;
                         ptr->B = pixel.G;
@@ -80,11 +82,25 @@ namespace ImageProcessing.JPEGCodec
             decoder.ReadHeader();
             return decoder.ReadBitmap();
         }
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : struct
+        {
+            JPEGDecoder decoder = new JPEGDecoder();
+            decoder.SetStream(new BufferedStream(s , new byte[0]));
+            decoder.ReadHeader();
+            return decoder.ReadData<T>();
+        }
+
+        public Image<T> ReadImage<T>(Stream s) where T : struct
+        {
+            return DecodeStream(s).ConvertBufferTo<T>();
+        }
     }
     internal class JPEGDecoder : IBitmapDecoder
     {
         BufferedStream s;
+        public int Height => 0;
 
+        public int Width => 0;
         public Bitmap ReadBitmap()
         {
             JpegImage img = new JpegImage(s);
@@ -116,7 +132,28 @@ namespace ImageProcessing.JPEGCodec
                 return bmp;
             }
         }
-
+        public IEnumerable<ColorPoint<T>> ReadData<T>() where T : struct
+        {
+            var converter = ColorConvert.GetConversionFrom<Pixel,T>();
+            JpegImage img = new JpegImage(s);
+            if ( img.Colorspace == Colorspace.RGB )
+            {
+                var bmp = new Bitmap(img.Width,img.Height);
+                for ( var r = 0; r < img.Height; r++ )
+                {
+                    var row = img.GetRow(r);
+                    for ( var c = 0; c < img.Width; c++ )
+                    {
+                        var sample = row.GetAt(c);
+                        var components = new byte[3];
+                        components[0] = ( byte ) sample.GetComponent(0);
+                        components[1] = ( byte ) sample.GetComponent(1);
+                        components[2] = ( byte ) sample.GetComponent(2);
+                        yield return new ColorPoint<T>(c,r,converter(Pixel.FromArgb(255 , components[0] , components[1] , components[2])));
+                    }
+                }
+            }
+        }
         public bool ReadHeader()
         {
             return true;

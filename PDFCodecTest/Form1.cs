@@ -39,7 +39,7 @@ namespace PDFCodecTest
                 var bmp1 = new BitmapFactory( ).Decode(fs);
                 //var bmp1 = codec.DecodeStream(fs);
                 var fs2 = System.IO.File.Open(ofd.FileName+"2.png", System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite);
-                codec.Save(bmp1 , fs2);
+                codec.Save<Pixel>(bmp1 , fs2);
 
                 //TestRawPng(fs2);
 

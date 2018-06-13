@@ -14,7 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Video
     public class OneBandVideoWriter
     {
         private Stream s;
-        private OneBandImage f;
+        private Image<byte> f;
         int ct;
         /// <summary>
         /// Minimum difference to store in video(higher value = smaller file)
@@ -34,14 +34,13 @@ namespace MoyskleyTech.ImageProcessing.Video
         /// Write a frame to the monochrome video
         /// </summary>
         /// <param name="img"></param>
-        public void WriteFrame(OneBandImage img)
+        public void WriteFrame(Image<byte> img)
         {
             if ( f == null )
             {
                 s.Write(BitConverter.GetBytes(img.Width),0,4);
                 s.Write(BitConverter.GetBytes(img.Height) , 0 , 4);
-                f = new OneBandImage(img.Width , img.Height);
-                f.Clear(0);
+                f = Image<byte>.FilledWith(img.Width , img.Height,0);
                 ct = f.Height * f.Width;
             }
             WriteBand(f , img , Quality , s);
@@ -54,7 +53,7 @@ namespace MoyskleyTech.ImageProcessing.Video
         /// <param name="next"></param>
         /// <param name="Quality"></param>
         /// <param name="s"></param>
-        public static void WriteBand(OneBandImage previous , OneBandImage next,int Quality,Stream s)
+        public static void WriteBand(Image<byte> previous , Image<byte> next ,int Quality,Stream s)
         {
             var diff = GetDiff(previous,next,Quality);
             s.WriteByte((byte)'F');
@@ -62,7 +61,7 @@ namespace MoyskleyTech.ImageProcessing.Video
 
             AlterImage(previous , diff);
         }
-        private static void AlterImage(OneBandImage f , byte[ ] diff)
+        private static void AlterImage(Image<byte> f , byte[ ] diff)
         {
             for ( var i = 0; i < diff.Length; i++ )
             {
@@ -110,7 +109,7 @@ namespace MoyskleyTech.ImageProcessing.Video
         /// <param name="img"></param>
         /// <param name="Quality"></param>
         /// <returns></returns>
-        public static byte[] GetDiff(OneBandImage f , OneBandImage img,int Quality)
+        public static byte[] GetDiff(Image<byte> f , Image<byte> img ,int Quality)
         {
             var ct = f.Width*f.Height;
             byte[] b = new byte[ct];

@@ -91,7 +91,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public Bitmap Decode(Stream s)
+        public Image<Pixel> Decode(Stream s)
         {
             var decoder= FindDecoder(s);
             if ( decoder == null )
