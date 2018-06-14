@@ -10,7 +10,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
         /// </summary>
         /// <param name="proxy"></param>
         /// <param name="size"></param>
-        public static void Apply(ImageProxy proxy,int size)
+        public static void Apply(ImageProxy<Pixel> proxy ,int size)
         {
             Random r = new Random();
             Pixel chooseColor(int x, int y)
@@ -31,7 +31,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
             }
         }
         public static void Apply<Representation>(ImageProxy<Representation> proxy , int size)
-            where Representation:struct
+            where Representation:unmanaged
         {
             Random r = new Random();
             Representation chooseColor(int x , int y)

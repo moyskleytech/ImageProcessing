@@ -46,8 +46,7 @@ namespace ImageProcessing.JPEGCodec
             return null;
         }
 
-        public unsafe void Save<T>(ImageProxy<T> bmp , Stream s)
-            where T : struct
+        public unsafe void Save<T>(ImageProxy<T> bmp , Stream s) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             SampleRow[] rows = new SampleRow[bmp.Height];
@@ -75,14 +74,14 @@ namespace ImageProcessing.JPEGCodec
             img.WriteJpeg(s);
         }
 
-        public Bitmap DecodeStream(Stream s)
+        public Image<Pixel> DecodeStream(Stream s)
         {
             JPEGDecoder decoder = new JPEGDecoder();
             decoder.SetStream(new BufferedStream(s , new byte[0]));
             decoder.ReadHeader();
             return decoder.ReadBitmap();
         }
-        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : struct
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : unmanaged
         {
             JPEGDecoder decoder = new JPEGDecoder();
             decoder.SetStream(new BufferedStream(s , new byte[0]));
@@ -90,7 +89,7 @@ namespace ImageProcessing.JPEGCodec
             return decoder.ReadData<T>();
         }
 
-        public Image<T> ReadImage<T>(Stream s) where T : struct
+        public Image<T> ReadImage<T>(Stream s) where T : unmanaged
         {
             return DecodeStream(s).ConvertBufferTo<T>();
         }
@@ -101,7 +100,7 @@ namespace ImageProcessing.JPEGCodec
         public int Height => 0;
 
         public int Width => 0;
-        public Bitmap ReadBitmap()
+        public Image<Pixel> ReadBitmap()
         {
             JpegImage img = new JpegImage(s);
             if ( img.Colorspace == Colorspace.RGB )
@@ -132,7 +131,7 @@ namespace ImageProcessing.JPEGCodec
                 return bmp;
             }
         }
-        public IEnumerable<ColorPoint<T>> ReadData<T>() where T : struct
+        public IEnumerable<ColorPoint<T>> ReadData<T>() where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<Pixel,T>();
             JpegImage img = new JpegImage(s);

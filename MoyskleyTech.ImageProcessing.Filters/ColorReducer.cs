@@ -8,7 +8,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
 {
     public static class ColorReducer
     {
-        public static double FromStatistics(ImageProxy bmp , int colorCount)
+        public static double FromStatistics(ImageProxy<Pixel> bmp , int colorCount)
         {
             var statistics = new ImageStatistics(bmp);
             var colors = statistics.ColorStatistics.Dominance.OrderByDescending((x) => x.Value).Take(colorCount).Select((x)=>x.Key).ToArray() ;
@@ -47,7 +47,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
             }
             return getRepresentation();
         }
-        public static double PreviewFromStatistics(ImageProxy bmp , int colorCount)
+        public static double PreviewFromStatistics(ImageProxy<Pixel> bmp , int colorCount)
         {
             var statistics = new ImageStatistics(bmp);
             var colors = statistics.ColorStatistics.Dominance.OrderByDescending((x) => x.Value).Take(colorCount).Select((x)=>x.Key).ToArray() ;
@@ -59,7 +59,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
             }
             return getRepresentation();
         }
-        public static IEnumerable<double> PreviewFromStatistics(ImageProxy bmp)
+        public static IEnumerable<double> PreviewFromStatistics(ImageProxy<Pixel> bmp)
         {
             var statistics = new ImageStatistics(bmp);
             double max = bmp.Width*bmp.Height;
@@ -92,7 +92,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 return GetBeginningMean(count , stats)().Select((x) => x.ToHSB()).ToArray();
             };
         }
-        public static List<Pixel> FromKMeans(ImageProxy bmp , int colorCount, Func<Pixel , Pixel , double> getDistance=null)
+        public static List<Pixel> FromKMeans(ImageProxy<Pixel> bmp , int colorCount, Func<Pixel , Pixel , double> getDistance=null)
         {
             var statistics = new ImageStatistics(bmp);
             IEnumerable<Pixel> colors=null;
@@ -146,7 +146,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
 
             return colors.ToList();
         }
-        public static List<Pixel> FromKMeansHSB(ImageProxy bmp , int colorCount , Func<HSB , HSB , double> getDistance = null)
+        public static List<Pixel> FromKMeansHSB(ImageProxy<Pixel> bmp , int colorCount , Func<HSB , HSB , double> getDistance = null)
         {
             var statistics = new ImageStatistics(bmp);
             IEnumerable<HSB> colors=null;
@@ -201,7 +201,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
             return colors.Select((x) => x.ToRGB()).ToList();
         }
 
-        public static void FromXMeans(ImageProxy bmp , int colorCount , int maxDistance = 50 , Func<Pixel , Pixel , double> getDistance = null)
+        public static void FromXMeans(ImageProxy<Pixel> bmp , int colorCount , int maxDistance = 50 , Func<Pixel , Pixel , double> getDistance = null)
         {
             var statistics = new ImageStatistics(bmp);
             IEnumerable<Pixel> colors=null;
@@ -253,7 +253,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 for ( var y = 0; y < bmp.Height; y++ )
                     bmp[x , y] = getClosest(bmp[x , y]);
         }
-        public static void FromPalette(ImageProxy bmp , BitmapPalette8bpp palette, Func<Pixel , Pixel , double> getDistance = null)
+        public static void FromPalette(ImageProxy<Pixel> bmp , BitmapPalette8bpp palette, Func<Pixel , Pixel , double> getDistance = null)
         {
             if ( getDistance == null )
                 getDistance = RGBDistanceBasic;
@@ -279,7 +279,7 @@ namespace MoyskleyTech.ImageProcessing.Filters
                 for ( var y = 0; y < bmp.Height; y++ )
                     bmp[x , y] = getClosest(bmp[x , y]);
         }
-        public static void FromPalette(ImageProxy bmp , List<Pixel> palette , Dictionary<Pixel , Pixel> cache = null , Func<Pixel , Pixel , double> getDistance = null)
+        public static void FromPalette(ImageProxy<Pixel> bmp , List<Pixel> palette , Dictionary<Pixel , Pixel> cache = null , Func<Pixel , Pixel , double> getDistance = null)
         {
             if ( cache == null )
                 cache = new Dictionary<Pixel , Pixel>();

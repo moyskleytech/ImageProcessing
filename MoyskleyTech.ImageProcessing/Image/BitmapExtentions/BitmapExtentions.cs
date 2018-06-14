@@ -64,6 +64,26 @@ namespace MoyskleyTech.ImageProcessing
             var g= Graphics<T>.FromProxy(bmp);
             g.DrawImage(bmp , destination);
         }
+
+
+        public static void Save<T>(this Image<T> bmp , Stream s) where T : unmanaged
+        {
+            Save(( ImageProxy<T> ) bmp , s);
+        }
+        public static void Save<T>(this ImageProxy<T> bmp , Stream s) where T : unmanaged
+        {
+            new BitmapCodec().Save(bmp , s);
+        }
+        public static void ToStream<T>(this Image<T> bmp , Stream s) where T : unmanaged
+        {
+            ToStream(( ImageProxy<T> ) bmp , s);
+        }
+        public static void ToStream<T>(this ImageProxy<T> bmp , Stream s) where T : unmanaged
+        {
+            new BitmapCodec().Save(bmp , s);
+        }
+
+
         /// <summary>
         /// Allow saving in 8bpp mode
         /// </summary>

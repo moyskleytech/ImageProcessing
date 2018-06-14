@@ -145,19 +145,12 @@ namespace MoyskleyTech.ImageProcessing.WPF
             Canvas.SetTop(circle , y);
             ctx.Children.Add(circle);
         }
-        public override void DrawImage(Image<Pixel> source , int x , int y)
+        public override void DrawImage(ImageProxy<Pixel> source , int x , int y)
         {
             System.Windows.Controls.Image img = new System.Windows.Controls.Image();
             MemoryStream ms = new MemoryStream();
-            if ( source is Bitmap bmp )
-                bmp.ToStream(ms);
-            else
-            {
-                var bmpS = (Bitmap)source.ConvertTo<Pixel>();
-                bmpS.ToStream(ms);
-                bmpS.Dispose();
-            }
-
+            new BitmapCodec().Save<Pixel>(bmp , ms);
+           
             var imageSource = new System.Windows.Media.Imaging.BitmapImage();
             ms.Position = 0;
             imageSource.BeginInit();
@@ -356,8 +349,8 @@ namespace MoyskleyTech.ImageProcessing.WPF
             if ( myBrush is ImageBrush )
             {
                 MemoryStream ms = new MemoryStream();
-                ( myBrush as ImageBrush ).Image.ToStream(ms);
-
+                new BitmapCodec().Save<Pixel>(( myBrush as ImageBrush ).Image , ms);
+               
                 var imageSource = new System.Windows.Media.Imaging.BitmapImage();
                 ms.Position = 0;
                 imageSource.BeginInit();

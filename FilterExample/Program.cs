@@ -24,8 +24,8 @@ namespace FilterExample
             if ( ofd.ShowDialog() == DialogResult.OK )
             {
                 var fs = ofd.OpenFile();
-                Bitmap bmp = new BitmapFactory().Decode(fs);
-                Bitmap ori = (Bitmap)bmp.Clone();
+                Image<Pixel> bmp = new BitmapFactory().Decode(fs);
+                Image<Pixel> ori = bmp.Clone();
                 fs.Dispose();
 
                 ShowImage(bmp , "original");
@@ -53,7 +53,7 @@ namespace FilterExample
                 ShowImage(bmp , "color reduced to 512");
             }
         }
-        public static void ShowImage(Bitmap bmp , string name = "")
+        public static void ShowImage(ImageProxy<Pixel> bmp , string name = "")
         {
             new Form() {
                 Width = bmp.Width,

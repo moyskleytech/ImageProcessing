@@ -139,7 +139,7 @@ namespace MoyskleyTech.ImageProcessing.iOS
 
             ctx.FillEllipseInRect(new CGRect(x , y , w , h));
         }
-        public override void DrawImage(Image<Pixel> source , int x , int y)
+        public override void DrawImage(ImageProxy<Pixel> source , int x , int y)
         {
             ctx.DrawImage(new CGRect(x , y , source.Width , source.Height) , source.ToCGBitmap().ToImage());
         }

@@ -22,12 +22,12 @@ namespace ImageProcessing.TGACodec
             return null;
         }
 
-        public Bitmap DecodeStream(Stream s)
+        public Image<Pixel> DecodeStream(Stream s)
         {
             return TgaReader.Load(s);
         }
 
-        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : struct
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<Pixel,T>();
             var bmp=DecodeStream(s);
@@ -36,7 +36,7 @@ namespace ImageProcessing.TGACodec
                    select new ColorPoint<T>(x , y , converter(bmp[x , y]));
         }
 
-        public Image<T> ReadImage<T>(Stream s) where T : struct
+        public Image<T> ReadImage<T>(Stream s) where T : unmanaged
         {
             return DecodeStream(s).ConvertBufferTo<T>();
         }
@@ -82,7 +82,7 @@ namespace ImageProcessing.TGACodec
                 }
         }
 
-        public void Save<T>(ImageProxy<T> bmp , Stream s) where T : struct
+        public void Save<T>(ImageProxy<T> bmp , Stream s) where T : unmanaged
         {
             throw new NotImplementedException();
         }

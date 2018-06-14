@@ -32,20 +32,19 @@ namespace MoyskleyTech.ImageProcessing.Image
     [NotSerialized]
     public class ImageBrush : Brush
     {
-        private Bitmap src;
         /// <summary>
         /// Create the brush using an image
         /// </summary>
         /// <param name="img"></param>
-        public ImageBrush(Bitmap img)
+        public ImageBrush(Image<Pixel> img)
         {
-            src = img;
+            Image = img;
         }
 
         /// <summary>
         /// Return the image
         /// </summary>
-        public Bitmap Image { get { return src; } }
+        public Image<Pixel> Image { get; }
 
         /// <summary>
         /// Get the color from the specified position in the pattern
@@ -55,7 +54,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns></returns>
         public override Pixel GetColor(int x , int y)
         {
-            return src[x % src.Width , y % src.Height];
+            return Image[x % Image.Width , y % Image.Height];
         }
     }
     /// <summary>

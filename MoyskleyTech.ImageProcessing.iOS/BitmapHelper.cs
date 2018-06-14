@@ -11,7 +11,14 @@ namespace MoyskleyTech.ImageProcessing.iOS
 {
     public static class BitmapHelper
     {
-   
+
+        public static CGBitmapContext ToCGBitmap(this ImageProxy<Pixel> bmp)
+        {
+            using ( var img = bmp.ToImage() )
+            {
+                return img.ToCGBitmap();
+            }
+        }
         public static CGBitmapContext ToCGBitmap(this Image<Pixel> bmp)
         {
             CGBitmapContext ctx = new CGBitmapContext( null,bmp.Width,bmp.Height,8,bmp.Width*4, CGColorSpace.CreateDeviceRGB(), CGImageAlphaInfo.None);
@@ -22,9 +29,9 @@ namespace MoyskleyTech.ImageProcessing.iOS
         {
             return bmp.ToImage();
         }
-        public static Bitmap ToBitmap(this CGBitmapContext src)
+        public static Image<Pixel> ToBitmap(this CGBitmapContext src)
         {
-            Bitmap bmp= new Bitmap((int)src.Width,(int)src.Height);
+            Image<Pixel> bmp= Image<Pixel>.Create((int)src.Width,(int)src.Height);
             bmp.CopyFrom(src.Data);
             return bmp;
         }

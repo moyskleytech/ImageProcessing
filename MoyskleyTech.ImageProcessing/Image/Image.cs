@@ -14,7 +14,7 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// </summary>
     /// <typeparam name="Representation"></typeparam>
     [NotSerialized]
-    public unsafe partial class Image<Representation>
+    public unsafe partial class Image<Representation> : IDisposable
         where Representation : unmanaged
     {
         /// <summary>
@@ -214,7 +214,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Representation* src = dataPointer;
             Representation* dest = (Representation*)dst.ToPointer();
-            for ( var i = 0; i < width * height * lengthOfItem; i++ )
+            for ( var i = 0; i < width * height; i++ )
                 *dest++ = *src++;
         }
         /// <summary>
@@ -225,7 +225,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Representation* src = (Representation*)dst.ToPointer();
             Representation* dest = dataPointer;
-            for ( var i = 0; i < width * height * lengthOfItem; i++ )
+            for ( var i = 0; i < width * height; i++ )
                 *dest++ = *src++;
         }
         /// <summary>
@@ -236,7 +236,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Representation* src = dataPointer;
             Representation* dest = (Representation*)dst;
-            for ( var i = 0; i < width * height * lengthOfItem; i++ )
+            for ( var i = 0; i < width * height; i++ )
                 *dest++ = *src++;
         }
         /// <summary>
@@ -247,7 +247,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Representation* src = (Representation*)dst;
             Representation* dest = dataPointer;
-            for ( var i = 0; i < width * height * lengthOfItem; i++ )
+            for ( var i = 0; i < width * height; i++ )
                 *dest++ = *src++;
         }
         /// <summary>
@@ -279,6 +279,10 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Image<NewRepresentation> ConvertBufferTo<NewRepresentation>()
             where NewRepresentation : unmanaged
         {
+            if ( Disposed )
+                return null;
+            if ( !deleteOnDispose )
+                return ConvertTo<NewRepresentation>();
             Image<NewRepresentation> ret=null;
             var szN = Marshal.SizeOf(typeof(NewRepresentation));
             var szO = Marshal.SizeOf(typeof(Representation));
@@ -497,7 +501,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             if ( typeof(Representation) == typeof(Pixel) )
                 return ( Image<Representation> ) ( object ) new Bitmap(data.Value , width , height);
 
-            return new Image<Representation>(width , height);
+            return Image<Representation>.UsingExistingMemoryPointer(data.Value,width , height);
         }
         /// <summary>
         /// Crop
@@ -623,7 +627,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return Average(r.X , r.Y , r.Width , r.Height);
         }
-        
+
     }
 
     public static class Image
@@ -949,18 +953,111 @@ namespace MoyskleyTech.ImageProcessing.Image
 
             return ( float ) acount / count;
         }
+        public static Pixel Get(Func<int , int , Pixel> getter , Size size , double x , double y)
+        {
+            var ix = (int)x;
+            var iy = (int)y;
+            var dx = x-ix;
+            var dy = y-iy;
+
+            if ( dx == 0 && dy == 0 )
+                return getter(ix , iy);
+
+            var dx2 = 1-dx;
+            var dy2 = 1-dy;
+
+            var ipx = getter(ix,iy);
+
+            double sa=ipx.A,sr=ipx.R,sg=ipx.G,sb=ipx.B;
+            if ( ix > 0 )
+            {
+                var px = getter(ix , iy);
+                sa += px.A * dx2;
+                sr += px.R * dx2;
+                sg += px.G * dx2;
+                sb += px.B * dx2;
+            }
+            if ( iy > 0 )
+            {
+                var px=getter(ix , iy);
+                sa += px.A * dy2;
+                sr += px.R * dy2;
+                sg += px.G * dy2;
+                sb += px.B * dy2;
+            }
+            if ( ix < size.Width - 1 )
+            {
+                var px = getter(ix + 1 , iy);
+                sa += px.A * dx;
+                sr += px.R * dx;
+                sg += px.G * dx;
+                sb += px.B * dx;
+            }
+            if ( iy < size.Height - 1 )
+            {
+                var px = getter(ix,iy+1);
+                sa += px.A * dy;
+                sr += px.R * dy;
+                sg += px.G * dy;
+                sb += px.B * dy;
+            }
+            Pixel destinationpx = new Pixel()
+            {
+                R = ( byte ) ( sr / 3 ),
+                G = ( byte ) ( sg / 3 ),
+                B = ( byte ) ( sb / 3 ),
+                A = ( byte ) ( sa / 3 )
+            };
+            return destinationpx;
+        }
+        public static Pixel Average(Func<int , int , Pixel> getter , double x , double y , double w , double h)
+        {
+            var sex = x+w;
+            var sey = y+w;
+            var sx = (int)x;
+            var sy = (int)y;
+
+            ulong count=0;
+            ulong acount=0;
+            ulong sa=0,sr=0,sg=0,sb=0;
+            for ( var i = sx; i < sex; i++ )
+            {
+                for ( var j = sy; j < sey; j++ )
+                {
+                    count++;
+                    Pixel source = getter(i,j);
+                    acount += source.A;
+                    sa += source.A;
+                    sr += source.R;
+                    sg += source.G;
+                    sb += source.B;
+                }
+            }
+            Pixel destinationpx = new Pixel
+            {
+                A = ( byte ) ( sa / count )
+            };
+            if ( acount > 0 )
+            {
+                destinationpx.R = ( byte ) ( sr * 255 / acount );
+                destinationpx.G = ( byte ) ( sg * 255 / acount );
+                destinationpx.B = ( byte ) ( sb * 255 / acount );
+            }
+            return destinationpx;
+        }
         public static T Get<T>(Func<int , int , T> getter , Size size , double x , double y)
             where T : unmanaged
         {
-            var converter1 = ColorConvert.GetConversionFrom<T,ARGB_Float>();
-            var converter2 = ColorConvert.GetConversionFrom<ARGB_Float,T>();
+            var converter1 = ColorConvert.GetConversionFrom<T,Pixel>();
+            var converter2 = ColorConvert.GetConversionFrom<Pixel,T>();
             return converter2(Get((x2 , y2) => converter1(getter(x2 , y2)) , size , x , y));
         }
         public static T Average<T>(Func<int , int , T> getter , double x , double y , double w , double h)
             where T : unmanaged
         {
-            var converter1 = ColorConvert.GetConversionFrom<T,ARGB_Float>();
-            var converter2 = ColorConvert.GetConversionFrom<ARGB_Float,T>();
+            var converter1 = ColorConvert.GetConversionFrom<T,Pixel>();
+            var converter2 = ColorConvert.GetConversionFrom<Pixel,T>();
+
             return converter2(Average((x2 , y2) => converter1(getter(x2 , y2)) , x , y , w , h));
         }
     }

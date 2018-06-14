@@ -24,9 +24,9 @@ namespace SobelExample
             if ( ofd.ShowDialog() == DialogResult.OK )
             {
                 var fs = ofd.OpenFile();
-                Bitmap bmp = new BitmapFactory().Decode(fs);
+                Image<Pixel> bmp = new BitmapFactory().Decode(fs);
                 fs.Dispose();
-                Bitmap bmp2=bmp;
+                Image<Pixel> bmp2=bmp;
                 if ( bmp.Width > 800 || bmp.Height > 800 )
                 {
                     double ratio = (double)bmp.Width/bmp.Height;
@@ -58,7 +58,7 @@ namespace SobelExample
                 ShowImage(sobelled , "Sobel");
             }
         }
-        public static void ShowImage(Bitmap bmp , string name = "")
+        public static void ShowImage(ImageProxy<Pixel> bmp , string name = "")
         {
             new Form()
             {

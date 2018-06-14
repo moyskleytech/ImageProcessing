@@ -59,7 +59,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         Image<Pixel> ReadBitmap();
 
         IEnumerable<ColorPoint<T>> ReadData<T>()
-            where T : struct;
+            where T : unmanaged;
         int Height { get; }
         int Width { get; }
     }

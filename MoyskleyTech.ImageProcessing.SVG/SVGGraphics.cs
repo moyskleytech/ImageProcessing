@@ -82,7 +82,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
             FillCircle(new SolidBrush(p) , x0 , y0 , r);
         }
        
-        public override void DrawImage(MoyskleyTech.ImageProcessing.Image.Image<Pixel> source , int x , int y)
+        public override void DrawImage(MoyskleyTech.ImageProcessing.Image.ImageProxy<Pixel> source , int x , int y)
         {
             root.Attributes["xmlns:xlink"] = "http://www.w3.org/1999/xlink";
             XMLNode image = new XMLNode() { Name="image" };
@@ -248,10 +248,10 @@ namespace MoyskleyTech.ImageProcessing.SVG
         {
             FillRectangle(p , px , py , 1 , 1);
         }
-        public string Convert(Image<Pixel> bmp)
+        public string Convert(ImageProxy<Pixel> bmp)
         {
             MemoryStream ms = new MemoryStream();
-            ((Bitmap)bmp).Save(ms);
+            new BitmapCodec().Save(bmp , ms);
             ms.Position = 0;
             byte[] array = ms.ToArray();
             ms.Dispose();

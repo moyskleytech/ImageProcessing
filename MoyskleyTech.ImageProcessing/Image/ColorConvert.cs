@@ -181,12 +181,12 @@ namespace MoyskleyTech.ImageProcessing.Image
             RegisterTransition<bool , byte>(ToByte , 1);
             RegisterTransition<ushort , byte>(ToByte , 0.5);
             RegisterTransition<byte , ushort>(ToUShort , 1);
-            RegisterTransition<ARGB_16bit , ushort>(ToUShort , 0.25);
+            //RegisterTransition<ARGB_16bit , ushort>(ToUShort , 0.25);
             RegisterTransition<uint , ushort>(ToUShort , 0.5);
             RegisterTransition<ushort , uint>(ToUInt , 1);
             RegisterTransition<ulong , uint>(ToUInt , 0.5);
             RegisterTransition<uint , ulong>(ToULong , 1);
-            RegisterTransition<ARGB_Float , float>(ToFloat , 0.25);
+            //RegisterTransition<ARGB_Float , float>(ToFloat , 0.25);
 
             RegisterTransition<BGR , RGB>(ToRGB , 1);
             RegisterTransition<Pixel , RGB>(ToRGB , 0.75);

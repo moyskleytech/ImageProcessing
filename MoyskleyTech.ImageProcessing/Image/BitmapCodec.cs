@@ -629,7 +629,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             return bmp;
         }
         public IEnumerable<ColorPoint<T>> ReadData<T>()
-            where T:struct
+            where T:unmanaged
         {
             if ( header.numberOfBitPerPixel == 8 )
                 palette8bpp = ReadPalette();

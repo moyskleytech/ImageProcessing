@@ -158,17 +158,11 @@ namespace MoyskleyTech.ImageProcessing.Android
             G.RectF rect = new G.RectF(x,y,w,h);
             ctx.DrawOval(rect , ConvertFill(p , x , y));
         }
-        public override void DrawImage(Image<Pixel> source , int x , int y)
+        public override void DrawImage(ImageProxy<Pixel> source , int x , int y)
         {
-            if ( source is Bitmap b )
-                ctx.DrawBitmap(b.ToAndroidBitmap() , x , y , null);
-            else
-            {
-                Bitmap bitmap = new Bitmap(source.Width,source.Height);
-                bitmap.CopyFrom(source.DataPointer);
-                ctx.DrawBitmap(bitmap.ToAndroidBitmap() , x , y , null);
-                bitmap.Dispose();
-            }
+            Image<Pixel> bitmap = source.ToImage();
+            ctx.DrawBitmap(bitmap.ToAndroidBitmap() , x , y , null);
+            bitmap.Dispose();
         }
         public void DrawImage(G.Bitmap source , int x , int y)
         {

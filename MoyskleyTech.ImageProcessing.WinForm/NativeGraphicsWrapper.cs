@@ -96,11 +96,13 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             ctx.FillEllipse(brush , x , y , w , h);
             brush.Dispose();
         }
-        public override void DrawImage(Image<Pixel> source , int x , int y)
+        public override void DrawImage(ImageProxy<Pixel> source , int x , int y)
         {
-            var img=source.ToWinFormBitmap();
+            var tmp = source.ToImage();
+            var img=tmp.ToWinFormBitmap();
             ctx.DrawImage(img , x , y);
             img.Dispose();
+            tmp.Dispose();
         }
         public override void DrawLine(Pixel p , double x , double y , double x2 , double y2)
         {

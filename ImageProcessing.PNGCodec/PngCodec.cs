@@ -41,7 +41,7 @@ namespace ImageProcessing.PNGCodec
             return decoder;
         }
 
-        public Bitmap DecodeStream(Stream s)
+        public Image<Pixel> DecodeStream(Stream s)
         {
             PngDecoder decoder = new PngDecoder();
             decoder.SetStream(new BufferedStream(s , new byte[0]));
@@ -50,7 +50,7 @@ namespace ImageProcessing.PNGCodec
         }
 
         public unsafe void Save<T>(ImageProxy<T> bmp , Stream s)
-            where T:struct
+            where T:unmanaged
         {
             var converter= ColorConvert.GetConversionFrom<T,Pixel>();
             PngWriter pngw = new PngWriter(s, new ImageInfo(bmp.Width,bmp.Height,8,true,false,false));
@@ -75,7 +75,7 @@ namespace ImageProcessing.PNGCodec
             }
             pngw.End();
         }
-        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : struct
+        public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<Pixel,T>();
             using (var bmp = DecodeStream(s) )
@@ -84,7 +84,7 @@ namespace ImageProcessing.PNGCodec
                        select new ColorPoint<T>(x , y , converter(bmp[x , y]));
         }
 
-        public Image<T> ReadImage<T>(Stream s) where T : struct
+        public Image<T> ReadImage<T>(Stream s) where T : unmanaged
         {
             return DecodeStream(s).ConvertBufferTo<T>();
         }
@@ -101,7 +101,7 @@ namespace ImageProcessing.PNGCodec
 
         public int Width => 0;
 
-        public unsafe Bitmap ReadBitmap()
+        public unsafe Image<Pixel> ReadBitmap()
         {
             PngReader pngr = new PngReader(s);
             pngr.SetUnpackedMode(true);
@@ -138,7 +138,7 @@ namespace ImageProcessing.PNGCodec
             return bmp;
         }
 
-        public IEnumerable<ColorPoint<T>> ReadData<T>() where T : struct
+        public IEnumerable<ColorPoint<T>> ReadData<T>() where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<Pixel,T>();
             using ( var bmp = ReadBitmap() )

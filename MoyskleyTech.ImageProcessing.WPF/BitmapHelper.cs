@@ -14,15 +14,13 @@ namespace MoyskleyTech.ImageProcessing.WPF
     {
         public static BitmapImage ToWPFBitmap(this Image<Pixel> bmp)
         {
+            return ToWPFBitmap(( ImageProxy<Pixel> ) bmp);
+        }
+        public static BitmapImage ToWPFBitmap(this ImageProxy<Pixel> bmp)
+        {
             var stream = new MemoryStream();
-            if ( bmp is Bitmap b )
-                b.Save(stream);
-            else
-            {
-                var bmpS = (Bitmap)bmp.ConvertTo<Pixel>();
-                bmpS.Save(stream);
-                bmpS.Dispose();
-            }
+            new BitmapCodec().Save<Pixel>(bmp , stream);
+
             stream.Position = 0;
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -32,7 +30,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             bitmap.Freeze();
             return bitmap;
         }
-        public static Bitmap ToBitmap(this BitmapSource src)
+        public static Image<Pixel> ToBitmap(this BitmapSource src)
         {
             if ( src.Format != PixelFormats.Bgra32 )
                 src = new FormatConvertedBitmap(src , PixelFormats.Bgra32 , null , 0);
@@ -43,7 +41,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
 
             src.CopyPixels(pixels , stride , 0);
 
-            Bitmap bmp = new Bitmap(src.PixelWidth,src.PixelHeight);
+            Image<Pixel> bmp = new Image<Pixel>(src.PixelWidth,src.PixelHeight);
             unsafe
             {
                 fixed ( byte* ptr = pixels )

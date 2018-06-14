@@ -10,13 +10,13 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
     public class Sobel
     {
         //Thanks to Epoch abuse https://epochabuse.com/csharp-sobel/
-        public static Bitmap ConvolutionFilter(Bitmap sourceImage , double[ , ] xkernel =null, double[ , ] ykernel = null , double factor = 1 , int bias = 0)
+        public static Image<Pixel> ConvolutionFilter(ImageProxy<Pixel> sourceImage , double[ , ] xkernel =null, double[ , ] ykernel = null , double factor = 1 , int bias = 0)
         {
             if ( xkernel == null )
                 xkernel = xSobel;
             if ( ykernel == null )
                 ykernel = ySobel;
-            Bitmap result = (Bitmap)sourceImage.Clone();
+            Image<Pixel> result = sourceImage.ToImage();
             //Image dimensions stored in variables for convenience
             int width = sourceImage.Width;
             int height = sourceImage.Height;

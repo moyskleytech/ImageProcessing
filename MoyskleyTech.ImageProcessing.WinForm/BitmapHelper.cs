@@ -10,15 +10,45 @@ namespace MoyskleyTech.ImageProcessing.WinForm
 {
     public static class BitmapHelper
     {
+        public static System.Drawing.Bitmap ToWinFormBitmap(this ImageProxy<Pixel> bmp)
+        {
+            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var img=bmp.ToImage();
+            dest.CopyFrom(img);
+            img.Dispose();
+            return dest;
+        }
         public static System.Drawing.Bitmap ToWinFormBitmap(this Image<Pixel> bmp)
         {
             System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             dest.CopyFrom(bmp);
             return dest;
         }
-        public static Bitmap ToBitmap(this System.Drawing.Bitmap src)
+
+        public static System.Drawing.Bitmap ToWinFormBitmap(this ImageProxy<BGR> bmp)
         {
-            Bitmap bmp= new Bitmap(src.Width,src.Height);
+            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            var img=bmp.ToImage();
+            dest.CopyFrom(img);
+            img.Dispose();
+            return dest;
+        }
+        public static System.Drawing.Bitmap ToWinFormBitmap(this Image<BGR> bmp)
+        {
+            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            dest.CopyFrom(bmp);
+            return dest;
+        }
+
+        public static Image<Pixel> ToBitmap(this System.Drawing.Bitmap src)
+        {
+            Image<Pixel> bmp= Image<Pixel>.Create(src.Width,src.Height);
+            bmp.CopyFrom(src);
+            return bmp;
+        }
+        public static Image<BGR> ToBGR(this System.Drawing.Bitmap src)
+        {
+            Image<BGR> bmp= Image<BGR>.Create(src.Width,src.Height);
             bmp.CopyFrom(src);
             return bmp;
         }
@@ -32,6 +62,19 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         {
             var loc = bmp.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             dest.CopyFromBGRA(loc.Scan0);
+            bmp.UnlockBits(loc);
+        }
+
+        public static void CopyFrom(this System.Drawing.Bitmap dest , Image<BGR> bmp)
+        {
+            var loc = dest.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            bmp.CopyTo(loc.Scan0);
+            dest.UnlockBits(loc);
+        }
+        public static void CopyFrom(this Image<BGR> dest , System.Drawing.Bitmap bmp)
+        {
+            var loc = bmp.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            dest.CopyFrom(loc.Scan0);
             bmp.UnlockBits(loc);
         }
     }

@@ -28,8 +28,8 @@ namespace WinFormDemo_Multiple_Test_
                 var bmpt = new Bitmap(bmp);
                 bmp.Dispose();
 
-                MoyskleyTech.ImageProcessing.Image.Image<MoyskleyTech.ImageProcessing.Image.Pixel> ubmp = bmpt.ToBitmap();
-                ubmp=ubmp.Rescale(8000 , 6000 , MoyskleyTech.ImageProcessing.Image.ScalingMode.AverageInterpolate);
+                MoyskleyTech.ImageProcessing.Image.Image<MoyskleyTech.ImageProcessing.Image.BGR> ubmp = bmpt.ToBGR();
+                ubmp=ubmp.Rescale(8 , 6 , MoyskleyTech.ImageProcessing.Image.ScalingMode.AverageInterpolate);
                 pictureBox1.Image = ubmp.ToWinFormBitmap();
 
                 pictureBox1.Image.Save(ofd.FileName + ".png", System.Drawing.Imaging.ImageFormat.Png);
