@@ -46,5 +46,10 @@ namespace WinFormDemo_Multiple_Test_
         {
             ( new Scaling() ).ShowDialog();
         }
+
+        private void btn4_Click(object sender , EventArgs e)
+        {
+            ( new Charting3() ).ShowDialog();
+        }
     }
 }

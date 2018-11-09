@@ -16,6 +16,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// The proxying image
         /// </summary>
         protected Image<Representation> img;
+
+
+        public bool Readonly { get; private set; }
         /// <summary>
         /// Area rectangle
         /// </summary>
@@ -28,16 +31,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Create a empty proxy
         /// </summary>
-        protected ImageProxy()
+        protected ImageProxy(bool rdonly)
         {
-
+            Readonly = false;
         }
         /// <summary>
         /// Create a proxy using an image
         /// </summary>
         /// <param name="bitmap"></param>
         /// <param name="rectangle"></param>
-        public ImageProxy(Image<Representation> bitmap , Rectangle rectangle)
+        public ImageProxy(Image<Representation> bitmap , Rectangle rectangle , bool rdonly = false) : this(rdonly)
         {
             this.img = bitmap;
             this.Rect = rectangle;
@@ -47,11 +50,12 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="prx"></param>
         /// <param name="rectangle"></param>
-        public ImageProxy(ImageProxy<Representation> prx , Rectangle rectangle)
+        public ImageProxy(ImageProxy<Representation> prx , Rectangle rectangle , bool rdonly = false) : this(prx.Readonly || rdonly)
         {
             this.img = prx.img;
             this.Rect = new Rectangle(rectangle.X + prx.Rectangle.X , rectangle.Y + prx.Rectangle.Y , rectangle.Width , rectangle.Height);
         }
+
         /// <summary>
         /// Left of area
         /// </summary>
@@ -106,7 +110,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <typeparam name="T"></typeparam>
         /// <param name="converter"></param>
         /// <returns></returns>
-        public virtual Image<T> ToImage<T>(Func<Representation , T> converter=null)
+        public virtual Image<T> ToImage<T>(Func<Representation , T> converter = null)
             where T : unmanaged
         {
             if ( converter == null )
@@ -135,6 +139,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 int y = t/Width;
                 int x = t-y*Width;
                 this[x , y] = value;
+
             }
         }
         /// <summary>
@@ -153,7 +158,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             set
             {
-                if ( x < Rect.Width && x >= 0 && y < Rect.Height && y >= 0 )
+                if ( !Readonly && x < Rect.Width && x >= 0 && y < Rect.Height && y >= 0 )
                     img[x + rct.X , y + rct.Y] = value;
             }
         }
@@ -185,12 +190,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
 
         public ImageProxy<B> As<B>()
-            where B: unmanaged
+            where B : unmanaged
         {
             ImageTypeProxy<Representation,B> proxy = new ImageTypeProxy<Representation, B>(this);
             return proxy;
         }
+        public ImageProxy<B> As<B>(Func<Representation , B> converter)
+            where B : unmanaged
+        {
+            ImageTypeProxy<Representation,B> proxy = new ImageTypeProxy<Representation, B>(this,converter);
+            return proxy;
+        }
     }
+
     /// <summary>
     /// Main use is ROI
     /// </summary>
@@ -210,13 +222,19 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Create a empty proxy
         /// </summary>
-        protected ImageTypeProxy()
+        protected ImageTypeProxy(bool rdonly , Func<RepresentationA , RepresentationB> converter) : base(rdonly || converter!=null)
         {
-            converter = ColorConvert.GetConversionFrom<RepresentationA , RepresentationB>();
+            if ( converter == null )
+                converter = ColorConvert.GetConversionFrom<RepresentationA , RepresentationB>();
+            this.converter = converter;
             converter2 = ColorConvert.GetConversionFrom<RepresentationB , RepresentationA>();
         }
 
-        public ImageTypeProxy(ImageProxy<RepresentationA> t):this()
+        public ImageTypeProxy(ImageProxy<RepresentationA> t) : this(t.Readonly , null)
+        {
+            imgP = t;
+        }
+        public ImageTypeProxy(ImageProxy<RepresentationA> t , Func<RepresentationA , RepresentationB> converter) : this(t.Readonly , converter)
         {
             imgP = t;
         }

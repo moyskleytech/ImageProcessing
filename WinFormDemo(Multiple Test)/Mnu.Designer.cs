@@ -34,6 +34,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.btn4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -96,11 +97,22 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // btn4
+            // 
+            this.btn4.Location = new System.Drawing.Point(45, 145);
+            this.btn4.Name = "btn4";
+            this.btn4.Size = new System.Drawing.Size(93, 23);
+            this.btn4.TabIndex = 6;
+            this.btn4.Text = "Charting3D";
+            this.btn4.UseVisualStyleBackColor = true;
+            this.btn4.Click += new System.EventHandler(this.btn4_Click);
+            // 
             // Mnu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.btn4);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
@@ -121,5 +133,6 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button btn4;
     }
 }

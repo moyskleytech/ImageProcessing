@@ -20,12 +20,12 @@ namespace MoyskleyTech.ImageProcessing.Android
             ColorConvertAndroid.RegisterIfNot();
         }
         G.Bitmap image;
-        public AndroidBitmapPixelProxy(G.Bitmap bmp)
+        public AndroidBitmapPixelProxy(G.Bitmap bmp):base(false)
         {
             image = bmp;
             rct = new Rectangle(0 , 0 , bmp.Width , bmp.Height);
         }
-        public AndroidBitmapPixelProxy(G.Bitmap bmp , Rectangle src)
+        public AndroidBitmapPixelProxy(G.Bitmap bmp , Rectangle src) : base(false)
         {
             image = bmp;
             rct = src;
@@ -68,12 +68,12 @@ namespace MoyskleyTech.ImageProcessing.Android
             ColorConvertAndroid.RegisterIfNot();
         }
         G.Bitmap image;
-        public AndroidBitmapProxy(G.Bitmap bmp)
+        public AndroidBitmapProxy(G.Bitmap bmp) : base(false)
         {
             image = bmp;
             rct = new Rectangle(0 , 0 , bmp.Width , bmp.Height);
         }
-        public AndroidBitmapProxy(G.Bitmap bmp , Rectangle src)
+        public AndroidBitmapProxy(G.Bitmap bmp , Rectangle src) : base(false)
         {
             image = bmp;
             rct = src;

@@ -8,6 +8,8 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public unsafe partial class Image<Representation>
     {
+        public Rectangle Bounds { get { return new Rectangle(0 , 0 , width , height); } }
+
         /// <summary>
         /// Let resize a bitmap to a new size
         /// </summary>
@@ -77,10 +79,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             double scaleX = (double)width / destination.width;
             double scaleY = (double)height / destination.height;
-            for ( var x = 0; x < destination.width; x++ )
-            {
-                for ( var y = 0; y < destination.height; y++ )
-                {
+
+            Parallel.For(0 , destination.width , (x) => {
+                Parallel.For(0 , destination.height , (y) => {
                     int sx = (int)(x*scaleX);
                     int sy = (int)(y*scaleY);
                     var dsx = x*scaleX;
@@ -104,8 +105,8 @@ namespace MoyskleyTech.ImageProcessing.Image
                         var destinationpx = Average(sx,sy,sex-sx,sey-sy);
                         destination[x , y] = destinationpx;
                     }
-                }
-            }
+                });
+            });
         }
         /// <summary>
         /// Let resize a bitmap to a new size(ASYNC)

@@ -122,7 +122,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static PointF[ ] GetRoundedRectanglePolygon(RectangleF bounds , double radius)
         {
             if ( radius == 0 )
-                return new PointF[ ] { new PointF(bounds.X,bounds.Y), new PointF(bounds.Right , bounds.Y), new PointF(bounds.Right , bounds.Bottom), new PointF(bounds.X , bounds.Bottom) };
+                return new PointF[ ] { new PointF(bounds.X , bounds.Y) , new PointF(bounds.Right , bounds.Y) , new PointF(bounds.Right , bounds.Bottom) , new PointF(bounds.X , bounds.Bottom) };
             const double HALF_PI = Math.PI/2;
             double INCREMENT = HALF_PI*4/radius;
             var ptTopLeft = new PointF(bounds.X+radius, bounds.Y+radius);
@@ -135,24 +135,24 @@ namespace MoyskleyTech.ImageProcessing.Image
             points.AddRange(GetArcPolygon(ptTopRight , radius , 3 * HALF_PI , HALF_PI));
             points.AddRange(GetArcPolygon(ptBottomRight , radius , 0 , HALF_PI));
             points.AddRange(GetArcPolygon(ptBottomLeft , radius , HALF_PI , HALF_PI));
-            points.AddRange(GetArcPolygon(ptTopLeft , radius , 2*HALF_PI , HALF_PI));
+            points.AddRange(GetArcPolygon(ptTopLeft , radius , 2 * HALF_PI , HALF_PI));
 
             return points.ToArray();
         }
 
-        public static PointF[] GetArcPolygon(PointF center , double radius , double beginAngle , double span)
+        public static PointF[ ] GetArcPolygon(PointF center , double radius , double beginAngle , double span)
         {
             beginAngle %= 2 * Math.PI;
             var points =new List<PointF>();
             var INCREMENT = (span)/(Math.Max(radius,10));
-            for ( var i = beginAngle; i < beginAngle+span; i += INCREMENT )
+            for ( var i = beginAngle; i < beginAngle + span; i += INCREMENT )
             {
                 points.Add(FindEllipsePoint(radius , radius , 0 , center.X , center.Y , i));
             }
             points.Add(FindEllipsePoint(radius , radius , 0 , center.X , center.Y , beginAngle + span));
             return points.ToArray();
         }
-        public static PointF[ ] GetEllipseArcPolygon(PointF center , double radius1,double radius2 , double beginAngle , double span)
+        public static PointF[ ] GetEllipseArcPolygon(PointF center , double radius1 , double radius2 , double beginAngle , double span)
         {
             beginAngle %= 2 * Math.PI;
             var points =new List<PointF>();
@@ -179,6 +179,8 @@ namespace MoyskleyTech.ImageProcessing.Image
 
         public static double[ , ] GetGaussianKernel(int length , double weight)
         {
+            if ( length % 2 == 0 )
+                length++;
             double[,] Kernel = new double [length, length];
             double sumTotal = 0;
 

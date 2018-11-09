@@ -12,7 +12,7 @@ namespace MoyskleyTech.ImageProcessing
     /// <summary>
     /// Allow basic operation of bitmap that are added
     /// </summary>
-    public static class BitmapExtentions
+    public unsafe static class BitmapExtentions
     {
         /// <summary>
         /// Noise value of bitmap(usefull to hide bitmap content after use)
@@ -55,7 +55,7 @@ namespace MoyskleyTech.ImageProcessing
             }
             return palette;
         }
-        public static void Replace<T>(this Image<T> bmp , Rectangle destination , ImageProxy<T> newImage) where T:unmanaged
+        public static void Replace<T>(this Image<T> bmp , Rectangle destination , ImageProxy<T> newImage) where T : unmanaged
         {
             Replace(( ImageProxy<T> ) bmp , destination , newImage);
         }
@@ -82,6 +82,13 @@ namespace MoyskleyTech.ImageProcessing
         {
             new BitmapCodec().Save(bmp , s);
         }
+        public static ImageProxy<T> As<U, T>(this Image<U> img)
+            where T : unmanaged
+            where U : unmanaged
+        {
+            ImageProxy<U> prx = img;
+            return prx.As<T>();
+        }
 
 
         /// <summary>
@@ -101,7 +108,7 @@ namespace MoyskleyTech.ImageProcessing
         {
             return GenerateBlurred(( ImageProxy<Pixel> ) bmp , size , weight);
         }
-        public static Image<Pixel> GenerateBlurred(this ImageProxy<Pixel> bmp , int size, double weight)
+        public static Image<Pixel> GenerateBlurred(this ImageProxy<Pixel> bmp , int size , double weight)
         {
             var kernel = GraphicsHelper.GetGaussianKernel(size , weight);
             return Convolve(bmp , kernel);
@@ -132,7 +139,7 @@ namespace MoyskleyTech.ImageProcessing
         }
 
         public static Image<T> GenerateBlurred<T>(this Image<T> bmp , int size , double weight)
-            where T: unmanaged
+            where T : unmanaged
         {
             return GenerateBlurred(( ImageProxy<T> ) bmp , size , weight);
         }
@@ -173,7 +180,7 @@ namespace MoyskleyTech.ImageProcessing
         {
             return Task.Run(() =>
             {
-                Blur(bmp , size,weight);
+                Blur(bmp , size , weight);
             });
         }
         public static Task BlurAsync<T>(this Image<T> bmp , int size , double weight) where T : unmanaged
@@ -424,7 +431,7 @@ namespace MoyskleyTech.ImageProcessing
             }
             return img;
         }
-      
+
         /// <summary>
         /// Allow replace of a color band
         /// </summary>
@@ -540,7 +547,7 @@ namespace MoyskleyTech.ImageProcessing
                                                   int bias = 0)
             where T : unmanaged
         {
-            var imgpx=Convolve(sourceBitmap.As<T>() , filterMatrix , factor , bias);
+            var imgpx=Convolve(sourceBitmap.As<Pixel>() , filterMatrix , factor , bias);
             return imgpx.ConvertBufferTo<T>();
         }
         public static Image<Pixel> Convolve(this ImageProxy<Pixel> sourceBitmap , double[ , ] filterMatrix , double factor = 1 ,
@@ -620,6 +627,362 @@ namespace MoyskleyTech.ImageProcessing
             return dest;
         }
 
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">SOurce</param>
+        public static void CopyFromARGB(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr= (Pixel*)ptr;
+            var optr = (Pixel*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                    *optr++ = *iptr++;
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToARGB(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr=(Pixel*)bmp.DataPointer.ToPointer();
+            var optr = (Pixel*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                    *optr++ = *iptr++;
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">SOurce</param>
+        public static void CopyFromRGB(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr= (byte*)ptr;
+            var optr = (Pixel*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->R = *iptr++;
+                    optr->G = *iptr++;
+                    optr->B = *iptr++;
+                    optr->A = 255;
+                    optr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToRGB(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr=(Pixel*)bmp.DataPointer.ToPointer();
+            var optr = (byte*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    *optr++ = iptr->R;
+                    *optr++ = iptr->G;
+                    *optr++ = iptr->B;
+                }
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">SOurce</param>
+        public static void CopyFromBGR(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr= (byte*)ptr;
+            var optr = (Pixel*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->B = *iptr++;
+                    optr->G = *iptr++;
+                    optr->R = *iptr++;
+                    optr->A = 255;
+                    optr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToBGR(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr=(Pixel*)bmp.DataPointer.ToPointer();
+            var optr = (byte*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    *optr++ = iptr->B;
+                    *optr++ = iptr->G;
+                    *optr++ = iptr->R;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy from pointer using BRGA pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Source</param>
+        public static void CopyFromBGRA(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr= (Pixel*)ptr;
+            var optr = (Pixel*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->B = iptr->A;
+                    optr->G = iptr->R;
+                    optr->R = iptr->G;
+                    optr->A = iptr->B;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy from pointer using BRGA pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Source</param>
+        public static void CopyFromBGRA(this Image<BGR> bmp , void* ptr)
+        {
+            var iptr= (Pixel*)ptr;
+            var optr = (BGR*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->B = iptr->R;
+                    optr->G = iptr->G;
+                    optr->R = iptr->B;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using BGRA pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToBGRA(this Image<Pixel> bmp , void* ptr)
+        {
+            Pixel* iptr=(Pixel*)bmp.DataPointer.ToPointer();
+            Pixel* optr = (Pixel*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->A = iptr->B;
+                    optr->R = iptr->G;
+                    optr->G = iptr->R;
+                    optr->B = iptr->A;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using BGRA pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToBGRA(this Image<BGR> bmp , void* ptr)
+        {
+            BGR* iptr=(BGR*)bmp.DataPointer.ToPointer();
+            Pixel* optr = (Pixel*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->A = iptr->B;
+                    optr->R = iptr->G;
+                    optr->G = iptr->R;
+                    optr->B = 255;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy from pointer using ABGR pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Source</param>
+        public static void CopyFromABGR(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr= (Pixel*)ptr;
+            var optr = (Pixel*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->A = iptr->A;
+                    optr->B = iptr->R;
+                    optr->G = iptr->G;
+                    optr->R = iptr->B;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using ABGR pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToABGR(this Image<Pixel> bmp , void* ptr)
+        {
+            Pixel* iptr=(Pixel*)bmp.DataPointer.ToPointer();
+            Pixel* optr = (Pixel*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->A = iptr->A;
+                    optr->R = iptr->B;
+                    optr->G = iptr->G;
+                    optr->B = iptr->R;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy from pointer using RGBA pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Source</param>
+        public static void CopyFromRGBA(this Image<Pixel> bmp , void* ptr)
+        {
+            var iptr= (Pixel*)ptr;
+            var optr = (Pixel*)bmp.DataPointer.ToPointer();
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->R = iptr->A;
+                    optr->G = iptr->R;
+                    optr->B = iptr->G;
+                    optr->A = iptr->B;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using RGBA pattern for bytes
+        /// </summary>
+        /// <param name="ptr">Destination</param>
+        public static void CopyToRGBA(this Image<Pixel> bmp , void* ptr)
+        {
+            Pixel* iptr=(Pixel*)bmp.DataPointer.ToPointer();
+            Pixel* optr = (Pixel*)ptr;
+            for ( var i = 0; i < bmp.Height; i++ )
+                for ( var j = 0; j < bmp.Width; j++ )
+                {
+                    optr->A = iptr->R;
+                    optr->R = iptr->G;
+                    optr->G = iptr->B;
+                    optr->B = iptr->A;
+                    optr++;
+                    iptr++;
+                }
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToRGB(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyToRGB(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToBGR(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyToBGR(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToARGB(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyToARGB(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using BGRA pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToBGRA(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyToBGRA(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using BGRA pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToBGRA(this Image<BGR> bmp , IntPtr scan0)
+        {
+            CopyToBGRA(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using RGBA pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToRGBA(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyToRGBA(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy to pointer using ABGR pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Destination</param>
+        public static void CopyToABGR(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyToABGR(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromRGB(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyFromRGB(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromBGR(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyFromBGR(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using ARGB pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromARGB(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyFromARGB(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using BGRA pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromBGRA(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyFromBGRA(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using BGRA pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromBGRA(this Image<BGR> bmp , IntPtr scan0)
+        {
+            CopyFromBGRA(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using RGBA pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromRGBA(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyFromRGBA(bmp , scan0.ToPointer());
+        }
+        /// <summary>
+        /// Copy from pointer using ABGR pattern for bytes
+        /// </summary>
+        /// <param name="scan0">Source</param>
+        public static void CopyFromABGR(this Image<Pixel> bmp , IntPtr scan0)
+        {
+            CopyFromABGR(bmp , scan0.ToPointer());
+        }
 
         #region BGR
         /// <summary>
@@ -868,7 +1231,7 @@ namespace MoyskleyTech.ImageProcessing
         /// </summary>
         /// <returns></returns>
         public static Image<byte> GetRedBandImage<T>(this Image<T> bmp)
-            where T:unmanaged
+            where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             Image<byte> img = Image<byte>.Create(bmp.Width,bmp.Height);
@@ -883,7 +1246,7 @@ namespace MoyskleyTech.ImageProcessing
         /// Get a band image for green
         /// </summary>
         /// <returns></returns>
-        public static Image<byte> GetGreenBandImage<T>(this Image<T> bmp) where T:unmanaged
+        public static Image<byte> GetGreenBandImage<T>(this Image<T> bmp) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             Image<byte> img = Image<byte>.Create(bmp.Width,bmp.Height);
@@ -898,7 +1261,7 @@ namespace MoyskleyTech.ImageProcessing
         /// Get a band image for blue
         /// </summary>
         /// <returns></returns>
-        public static Image<byte> GetBlueBandImage<T>(this Image<T> bmp) where T:unmanaged
+        public static Image<byte> GetBlueBandImage<T>(this Image<T> bmp) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             Image<byte> img = Image<byte>.Create(bmp.Width,bmp.Height);
@@ -913,7 +1276,7 @@ namespace MoyskleyTech.ImageProcessing
         /// Get a grayscale version(compacted)
         /// </summary>
         /// <returns></returns>
-        public static Image<byte> GetGrayBandImage<T>(this Image<T> bmp) where T:unmanaged
+        public static Image<byte> GetGrayBandImage<T>(this Image<T> bmp) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             Image<byte> img = Image<byte>.Create(bmp.Width,bmp.Height);
@@ -928,13 +1291,13 @@ namespace MoyskleyTech.ImageProcessing
         /// Allow replace of a color band
         /// </summary>
         /// <param name="img"></param>
-        public static void ReplaceRedBand<T>(this Image<T> bmp , Image<byte> img) where T:unmanaged
+        public static void ReplaceRedBand<T>(this Image<T> bmp , Image<byte> img) where T : unmanaged
         {
             var converter = ColorConvert.GetConversionFrom<T,Pixel>();
             var converter2 = ColorConvert.GetConversionFrom<Pixel,T>();
             var ct = bmp.Width*bmp.Height;
             for ( var i = 0; i < ct; i++ )
-            { 
+            {
                 var c = converter(bmp[i]);
                 var im = img[i];
                 c.R = im;
@@ -988,7 +1351,7 @@ namespace MoyskleyTech.ImageProcessing
             {
                 var c = converter(bmp[i]);
                 var im = img[i];
-                c.R = im;c.G = im;c.B = im;
+                c.R = im; c.G = im; c.B = im;
                 bmp[i] = converter2(c);
             }
         }

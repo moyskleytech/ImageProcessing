@@ -27,16 +27,18 @@ namespace MoyskleyTech.ImageProcessing.WinForm
 
         public static System.Drawing.Bitmap ToWinFormBitmap(this ImageProxy<BGR> bmp)
         {
-            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            var img=bmp.ToImage();
+            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var img=bmp.ToImage<Pixel>();
             dest.CopyFrom(img);
             img.Dispose();
             return dest;
         }
         public static System.Drawing.Bitmap ToWinFormBitmap(this Image<BGR> bmp)
         {
-            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            dest.CopyFrom(bmp);
+            System.Drawing.Bitmap dest = new System.Drawing.Bitmap(bmp.Width,bmp.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var img = bmp.ConvertTo<Pixel>();
+            dest.CopyFrom(img);
+            img.Dispose();
             return dest;
         }
 
@@ -48,9 +50,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
         public static Image<BGR> ToBGR(this System.Drawing.Bitmap src)
         {
-            Image<BGR> bmp= Image<BGR>.Create(src.Width,src.Height);
-            bmp.CopyFrom(src);
-            return bmp;
+            return src.ToBitmap().ConvertBufferTo<BGR>();
         }
         public static void CopyFrom(this System.Drawing.Bitmap dest , Image<Pixel> bmp)
         {
@@ -64,17 +64,16 @@ namespace MoyskleyTech.ImageProcessing.WinForm
             dest.CopyFromBGRA(loc.Scan0);
             bmp.UnlockBits(loc);
         }
-
         public static void CopyFrom(this System.Drawing.Bitmap dest , Image<BGR> bmp)
         {
-            var loc = dest.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            bmp.CopyTo(loc.Scan0);
+            var loc = dest.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            bmp.CopyToBGRA(loc.Scan0);
             dest.UnlockBits(loc);
         }
         public static void CopyFrom(this Image<BGR> dest , System.Drawing.Bitmap bmp)
         {
-            var loc = bmp.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            dest.CopyFrom(loc.Scan0);
+            var loc = bmp.LockBits(new System.Drawing.Rectangle(0 , 0 , bmp.Width , bmp.Height) , System.Drawing.Imaging.ImageLockMode.WriteOnly , System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            dest.CopyFromBGRA(loc.Scan0);
             bmp.UnlockBits(loc);
         }
     }
