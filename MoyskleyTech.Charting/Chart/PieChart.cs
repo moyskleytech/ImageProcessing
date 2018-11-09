@@ -83,15 +83,13 @@ namespace MoyskleyTech.Charting.Chart
 
             var width = bmpWidth-Padding.Horizontal;
             var height = bmpHeight-Padding.Vertical;
-            var halfWidth = width/2;
-            var halfHeight = height/2;
-
+            
             double totalWeight = Datas.Sum((x)=>x.Weight);
 
             double angle=0;
             double angleSpan=0;
             var enumColor = GetColors().GetEnumerator();
-            var r = Math.Min(halfHeight,halfWidth);
+            var r = Math.Min(width/2,height/2);
 
             if ( Mode == PieChartMode.Pie2D )
             {
@@ -107,8 +105,8 @@ namespace MoyskleyTech.Charting.Chart
                     angleSpan = pd.Weight / totalWeight * 2 * PI;
                     if ( pd == Datas.Last() )
                         angleSpan = 2 * PI - angle;
-                    var poly = g.DrawPie(borderColor , offsetX+ Padding.Left+halfWidth , offsetY+ Padding.Top+halfHeight , r, angleSpan , angle, LineThickness);
-                    g.FillPie(color , offsetX + Padding.Left + halfWidth , offsetY + Padding.Top + halfHeight , r , angleSpan , angle);
+                    var poly = g.DrawPie(borderColor , offsetX+ Padding.Left , offsetY+ Padding.Top , r, angleSpan , angle, LineThickness);
+                    g.FillPie(color , offsetX + Padding.Left  , offsetY + Padding.Top  , r , angleSpan , angle);
 
                     var avgX = poly.Average((X) => X.X);
                     var avgY = poly.Average((X) => X.Y);
@@ -126,7 +124,7 @@ namespace MoyskleyTech.Charting.Chart
             }
             else
             {
-                int x=offsetX+ Padding.Left+halfWidth-r, y=offsetY+ Padding.Top + halfHeight-r, w=r,h=(int)(r*0.9);
+                int x=offsetX+ Padding.Left-r, y=offsetY+ Padding.Top -r, w=r,h=(int)(r*0.9);
                 int xCenter = x+r;
                 int yCenter = y+r;
 
