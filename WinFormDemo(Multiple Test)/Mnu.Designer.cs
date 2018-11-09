@@ -121,6 +121,7 @@
             this.Controls.Add(this.button1);
             this.Name = "Mnu";
             this.Text = "Mnu";
+            this.Load += new System.EventHandler(this.Mnu_Load);
             this.ResumeLayout(false);
 
         }

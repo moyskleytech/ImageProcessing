@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MoyskleyTech.ImageProcessing.Image;
 
 namespace WinFormDemo_Multiple_Test_
 {
@@ -50,6 +51,13 @@ namespace WinFormDemo_Multiple_Test_
         private void btn4_Click(object sender , EventArgs e)
         {
             ( new Charting3() ).ShowDialog();
+        }
+
+        private void Mnu_Load(object sender , EventArgs e)
+        {
+            Pixel p = Pixels.DeepPink;
+            var f = ColorConvert.Convert<Pixel , ARGB_Float>(p);
+            var b  =ColorConvert.Convert<ARGB_Float, Pixel>(f);
         }
     }
 }
