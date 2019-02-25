@@ -202,7 +202,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             set
             {
                 if ( pos > 0 && pos < width * height )
-                    Marshal.StructureToPtr(value , raw + ( pos * lengthOfItem ) , false);
+                    dataPointer[pos] = value;
             }
         }
         /// <summary>
