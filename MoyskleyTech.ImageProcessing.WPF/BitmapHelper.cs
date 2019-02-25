@@ -30,6 +30,16 @@ namespace MoyskleyTech.ImageProcessing.WPF
             bitmap.Freeze();
             return bitmap;
         }
+        public static BitmapImage ToWPFBitmap<T>(this Image<T> bmp)
+            where T:unmanaged
+        {
+            return ToWPFBitmap<T>(( ImageProxy<T> ) bmp);
+        }
+        public static BitmapImage ToWPFBitmap<T>(this ImageProxy<T> bmp)
+            where T : unmanaged
+        {
+            return ToWPFBitmap(bmp.As<Pixel>());
+        }
         public static Image<Pixel> ToBitmap(this BitmapSource src)
         {
             if ( src.Format != PixelFormats.Bgra32 )
