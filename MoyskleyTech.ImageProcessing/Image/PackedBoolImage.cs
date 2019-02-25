@@ -37,7 +37,8 @@ namespace MoyskleyTech.ImageProcessing.Image
             bytePtr = ( byte* ) raw.ToPointer();
             width = w;
             height = h;
-            CopyFrom(source);
+            if(source!=IntPtr.Zero)
+                CopyFrom(source);
         }
         public override bool this[int pos]
         {
