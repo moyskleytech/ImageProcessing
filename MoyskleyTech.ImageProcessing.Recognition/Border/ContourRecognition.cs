@@ -10,6 +10,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
 {
     public static class ContourRecognition
     {
+        [Obsolete("Use Analyse(ContourRecognitionPointKeep) instead of Analyse(bool)")]
         public static List<Contour<Representation>> Analyse<Representation>(ImageProxy<Representation> bmp , Func<Representation , bool> condition , bool keepAllPoints = false , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
            where Representation : unmanaged
         {
@@ -55,12 +56,13 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
             }
             return contours;
         }
+        [Obsolete("Use AnalyseFromPoints(ContourRecognitionPointKeep) instead of AnalyseFromPoints(bool)")]
         public static List<Contour<Representation>> AnalyseFromPoints<Representation>(ImageProxy<Representation> bmp , List<Point> pts , Func<Representation , bool> condition , bool keepAllPoints = false , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
             where Representation : unmanaged
         {
             return AnalyseFromPoints(bmp , pts , condition , keepAllPoints ? ContourRecognitionPointKeep.All : ContourRecognitionPointKeep.Border , mode);
         }
-            public static List<Contour<Representation>> AnalyseFromPoints<Representation>(ImageProxy<Representation> bmp , List<Point> pts , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
+        public static List<Contour<Representation>> AnalyseFromPoints<Representation>(ImageProxy<Representation> bmp , List<Point> pts , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
              where Representation : unmanaged
         {
             HashSet<Point> visited=new HashSet<Point>();
@@ -310,6 +312,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                 areaRect.Width += point.X - areaRect.Right;
             if ( point.Y > areaRect.Bottom )
                 areaRect.Height += point.Y - areaRect.Bottom;
+            area = areaRect;
         }
         public Rectangle Area
         {
