@@ -16,9 +16,17 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
         {
             return Analyse(bmp , condition , keepAllPoints ? ContourRecognitionPointKeep.All : ContourRecognitionPointKeep.Border,mode);
         }
+        [Obsolete("Use Analyse(selector) instead of Analyse(ContourRecognitionMode)")]
         public static List<Contour<Representation>> Analyse<Representation>(ImageProxy<Representation> bmp , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
             where Representation : unmanaged
         {
+            return Analyse(bmp , condition , keepAllPoints , mode == ContourRecognitionMode.EightConnex ? ConnexMatching.Match8ConnexSelector : ConnexMatching.Match4ConnexSelector);
+        }
+        public static List<Contour<Representation>> Analyse<Representation>(ImageProxy<Representation> bmp , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , Func<Point,Point[]> selector=null)
+            where Representation : unmanaged
+        {
+            if ( selector == null )
+                selector = ConnexMatching.Match8ConnexSelector;
             HashSet<Point> visited=new HashSet<Point>();
             List<Contour< Representation >> contours = new List<Contour<Representation>>();
             for ( var y = 0; y < bmp.Height; y++ )
@@ -32,22 +40,14 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                         var px = bmp[x,y];
                         if ( condition(px) )
                         {
-                            if ( mode == ContourRecognitionMode.EightConnex )
-                                bmp.Match8Connex(x , y , condition , (pt , pxl) =>
-                                {
-                                    contour.Include(pt);
-                                    visited.Add(pt);
-                                });
-                            else if ( mode == ContourRecognitionMode.FourConnex )
-                                bmp.Match4Connex(x , y , condition , (pt , pxl) =>
-                                {
-                                    contour.Include(pt);
-                                    visited.Add(pt);
-                                });
-
-
+                            bmp.MatchSelector(x,y,condition,selector, (pt , pxl) =>
+                            {
+                                contour.Include(pt);
+                                visited.Add(pt);
+                            });
+                          
                             contour.ImageArea = new ImageProxy<Representation>(bmp , contour.Area);
-                            if( keepAllPoints == ContourRecognitionPointKeep.Border)
+                            if ( keepAllPoints == ContourRecognitionPointKeep.Border )
                                 contour.CleanPoints();
                             contours.Add(contour);
                         }
@@ -62,12 +62,20 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
         {
             return AnalyseFromPoints(bmp , pts , condition , keepAllPoints ? ContourRecognitionPointKeep.All : ContourRecognitionPointKeep.Border , mode);
         }
+        [Obsolete("Use AnalyseFromPoints(selector) instead of AnalyseFromPoints(ContourRecognitionMode)")]
         public static List<Contour<Representation>> AnalyseFromPoints<Representation>(ImageProxy<Representation> bmp , List<Point> pts , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex)
              where Representation : unmanaged
         {
+            return AnalyseFromPoints(bmp , pts , condition , keepAllPoints , mode == ContourRecognitionMode.EightConnex ? ConnexMatching.Match8ConnexSelector : ConnexMatching.Match4ConnexSelector);
+        }
+        public static List<Contour<Representation>> AnalyseFromPoints<Representation>(ImageProxy<Representation> bmp , List<Point> pts , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , Func<Point,Point[]> selector=null)
+            where Representation : unmanaged
+        {
+            if ( selector == null )
+                selector = ConnexMatching.Match8ConnexSelector;
             HashSet<Point> visited=new HashSet<Point>();
             List<Contour<Representation>> contours = new List<Contour<Representation>>();
-            
+
             foreach ( var sp in pts )
             {
                 var x = sp.X;
@@ -78,19 +86,81 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                     var px = bmp[x,y];
                     if ( condition(px) )
                     {
-                        if ( mode == ContourRecognitionMode.EightConnex )
-                            bmp.Match8Connex(x , y , condition , (pt , pxl) =>
-                            {
-                                contour.Include(pt);
-                                visited.Add(pt);
-                            });
-                        else if ( mode == ContourRecognitionMode.FourConnex )
-                            bmp.Match4Connex(x , y , condition , (pt , pxl) =>
-                            {
-                                contour.Include(pt);
-                                visited.Add(pt);
-                            });
+                        bmp.MatchSelector(x,y,condition,selector, (pt , pxl) =>
+                        {
+                            contour.Include(pt);
+                            visited.Add(pt);
+                        });
+                        
+                        contour.ImageArea = new ImageProxy<Representation>(bmp , contour.Area);
+                        if ( keepAllPoints == ContourRecognitionPointKeep.Border )
+                            contour.CleanPoints();
+                        contours.Add(contour);
+                    }
+                }
+            }
+            return contours;
+        }
 
+        public static List<Contour<Representation>> AnalyseLargeImage<Representation>(ImageProxy<Representation> bmp , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , Func<Point,Point[]> selector=null)
+            where Representation : unmanaged
+        {
+            if ( selector == null )
+                selector = ConnexMatching.Match8ConnexSelector;
+            PackedBoolImage visited = new PackedBoolImage(bmp.Width,bmp.Height);
+            visited.ApplyFilter((_ , _1) => false);
+            List<Contour< Representation >> contours = new List<Contour<Representation>>();
+            for ( var y = 0; y < bmp.Height; y++ )
+            {
+                for ( var x = 0; x < bmp.Width; x++ )
+                {
+                    Contour< Representation> contour = new Contour<Representation>();
+                    contour.PointMode = keepAllPoints;
+                    if ( !visited[x , y] )
+                    {
+                        var px = bmp[x,y];
+                        if ( condition(px) )
+                        {
+                            bmp.MatchSelectorLargeImage(visited,x,y,condition,selector,(pt , pxl) =>
+                                {
+                                    contour.Include(pt);
+                                    visited[x , y] = true;
+                                });
+
+                            contour.ImageArea = new ImageProxy<Representation>(bmp , contour.Area);
+                            if ( keepAllPoints == ContourRecognitionPointKeep.Border )
+                                contour.CleanPoints();
+                            contours.Add(contour);
+                        }
+                    }
+                }
+            }
+            return contours;
+        }
+        public static List<Contour<Representation>> AnalyseFromPointsLargeImage<Representation>(ImageProxy<Representation> bmp , List<Point> pts , Func<Representation , bool> condition , ContourRecognitionPointKeep keepAllPoints = ContourRecognitionPointKeep.Border , ContourRecognitionMode mode = ContourRecognitionMode.EightConnex, Func<Point , Point[ ]> selector = null)
+            where Representation : unmanaged
+        {
+            if ( selector == null )
+                selector = ConnexMatching.Match8ConnexSelector;
+            PackedBoolImage visited = new PackedBoolImage(bmp.Width,bmp.Height);
+            visited.ApplyFilter((_ , _1) => false);
+            List<Contour<Representation>> contours = new List<Contour<Representation>>();
+
+            foreach ( var sp in pts )
+            {
+                var x = sp.X;
+                var y = sp.Y;
+                Contour<Representation> contour = new Contour<Representation>();
+                if ( !visited[sp] )
+                {
+                    var px = bmp[x,y];
+                    if ( condition(px) )
+                    {
+                        bmp.MatchSelectorLargeImage(visited , x , y , condition , selector , (pt , pxl) =>
+                        {
+                            contour.Include(pt);
+                            visited[x , y] = true;
+                        });
 
                         contour.ImageArea = new ImageProxy<Representation>(bmp , contour.Area);
                         if ( keepAllPoints == ContourRecognitionPointKeep.Border )
@@ -101,7 +171,7 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
             }
             return contours;
         }
-     
+
         public static double[ ] GetHuMoments<Representation>(ImageProxy<Representation> proxy)
             where Representation : unmanaged
         {
