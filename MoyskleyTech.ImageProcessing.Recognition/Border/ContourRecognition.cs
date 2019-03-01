@@ -121,11 +121,11 @@ namespace MoyskleyTech.ImageProcessing.Recognition.Border
                         var px = bmp[x,y];
                         if ( condition(px) )
                         {
-                            bmp.MatchSelectorLargeImage(visited,x,y,condition,selector,(pt , pxl) =>
-                                {
-                                    contour.Include(pt);
-                                    visited[x , y] = true;
-                                });
+                            bmp.MatchSelectorLargeImage(visited , x , y , condition , selector , (pt , pxl) =>
+                                          {
+                                              contour.Include(pt);
+                                              visited[x , y] = true;
+                                          });
 
                             contour.ImageArea = new ImageProxy<Representation>(bmp , contour.Area);
                             if ( keepAllPoints == ContourRecognitionPointKeep.Border )

@@ -194,14 +194,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             {
                 //return ( Representation ) Marshal.PtrToStructure(this[y * width + x] , typeof(Representation));
 
-                if ( pos > 0 && pos < width * height )
+                if ( pos >= 0 && pos < width * height )
                     return dataPointer[pos];
                 else
                     return default;
             }
             set
             {
-                if ( pos > 0 && pos < width * height )
+                if ( pos >= 0 && pos < width * height )
                     dataPointer[pos] = value;
             }
         }
