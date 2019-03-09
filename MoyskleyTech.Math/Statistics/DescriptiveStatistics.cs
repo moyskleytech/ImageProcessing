@@ -24,7 +24,15 @@ namespace MoyskleyTech.Mathematics.Statistics
         public double MinY { get; private set; } = double.MaxValue;
         public double RangeX { get { return MaxX - MinX; } }
         public double RangeY { get { return MaxY - MinY; } }
+
         public LinearRegression LinearRegression { get; private set; }
+
+
+        public double VarianceX { get; private set; }
+        public double VarianceY { get; private set; }
+        public double StandardDeviationX { get; private set; }
+        public double StandardDeviationY { get; private set; }
+        
         public static DescriptiveStatistics From1D(IEnumerable<double> x)
         {
             int i=0;
@@ -39,11 +47,11 @@ namespace MoyskleyTech.Mathematics.Statistics
                 statistics.Count++;
                 statistics.SumX += x;
                 statistics.SumY += y;
-                statistics.SumXY += x*y;
-                statistics.SumX2 += x*x;
-                statistics.SumY2 += y*y;
+                statistics.SumXY += x * y;
+                statistics.SumX2 += x * x;
+                statistics.SumY2 += y * y;
 
-                if (x< statistics.MinX )
+                if ( x < statistics.MinX )
                     statistics.MinX = x;
                 if ( y < statistics.MinY )
                     statistics.MinY = y;
@@ -52,6 +60,11 @@ namespace MoyskleyTech.Mathematics.Statistics
                 if ( y > statistics.MaxY )
                     statistics.MaxY = y;
             }
+            statistics.VarianceX = statistics.SumX2 / statistics.Count - statistics.AverageX * statistics.AverageX;
+            statistics.VarianceY = statistics.SumY2 / statistics.Count - statistics.AverageY * statistics.AverageY;
+            statistics.StandardDeviationX = Math.Sqrt(statistics.VarianceX);
+            statistics.StandardDeviationY = Math.Sqrt(statistics.VarianceY);
+
             if ( statistics.Count > 0 )
             {
                 statistics.AverageX = statistics.SumX / statistics.Count;
@@ -66,13 +79,13 @@ namespace MoyskleyTech.Mathematics.Statistics
 
                 if ( System.Math.Abs(reg.B1) < 1 )
                 {
-                    varExplique = reg.B1 * reg.B1 * (  statistics.SumX2 - (  statistics.SumX *  statistics.SumX /  statistics.Count ) );
+                    varExplique = reg.B1 * reg.B1 * ( statistics.SumX2 - ( statistics.SumX * statistics.SumX / statistics.Count ) );
                     varTot = statistics.SumY2 - ( statistics.SumY * statistics.SumY / statistics.Count );
                 }
                 else
                 {
-                    reg.B1 = (  statistics.SumXY - (  statistics.SumY *  statistics.SumX /  statistics.Count ) ) / (  statistics.SumY2 - (  statistics.SumY *  statistics.SumY /  statistics.Count ) );
-                    varExplique = reg.B1 * reg.B1 * (  statistics.SumY2 - (  statistics.SumY *  statistics.SumY /  statistics.Count ) );
+                    reg.B1 = ( statistics.SumXY - ( statistics.SumY * statistics.SumX / statistics.Count ) ) / ( statistics.SumY2 - ( statistics.SumY * statistics.SumY / statistics.Count ) );
+                    varExplique = reg.B1 * reg.B1 * ( statistics.SumY2 - ( statistics.SumY * statistics.SumY / statistics.Count ) );
                     varTot = statistics.SumX2 - ( statistics.SumX * statistics.SumX / statistics.Count );
                 }
 
@@ -96,7 +109,7 @@ namespace MoyskleyTech.Mathematics.Statistics
             {
                 double x=item.X,y=item.Y;
 
-                y = (( y - MinY ) / RangeY);
+                y = ( ( y - MinY ) / RangeY );
                 if ( y < 0 )
                     y = 0;
                 if ( y > 1 )
@@ -148,7 +161,7 @@ namespace MoyskleyTech.Mathematics.Statistics
         public static DescriptiveStatistics<Number> From1D(IEnumerable<Number> x)
         {
             int i=0;
-            return From2D(from t in x select new Coordinate<Number>((dynamic)i , t));
+            return From2D(from t in x select new Coordinate<Number>(( dynamic ) i , t));
         }
         public static DescriptiveStatistics<Number> From2D(IEnumerable<Coordinate<Number>> points)
         {
@@ -202,9 +215,9 @@ namespace MoyskleyTech.Mathematics.Statistics
                 reg.R2 = ( dynamic ) varExplique / varTot;
                 reg.Distort = ( System.Math.Sqrt(( ( dynamic ) varTot - varExplique ) / statistics.Count) );
 
-                if( typeof(Number) == typeof(double))
-                if ( double.IsNaN((double)(dynamic)reg.Distort) )
-                    reg.Distort = (dynamic)0;
+                if ( typeof(Number) == typeof(double) )
+                    if ( double.IsNaN(( double ) ( dynamic ) reg.Distort) )
+                        reg.Distort = ( dynamic ) 0;
 
                 statistics.LinearRegression = reg;
 
@@ -228,7 +241,7 @@ namespace MoyskleyTech.Mathematics.Statistics
         }
     }
     public struct LinearRegression<Number>
-        where Number:struct
+        where Number : struct
     {
         public Number B0;
         public Number B0Ori;
