@@ -34,6 +34,10 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
     <LangVersion>latest</LangVersion>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <BundleAssemblies>false</BundleAssemblies>
+    <MandroidI18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -81,6 +85,10 @@
     <Folder Include="Resources\mipmap-xxxhdpi\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MoyskleyTech.Charting\MoyskleyTech.Charting.csproj">
+      <Project>{6a3dbb52-b853-4b96-aa2a-e8259c8737ca}</Project>
+      <Name>MoyskleyTech.Charting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing.Android\MoyskleyTech.ImageProcessing.Android.csproj">
       <Project>{fd31d697-fae2-437d-92d0-4a674a464ed9}</Project>
       <Name>MoyskleyTech.ImageProcessing.Android</Name>

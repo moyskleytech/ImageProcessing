@@ -25,6 +25,17 @@ namespace MoyskleyTech.ImageProcessing
             g.Dispose();
         }
         /// <summary>
+        /// Noise value of bitmap(usefull to hide bitmap content after use)
+        /// </summary>
+        /// <param name="bmp"></param>
+        public static void Noise<R>(this Image<R> bmp)
+            where R:unmanaged
+        {
+            Graphics<R> g = Graphics<R>.FromImage(bmp);
+            g.Clear(ColorConvert.Convert<Pixel,R>(new NoiseBrush()));
+            g.Dispose();
+        }
+        /// <summary>
         /// Reduce color to 8bpp
         /// </summary>
         /// <param name="bmp"></param>
@@ -88,6 +99,13 @@ namespace MoyskleyTech.ImageProcessing
         {
             ImageProxy<U> prx = img;
             return prx.As<T>();
+        }
+        public static ImageProxy<T> As<U, T>(this Image<U> img, Func<U,T> conv)
+            where T : unmanaged
+            where U : unmanaged
+        {
+            ImageProxy<U> prx = img;
+            return prx.As<T>(conv);
         }
 
 

@@ -13,7 +13,7 @@ namespace MoyskleyTech.ImageProcessing.Image
     /// </summary>
     public unsafe partial class Bitmap : Image<Pixel>, IDisposable
     {
-        private Pixel* data;
+        
        
         /// <summary>
         /// Create a bitmap using Width and Height
@@ -23,7 +23,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap(int w , int h):base(w,h)
         {
             //Allocate
-            data = ( Pixel* ) raw.ToPointer();
             width = w;
             height = h;
         }
@@ -36,7 +35,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap(IntPtr p,int w , int h) : base(p,w , h)
         {
             //Allocate
-            data = ( Pixel* ) raw.ToPointer();
             width = w;
             height = h;
         }
@@ -49,7 +47,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         public Bitmap(int w , int h , byte[ ] raw):base(w,h)
         {
             //Allocate
-            data = ( Pixel* ) this.raw.ToPointer();
             Marshal.Copy(raw , 0 , this.raw , w * h * sizeof(Pixel));
             width = w;
             height = h;
@@ -74,27 +71,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             Dispose();
         }
-      
-        /// <summary>
-        /// Get pixel from coordinate
-        /// </summary>
-        /// <param name="pos">As 1 dim array</param>
-        /// <returns>Pixel</returns>
-        public override Pixel this[int pos]
-        {
-            get
-            {
-                if ( pos >= 0 && pos < width * height )
-                    return data[pos];
-                else
-                    return new Pixel();
-            }
-            set
-            {
-                if ( pos >= 0 && pos < width * height )
-                    data[pos] = value;
-            }
-        }
         /// <summary>
         /// Copy from pointer using ARGB pattern for bytes
         /// </summary>
@@ -102,7 +78,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromARGB(void* ptr)
         {
             var iptr= (Pixel*)ptr;
-            var optr = data;
+            var optr = dataPointer;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                     *optr++ = *iptr++;
@@ -113,7 +89,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="ptr">Destination</param>
         public void CopyToARGB(void* ptr)
         {
-            var iptr=data;
+            var iptr= dataPointer;
             var optr = (Pixel*)ptr;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
@@ -126,7 +102,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromRGB(void* ptr)
         {
             var iptr= (byte*)ptr;
-            var optr = data;
+            var optr = dataPointer;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                 {
@@ -143,7 +119,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="ptr">Destination</param>
         public void CopyToRGB(void* ptr)
         {
-            var iptr=data;
+            var iptr=dataPointer;
             var optr = (byte*)ptr;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
@@ -160,7 +136,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromBGR(void* ptr)
         {
             var iptr= (byte*)ptr;
-            var optr = data;
+            var optr = dataPointer;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                 {
@@ -177,7 +153,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="ptr">Destination</param>
         public void CopyToBGR(void* ptr)
         {
-            var iptr=data;
+            var iptr=dataPointer;
             var optr = (byte*)ptr;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
@@ -195,7 +171,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromBGRA(void* ptr)
         {
             var iptr= (Pixel*)ptr;
-            var optr = data;
+            var optr = dataPointer;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                 {
@@ -213,7 +189,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="ptr">Destination</param>
         public void CopyToBGRA(void* ptr)
         {
-            Pixel* iptr=data;
+            Pixel* iptr=dataPointer;
             Pixel* optr = (Pixel*)ptr;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
@@ -233,7 +209,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromABGR(void* ptr)
         {
             var iptr= (Pixel*)ptr;
-            var optr = data;
+            var optr = dataPointer;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                 {
@@ -251,7 +227,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="ptr">Destination</param>
         public void CopyToABGR(void* ptr)
         {
-            Pixel* iptr=data;
+            Pixel* iptr=dataPointer;
             Pixel* optr = (Pixel*)ptr;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
@@ -271,7 +247,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void CopyFromRGBA(void* ptr)
         {
             var iptr= (Pixel*)ptr;
-            var optr = data;
+            var optr = dataPointer;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
                 {
@@ -289,7 +265,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="ptr">Destination</param>
         public void CopyToRGBA(void* ptr)
         {
-            Pixel* iptr=data;
+            Pixel* iptr=dataPointer;
             Pixel* optr = (Pixel*)ptr;
             for ( var i = 0; i < height; i++ )
                 for ( var j = 0; j < width; j++ )
@@ -474,7 +450,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             palette = palette ?? BitmapPalette8bpp.Grayscale;
             int size = width*height;
-            Pixel*ptr = data;
+            Pixel*ptr = dataPointer;
             for ( var i = 0; i < size; i++ )
             {
                 *ptr++ = palette[raw[i]];
@@ -488,7 +464,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             MemoryStream ms = new MemoryStream();
             int size = width*height;
-            Pixel*ptr = data;
+            Pixel*ptr = dataPointer;
             for ( var i = 0; i < size; i++ )
             {
                 ms.WriteByte(ptr->GetGrayTone());

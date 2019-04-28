@@ -75,7 +75,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             {
                 if ( !from.ContainsKey(t) )
                     from[t] = new Dictionary<Type , Transition>();
-                double[] weight = new double[types.Count];
+                double[] weight = (from x in Enumerable.Range(0, types.Count) select (double)-1).ToArray();// new double[types.Count];
                 Func<object,object>[] links = new Func<object, object>[types.Count];
                 foreach ( var kv in from[t] )
                 {
@@ -107,6 +107,21 @@ namespace MoyskleyTech.ImageProcessing.Image
                             }
                         }
                     }
+                }
+            }
+
+            //Ensure
+            foreach (var t in types)
+            {
+                try
+                {
+                    var a = Pixels.DeepPink;
+                    var b = GetConversionFrom(typeof(Pixel), t)(a);
+                    var c = GetConversionFrom(t, typeof(Pixel))(b);
+                }
+                catch(Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine("Cannot convert Pixel to " + t.Name + " and back:"+e.Message+e.StackTrace);
                 }
             }
         }
@@ -181,13 +196,13 @@ namespace MoyskleyTech.ImageProcessing.Image
             RegisterTransition<bool , byte>(ToByte , 1);
             RegisterTransition<ushort , byte>(ToByte , 1/255d);
             RegisterTransition<byte , ushort>(ToUShort , 1);
-            //RegisterTransition<ARGB_16bit , ushort>(ToUShort , 1 / 32000d);
+            RegisterTransition<ARGB_16bit , ushort>(ToUShort , 0);
             RegisterTransition<uint , ushort>(ToUShort , 1/255d);
             RegisterTransition<ushort , uint>(ToUInt , 1);
             RegisterTransition<ulong , uint>(ToUInt , 1/32000d);
             RegisterTransition<uint , ulong>(ToULong , 1);
-            //RegisterTransition<ARGB_Float , float>(ToFloat , 1 / 32000d);
-            //RegisterTransition<Pixel , byte>(ToByte , 1/32000d);
+            RegisterTransition<ARGB_Float , float>(ToFloat , 0);
+            RegisterTransition<Pixel , byte>(ToByte , 0);
 
             RegisterTransition<BGR , RGB>(ToRGB , 1);
             RegisterTransition<Pixel , RGB>(ToRGB , 0.75);

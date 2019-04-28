@@ -59,5 +59,10 @@ namespace WinFormDemo_Multiple_Test_
             var f = ColorConvert.Convert<Pixel , ARGB_Float>(p);
             var b  =ColorConvert.Convert<ARGB_Float, Pixel>(f);
         }
+
+        private void Button7_Click(object sender, EventArgs e)
+        {
+            (new PieChartTest()).ShowDialog();
+        }
     }
 }

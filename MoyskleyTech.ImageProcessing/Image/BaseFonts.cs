@@ -18,10 +18,10 @@ namespace MoyskleyTech.ImageProcessing.Image
 
         private static void InitPremia()
         {
-            premia = new Font("premia");
-            premia.SetChar(' ' , new bool[1 , 2]);
-            premia.SetChar('\t' , new bool[1 , 32]);
-            premia.SetChar('a' , new bool[8 , 5] {
+            Premia = new Font("premia");
+            Premia.SetChar(' ' , new bool[1 , 2]);
+            Premia.SetChar('\t' , new bool[1 , 32]);
+            Premia.SetChar('a' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {false,true,true,true,false },
@@ -31,7 +31,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true,false,false,false,true  },
                 {false,true,true,true,true } });
 
-            premia.SetChar('b' , new bool[8 , 5] {
+            Premia.SetChar('b' , new bool[8 , 5] {
                 {true,false,false,false,false },
                  {true,false,false,false,false },
                 {true,false,false,false,false },
@@ -41,7 +41,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true,false,false,false,true },
                  {true,true,true,true,false } });
 
-            premia.SetChar('c' , new bool[8 , 5] {
+            Premia.SetChar('c' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {false , true , true , true , false },
@@ -51,7 +51,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , false , true },
                 {false , true , true , true , false } });
 
-            premia.SetChar('d' , new bool[8 , 5] {
+            Premia.SetChar('d' , new bool[8 , 5] {
                 {false , false , false , false , true },
                 {false,false,false,false,true },
                 {false , false , false , false , true },
@@ -60,7 +60,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , false , true },
                 {true , false , false , false , true },
                 {false , true , true , true , true } });
-            premia.SetChar('e' ,
+            Premia.SetChar('e' ,
             StringToChar(
                 "     " ,
                 "     " ,
@@ -70,7 +70,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1111 " ,
                 "1    " ,
                 " 1111"));
-            premia.SetChar('f' , new bool[8 , 3] {
+            Premia.SetChar('f' , new bool[8 , 3] {
                 {false , false , false },
                 {false,true,true },
                 {true , false , false  },
@@ -79,7 +79,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false  },
                 {true , false , false  },
                 {true , false , false  } });
-            premia.SetChar('g' , new bool[8 , 5] {
+            Premia.SetChar('g' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {false , true , true , true , false },
@@ -88,7 +88,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true , true , true , true },
                 {false , false , false , false , true },
                 {false , true , true , true , false } });
-            premia.SetChar('h' , new bool[8 , 4] {
+            Premia.SetChar('h' , new bool[8 , 4] {
                 {true , false,false , false  },
                 {true,false,false,false },
                 {true , false,false , false  },
@@ -97,7 +97,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false,false , true },
                 {true , false,false , true },
                 {true , false,false , true } });
-            premia.SetChar('i' , new bool[8 , 1] {
+            Premia.SetChar('i' , new bool[8 , 1] {
                 {false  },
                 {true },
                 {false  },
@@ -106,7 +106,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true  },
                 {true  },
                 {true  } });
-            premia.SetChar('j' , new bool[8 , 4] {
+            Premia.SetChar('j' , new bool[8 , 4] {
                 {false , false , false , true },
                 {false,false,false,false },
                 {false , false , true , true },
@@ -115,7 +115,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , false , false , true  },
                 {true , false , false , true  },
                 {false , true , true , false  } });
-            premia.SetChar('k' , new bool[8 , 4] {
+            Premia.SetChar('k' , new bool[8 , 4] {
                 {true , false , false , false },
                 {true,false,false,false },
                 {true , false , false , true  },
@@ -124,7 +124,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , true , false  },
                 {true , false , false , true  },
                 {true , false , false , true  } });
-            premia.SetChar('l' , new bool[8 , 2] {
+            Premia.SetChar('l' , new bool[8 , 2] {
                 {true , true  },
                 {false,true},
                 {false , true  },
@@ -133,7 +133,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true },
                 {false , true  },
                 {false , true  } });
-            premia.SetChar('m' , new bool[8 , 7] {
+            Premia.SetChar('m' , new bool[8 , 7] {
                 {false , false , false , false , false,false,false },
                 {false , false , false , false , false,false,false },
                 {false , true , true , false , true,true,false },
@@ -142,7 +142,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , true , false,false,true },
                  {true , false , false , true , false,false,true },
                 {true , false , false , true , false ,false,true} });
-            premia.SetChar('n' , new bool[8 , 4] {
+            Premia.SetChar('n' , new bool[8 , 4] {
                 {false , false , false , false},
                 {false,false,false,false},
                 {false , true , true , false  },
@@ -151,7 +151,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , true  },
                 {true , false , false , true  },
                 {true , false , false , true  } });
-            premia.SetChar('o' , new bool[8 , 5] {
+            Premia.SetChar('o' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {false , true , true , true , false },
@@ -160,7 +160,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , false , true },
                 {true , false , false , false , true },
                 {false , true , true , true , false } });
-            premia.SetChar('p' , new bool[8 , 4] {
+            Premia.SetChar('p' , new bool[8 , 4] {
                 {false , false , false , false  },
                 {false , false , false , false  },
                 {false,true,true,false },
@@ -169,7 +169,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , true , true , false },
                 {true , false , false , false },
                 {true , false , false , false } });
-            premia.SetChar('q' , new bool[8 , 4] {
+            Premia.SetChar('q' , new bool[8 , 4] {
                 {false , false , false , false  },
                  {false , false , false , false  },
                 {false,true,true,false },
@@ -178,7 +178,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true , true , true  },
                 {false , false , false , true  },
                 {false , false , false , true  } });
-            premia.SetChar('r' , new bool[8 , 5] {
+            Premia.SetChar('r' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {true , false , true , true , false },
@@ -187,7 +187,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , false , false },
                 {true , false , false , false , false },
                 {true , false , false , false , false } });
-            premia.SetChar('s' ,
+            Premia.SetChar('s' ,
             StringToChar(
                 "     " ,
                 "     " ,
@@ -197,7 +197,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 1111" ,
                 "    1" ,
                 "1111 "));
-            premia.SetChar('t' , new bool[8 , 3] {
+            Premia.SetChar('t' , new bool[8 , 3] {
                 {false , true , false },
                 { false , true , false },
                 {false , true , false },
@@ -206,7 +206,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true , false  },
                 {false , true , false  },
                 {false , true , false  } });
-            premia.SetChar('u' , new bool[8 , 5] {
+            Premia.SetChar('u' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {true , false , false , false , true },
@@ -215,7 +215,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , false , false , true },
                 {true , false , false , false , true },
                 {false , true , true , true , false } });
-            premia.SetChar('v' , new bool[8 , 5] {
+            Premia.SetChar('v' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {true , false , false , false , true },
@@ -224,7 +224,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true , false , true , false },
                 {false , false , true , false , false },
                 {false , false , true , false , false } });
-            premia.SetChar('w' , new bool[8 , 5] {
+            Premia.SetChar('w' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {true , false , false , false , true },
@@ -233,7 +233,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {true , false , true , false , true },
                 {true , true , false , true , true },
                 {true , false , false , false , true } });
-            premia.SetChar('x' , new bool[8 , 5] {
+            Premia.SetChar('x' , new bool[8 , 5] {
                 {false , false , false , false , false },
                 {false,false,false,false,false },
                 {false , false , false , false , false },
@@ -242,7 +242,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , false , true , false , false },
                 {false , true , false , true , false },
                 {true , false , false , false , true } });
-            premia.SetChar('y' , new bool[8 , 4] {
+            Premia.SetChar('y' , new bool[8 , 4] {
                 {false , false,false , false  },
                 {false,false,false,false },
                 {true , false,false , true  },
@@ -251,7 +251,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true,true , true  },
                 {false , false,false , true  },
                 {false , false , true ,false } });
-            premia.SetChar('z' , new bool[8 , 4] {
+            Premia.SetChar('z' , new bool[8 , 4] {
                 {false , false , false , false },
                 {false,false,false,false },
                 {true , true , true , true},
@@ -260,7 +260,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 {false , true , false , false },
                 {true , false , false , false  },
                 {true , true , true , true  } });
-            premia.SetChar('0' ,
+            Premia.SetChar('0' ,
                 StringToChar(
                     " 111 " ,
                     "1  11" ,
@@ -270,7 +270,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     "11  1" ,
                     "11  1" ,
                     " 111 "));
-            premia.SetChar('1' ,
+            Premia.SetChar('1' ,
                 StringToChar(
                     "11" ,
                     " 1" ,
@@ -280,7 +280,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     " 1" ,
                     " 1" ,
                     " 1"));
-            premia.SetChar('2' ,
+            Premia.SetChar('2' ,
                 StringToChar(
                     "1111" ,
                     "   1" ,
@@ -290,7 +290,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     "1   " ,
                     "1   " ,
                     "1111"));
-            premia.SetChar('3' ,
+            Premia.SetChar('3' ,
                StringToChar(
                    "1111" ,
                    "   1" ,
@@ -300,7 +300,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                    "   1" ,
                    "   1" ,
                    "1111"));
-            premia.SetChar('4' ,
+            Premia.SetChar('4' ,
               StringToChar(
                   "1 1 " ,
                   "1 1 " ,
@@ -310,7 +310,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                   "1111" ,
                   "  1 " ,
                   "  1 "));
-            premia.SetChar('5' ,
+            Premia.SetChar('5' ,
              StringToChar(
                  "1111" ,
                  "1   " ,
@@ -320,7 +320,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "   1" ,
                  "   1" ,
                  "1111"));
-            premia.SetChar('6' ,
+            Premia.SetChar('6' ,
              StringToChar(
                  "1111" ,
                  "1   " ,
@@ -330,7 +330,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  1" ,
                  "1  1" ,
                  "1111"));
-            premia.SetChar('7' ,
+            Premia.SetChar('7' ,
              StringToChar(
                  "11111" ,
                  "1   1" ,
@@ -340,7 +340,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1  " ,
                  "  1  " ,
                  "  1  "));
-            premia.SetChar('8' ,
+            Premia.SetChar('8' ,
              StringToChar(
                  "11111" ,
                  "1   1" ,
@@ -350,7 +350,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  "11111"));
-            premia.SetChar('9' ,
+            Premia.SetChar('9' ,
              StringToChar(
                  "1111" ,
                  "1  1" ,
@@ -360,7 +360,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "   1" ,
                  "   1" ,
                  "1111"));
-            premia.SetChar('_' ,
+            Premia.SetChar('_' ,
              StringToChar(
                  "        " ,
                  "        " ,
@@ -370,7 +370,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "        " ,
                  "        " ,
                  "11111111"));
-            premia.SetChar('!' ,
+            Premia.SetChar('!' ,
              StringToChar(
                  "1" ,
                  "1" ,
@@ -380,7 +380,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1" ,
                  " " ,
                  "1"));
-            premia.SetChar('?' ,
+            Premia.SetChar('?' ,
              StringToChar(
                  " 111 " ,
                  "1   1" ,
@@ -390,13 +390,13 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1  " ,
                  "     " ,
                  "  1  "));
-            premia.SetChar('"' ,
+            Premia.SetChar('"' ,
              StringToChar(
                  "1 1" ,
                  "1 1" ,
                  "1 1" ,
                  "1 1"));
-            premia.SetChar('(' ,
+            Premia.SetChar('(' ,
              StringToChar(
                  " 11" ,
                  "1  " ,
@@ -406,7 +406,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  " ,
                  "1  " ,
                  " 11"));
-            premia.SetChar(')' ,
+            Premia.SetChar(')' ,
              StringToChar(
                  "11 " ,
                  "  1" ,
@@ -416,7 +416,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1" ,
                  "  1" ,
                  "11 "));
-            premia.SetChar('|' ,
+            Premia.SetChar('|' ,
              StringToChar(
                  "1" ,
                  "1" ,
@@ -426,7 +426,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1" ,
                  "1" ,
                  "1"));
-            premia.SetChar('.' ,
+            Premia.SetChar('.' ,
              StringToChar(
                  " " ,
                  " " ,
@@ -436,7 +436,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " " ,
                  " " ,
                  "1"));
-            premia.SetChar(',' ,
+            Premia.SetChar(',' ,
              StringToChar(
                  "  " ,
                  "  " ,
@@ -446,7 +446,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1" ,
                  " 1" ,
                  "1 "));
-            premia.SetChar(':' ,
+            Premia.SetChar(':' ,
              StringToChar(
                  " " ,
                  " " ,
@@ -454,7 +454,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " " ,
                  " " ,
                  "1"));
-            premia.SetChar(';' ,
+            Premia.SetChar(';' ,
              StringToChar(
                  "  " ,
                  "  " ,
@@ -464,7 +464,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1" ,
                  " 1" ,
                  "1 "));
-            premia.SetChar('$' ,
+            Premia.SetChar('$' ,
              StringToChar(
                  "  1  " ,
                  " 111 " ,
@@ -474,7 +474,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1 1 1" ,
                  "11111" ,
                  "  1  "));
-            premia.SetChar('[' ,
+            Premia.SetChar('[' ,
              StringToChar(
                  "111" ,
                  "1  " ,
@@ -484,7 +484,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  " ,
                  "1  " ,
                  "111"));
-            premia.SetChar(']' ,
+            Premia.SetChar(']' ,
              StringToChar(
                  "111" ,
                  "  1" ,
@@ -495,7 +495,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1" ,
                  "111"));
 
-            premia.SetChar('<' ,
+            Premia.SetChar('<' ,
              StringToChar(
                  "   " ,
                  "   " ,
@@ -505,7 +505,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  " ,
                  " 1 " ,
                  "  1"));
-            premia.SetChar('>' ,
+            Premia.SetChar('>' ,
              StringToChar(
                  "   " ,
                  "   " ,
@@ -516,7 +516,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1 " ,
                  "1  "));
 
-            premia.SetChar('{' ,
+            Premia.SetChar('{' ,
              StringToChar(
                  "  11" ,
                  " 1  " ,
@@ -526,7 +526,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1  " ,
                  " 1  " ,
                  "  11"));
-            premia.SetChar('}' ,
+            Premia.SetChar('}' ,
              StringToChar(
                  "11  " ,
                  "  1 " ,
@@ -536,7 +536,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1 " ,
                  "  1 " ,
                  "11  "));
-            premia.SetChar('(' ,
+            Premia.SetChar('(' ,
              StringToChar(
                  " 11" ,
                  "1  " ,
@@ -546,7 +546,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  " ,
                  "1  " ,
                  " 11"));
-            premia.SetChar('%' ,
+            Premia.SetChar('%' ,
              StringToChar(
                  "11   1" ,
                  "11  1 " ,
@@ -556,7 +556,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1   " ,
                  " 1  11" ,
                  "1   11"));
-            premia.SetChar('@' ,
+            Premia.SetChar('@' ,
              StringToChar(
                  " 1111 " ,
                  "1    1" ,
@@ -566,14 +566,14 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  11 " ,
                  "1     " ,
                  " 1111 "));
-            premia.SetChar('-' ,
+            Premia.SetChar('-' ,
              StringToChar(
                  "   " ,
                  "   " ,
                  "   " ,
                  "   " ,
                  "111"));
-            premia.SetChar('+' ,
+            Premia.SetChar('+' ,
              StringToChar(
                  "     " ,
                  "     " ,
@@ -582,7 +582,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "11111" ,
                  "  1  " ,
                  "  1  "));
-            premia.SetChar('*' ,
+            Premia.SetChar('*' ,
              StringToChar(
                  "     " ,
                  "     " ,
@@ -591,7 +591,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "11111" ,
                  " 111 " ,
                  "1 1 1"));
-            premia.SetChar('/' ,
+            Premia.SetChar('/' ,
              StringToChar(
                  "  1" ,
                  "  1" ,
@@ -601,7 +601,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1 " ,
                  "1  " ,
                  "1  "));
-            premia.SetChar('\\' ,
+            Premia.SetChar('\\' ,
              StringToChar(
                  "1  " ,
                  "1  " ,
@@ -611,12 +611,12 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1 " ,
                  "  1" ,
                  "  1"));
-            premia.SetChar('^' ,
+            Premia.SetChar('^' ,
              StringToChar(
                  "  1  " ,
                  " 1 1 " ,
                  "1   1"));
-            premia.SetChar('#' ,
+            Premia.SetChar('#' ,
              StringToChar(
                  "     " ,
                  " 1 1 " ,
@@ -624,7 +624,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1 1 " ,
                  "11111" ,
                  " 1 1 "));
-            premia.SetChar('&' ,
+            Premia.SetChar('&' ,
              StringToChar(
                  " 11  " ,
                  "1  1 " ,
@@ -634,7 +634,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1  1 " ,
                  "1  11" ,
                  " 11 1"));
-            premia.SetChar('=' ,
+            Premia.SetChar('=' ,
              StringToChar(
                  "     " ,
                  "     " ,
@@ -643,7 +643,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "     " ,
                  "11111"));
 
-            premia.SetChar('é' ,
+            Premia.SetChar('é' ,
              StringToChar(
                  "   11" ,
                  "  1  " ,
@@ -653,7 +653,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1111 " ,
                  "1    " ,
                  " 111 "));
-            premia.SetChar('è' ,
+            Premia.SetChar('è' ,
              StringToChar(
                  "11   " ,
                  "  1  " ,
@@ -663,7 +663,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1111 " ,
                  "1    " ,
                  " 111 "));
-            premia.SetChar('ê' ,
+            Premia.SetChar('ê' ,
              StringToChar(
                  "  1  " ,
                  " 1 1 " ,
@@ -673,7 +673,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1111 " ,
                  "1    " ,
                  " 111 "));
-            premia.SetChar('ü' ,
+            Premia.SetChar('ü' ,
              StringToChar(
                  "     " ,
                  "11 11" ,
@@ -683,7 +683,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('â' ,
+            Premia.SetChar('â' ,
              StringToChar(
                  "  1  " ,
                  " 1 1 " ,
@@ -693,7 +693,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "11111" ,
                  "1   1" ,
                  " 1111"));
-            premia.SetChar('ä' ,
+            Premia.SetChar('ä' ,
              StringToChar(
                  "     " ,
                  "11 11" ,
@@ -703,7 +703,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "11111" ,
                  "1   1" ,
                  " 1111"));
-            premia.SetChar('à' ,
+            Premia.SetChar('à' ,
              StringToChar(
                  "11   " ,
                  "  1  " ,
@@ -713,7 +713,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "11111" ,
                  "1   1" ,
                  " 1111"));
-            premia.SetChar('ç' ,
+            Premia.SetChar('ç' ,
              StringToChar(
                  "     " ,
                  " 111 " ,
@@ -723,7 +723,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 111 " ,
                  "  1  " ,
                  " 111 "));
-            premia.SetChar('ë' ,
+            Premia.SetChar('ë' ,
              StringToChar(
                  "     " ,
                  "11 11" ,
@@ -733,7 +733,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1111 " ,
                  "1    " ,
                  " 111 "));
-            premia.SetChar('ï' ,
+            Premia.SetChar('ï' ,
              StringToChar(
                  "   " ,
                  "1 1" ,
@@ -743,7 +743,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1 " ,
                  " 1 " ,
                  " 1 "));
-            premia.SetChar('î' ,
+            Premia.SetChar('î' ,
              StringToChar(
                  "  1  " ,
                  " 1 1 " ,
@@ -753,7 +753,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1  " ,
                  "  1  " ,
                  "  1  "));
-            premia.SetChar('ì' ,
+            Premia.SetChar('ì' ,
              StringToChar(
                  "11 " ,
                  "  1" ,
@@ -763,7 +763,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1" ,
                  "  1" ,
                  "  1"));
-            premia.SetChar('ô' ,
+            Premia.SetChar('ô' ,
              StringToChar(
                  "  1  " ,
                  " 1 1 " ,
@@ -773,7 +773,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('ö' ,
+            Premia.SetChar('ö' ,
              StringToChar(
                  "     " ,
                  "11 11" ,
@@ -783,7 +783,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('ò' ,
+            Premia.SetChar('ò' ,
              StringToChar(
                  "11   " ,
                  "  1  " ,
@@ -793,7 +793,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('ÿ' ,
+            Premia.SetChar('ÿ' ,
              StringToChar(
                  "11 11" ,
                  "     " ,
@@ -804,7 +804,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  " 1   " ,
                  "1    "));
 
-            premia.SetChar('A' ,
+            Premia.SetChar('A' ,
              StringToChar(
                  "     " ,
                  "  1  " ,
@@ -814,7 +814,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  "1   1"));
-            premia.SetChar('B' ,
+            Premia.SetChar('B' ,
              StringToChar(
                  "     " ,
                  "1111 " ,
@@ -824,7 +824,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  "1111 "));
-            premia.SetChar('C' ,
+            Premia.SetChar('C' ,
              StringToChar(
                  "     " ,
                  " 1111" ,
@@ -834,7 +834,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1    " ,
                  "1   1" ,
                  " 1111"));
-            premia.SetChar('D' ,
+            Premia.SetChar('D' ,
              StringToChar(
                  "     " ,
                  "1111 " ,
@@ -844,7 +844,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  "1111 "));
-            premia.SetChar('E' ,
+            Premia.SetChar('E' ,
              StringToChar(
                  "     " ,
                  "11111" ,
@@ -854,7 +854,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1    " ,
                  "1    " ,
                  "11111"));
-            premia.SetChar('F' ,
+            Premia.SetChar('F' ,
              StringToChar(
                  "     " ,
                  "11111" ,
@@ -864,7 +864,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1    " ,
                  "1    " ,
                  "1    "));
-            premia.SetChar('G' ,
+            Premia.SetChar('G' ,
              StringToChar(
                  "     " ,
                  " 111 " ,
@@ -874,7 +874,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('H' ,
+            Premia.SetChar('H' ,
               StringToChar(
                   "     " ,
                   "1   1" ,
@@ -884,7 +884,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                   "1   1" ,
                   "1   1" ,
                   "1   1"));
-            premia.SetChar('I' ,
+            Premia.SetChar('I' ,
              StringToChar(
                  "     " ,
                  "11111" ,
@@ -894,7 +894,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "  1  " ,
                  "  1  " ,
                  "11111"));
-            premia.SetChar('J' ,
+            Premia.SetChar('J' ,
              StringToChar(
                  "     " ,
                  "    1" ,
@@ -904,7 +904,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('K' ,
+            Premia.SetChar('K' ,
             StringToChar(
                 "     " ,
                 "1   1" ,
@@ -914,7 +914,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1  1 " ,
                 "1   1" ,
                 "1   1"));
-            premia.SetChar('L' ,
+            Premia.SetChar('L' ,
             StringToChar(
                 "     " ,
                 "1    " ,
@@ -924,7 +924,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1    " ,
                 "1    " ,
                 "11111"));
-            premia.SetChar('M' ,
+            Premia.SetChar('M' ,
             StringToChar(
                 "       " ,
                 "1     1" ,
@@ -934,7 +934,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1     1" ,
                 "1     1" ,
                 "1     1"));
-            premia.SetChar('N' ,
+            Premia.SetChar('N' ,
             StringToChar(
                 "     " ,
                 "1   1" ,
@@ -944,7 +944,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1  11" ,
                 "1  11" ,
                 "1   1"));
-            premia.SetChar('O' ,
+            Premia.SetChar('O' ,
             StringToChar(
                 "     " ,
                 " 111 " ,
@@ -954,7 +954,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1   1" ,
                 "1   1" ,
                 " 111 "));
-            premia.SetChar('P' ,
+            Premia.SetChar('P' ,
             StringToChar(
                 "     " ,
                 "1111 " ,
@@ -964,7 +964,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1    " ,
                 "1    " ,
                 "1    "));
-            premia.SetChar('Q' ,
+            Premia.SetChar('Q' ,
             StringToChar(
                 "     " ,
                 " 111 " ,
@@ -974,7 +974,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1 1 1" ,
                 "1  11" ,
                 " 1111"));
-            premia.SetChar('R' ,
+            Premia.SetChar('R' ,
             StringToChar(
                 "     " ,
                 "1111 " ,
@@ -984,7 +984,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1  1 " ,
                 "1   1" ,
                 "1   1"));
-            premia.SetChar('S' ,
+            Premia.SetChar('S' ,
             StringToChar(
                 "     " ,
                 " 111 " ,
@@ -994,7 +994,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "    1" ,
                 "1   1" ,
                 " 111 "));
-            premia.SetChar('T' ,
+            Premia.SetChar('T' ,
             StringToChar(
                 "     " ,
                 "11111" ,
@@ -1004,7 +1004,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "  1  " ,
                 "  1  " ,
                 "  1  "));
-            premia.SetChar('U' ,
+            Premia.SetChar('U' ,
              StringToChar(
                  "     " ,
                  "1   1" ,
@@ -1014,7 +1014,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                  "1   1" ,
                  "1   1" ,
                  " 111 "));
-            premia.SetChar('V' ,
+            Premia.SetChar('V' ,
             StringToChar(
                 "     " ,
                 "1   1" ,
@@ -1024,7 +1024,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 1 1 " ,
                 " 1 1 " ,
                 "  1  "));
-            premia.SetChar('W' ,
+            Premia.SetChar('W' ,
             StringToChar(
                 "         " ,
                 "1   1   1" ,
@@ -1034,7 +1034,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 1 1 1 1 " ,
                 " 1 1 1 1 " ,
                 "  1   1  "));
-            premia.SetChar('X' ,
+            Premia.SetChar('X' ,
             StringToChar(
                 "     " ,
                 "1   1" ,
@@ -1044,7 +1044,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 1 1 " ,
                 " 1 1 " ,
                 "1   1"));
-            premia.SetChar('Y' ,
+            Premia.SetChar('Y' ,
             StringToChar(
                 "     " ,
                 "1   1" ,
@@ -1054,7 +1054,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "  1  " ,
                 "  1  " ,
                 "  1  "));
-            premia.SetChar('Z' ,
+            Premia.SetChar('Z' ,
             StringToChar(
                 "     " ,
                 "11111" ,
@@ -1064,15 +1064,15 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 1   " ,
                 "1    " ,
                 "11111"));
-            premia.SetChar('\'' ,
+            Premia.SetChar('\'' ,
             StringToChar(
                 "1" ,
                 "1"));
-            premia.SetChar('`' ,
+            Premia.SetChar('`' ,
            StringToChar(
                "1" ,
                "1"));
-            premia.SetChar('~' ,
+            Premia.SetChar('~' ,
             StringToChar(
                 "       " ,
                 "       " ,
@@ -1080,7 +1080,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 11  11" ,
                 "1  11  "));
 
-            premia.SetChar('Ç' ,
+            Premia.SetChar('Ç' ,
              StringToChar(
                 "     " ,
                 " 1111" ,
@@ -1092,7 +1092,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 " 1111" ,
                 "   1 " ,
                 " 111 "));
-            premia.SetChar('È' ,
+            Premia.SetChar('È' ,
             StringToChar(
                 "111  " ,
                 "11111" ,
@@ -1102,7 +1102,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1    " ,
                 "1    " ,
                 "11111"));
-            premia.SetChar('É' ,
+            Premia.SetChar('É' ,
             StringToChar(
                 "  111" ,
                 "11111" ,
@@ -1112,7 +1112,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1    " ,
                 "1    " ,
                 "11111"));
-            premia.SetChar('Ë' ,
+            Premia.SetChar('Ë' ,
             StringToChar(
                 " 1 1 " ,
                 "11111" ,
@@ -1122,7 +1122,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1    " ,
                 "1    " ,
                 "11111"));
-            premia.SetChar('Ê' ,
+            Premia.SetChar('Ê' ,
             StringToChar(
                 " 111 " ,
                 "11111" ,
@@ -1132,7 +1132,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1    " ,
                 "1    " ,
                 "11111"));
-            premia.SetChar('À' ,
+            Premia.SetChar('À' ,
             StringToChar(
                 "111  " ,
                 "  1  " ,
@@ -1144,11 +1144,10 @@ namespace MoyskleyTech.ImageProcessing.Image
                 "1   1"));
         }
 
-        private static Font premia;
         /// <summary>
         /// Premia FOnt
         /// </summary>
-        public static Font Premia { get { return premia; } }
+        public static Font Premia { get; private set; }
 
         /// <summary>
         /// Helper to translate string array to bool[,]

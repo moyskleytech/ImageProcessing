@@ -62,6 +62,7 @@
     <Compile Include="ChartOld%28TBD%29\IntelligentHorizontalGraduation.cs" />
     <Compile Include="ChartOld%28TBD%29\IntelligentVerticalGraduation.cs" />
     <Compile Include="Chart\PieChart.cs" />
+    <Compile Include="Chart\PieChartMode.cs" />
     <Compile Include="Chart\PieData.cs" />
     <Compile Include="ChartOld%28TBD%29\Plot.cs" />
     <Compile Include="ChartOld%28TBD%29\PlotChart.cs" />

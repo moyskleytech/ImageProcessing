@@ -230,21 +230,32 @@ namespace MoyskleyTech.ImageProcessing.Android
         {
             DrawPolygon(p , 1 , points);
         }
-        public override void SetPixel(Brush<Pixel> p , double x , double y)
+        public override void SetPixel(Brush<Pixel> p , double px , double py)
         {
-            DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
+            FillRectangle(p, px, py, 1, 1);
+            //DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
-        public override void SetPixel(Pixel p , double x , double y)
+        public override void SetPixel(Pixel p , double px , double py)
         {
-            DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
+            FillRectangle(p, px, py, 1, 1);
+            //DrawLine(p , new PointF(x , y) , new PointF(x + 1 , y) , 1);
         }
         public override void SetPixelWithoutTransform(Pixel p , double px , double py , bool alpha)
         {
             FillRectangle(p , px , py , 1 , 1);
         }
+
+        public override void FillRectangle(Pixel p, double px, double py, double pw, double ph)
+        {
+            ctx.DrawRect(new G.Rect((int)px, (int)py, (int)px + (int)pw, (int)py + (int)ph), ConvertFill(p));
+        }
+        public override void FillRectangle(Brush<Pixel> p, double px, double py, double pw, double ph)
+        {
+            ctx.DrawRect(new G.Rect((int)px, (int)py, (int)px + (int)pw, (int)py + (int)ph), ConvertFill(p,px,py));
+        }
         public override void Dispose()
         {
-
+            ctx.Dispose();
         }
         protected override Pixel this[int m]
         {
@@ -268,6 +279,7 @@ namespace MoyskleyTech.ImageProcessing.Android
                 SetPixelWithoutTransform(value , x , y);
             }
         }
+       
         public override int Height { get => ctx.Height; set { } }
         public override int Width { get => ctx.Width; set { } }
     }

@@ -35,6 +35,18 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Left+Right
         /// </summary>
         public int Horizontal { get { return Left + Right; } }
+
+        public Padding(int val)
+        {
+            Left = Top = Bottom = Right = val;
+        }
+        public Padding(int l,int t, int b, int r)
+        {
+            Left = l;
+            Top = t;
+            Bottom = b;
+            Right = r;
+        }
     }
 }
 

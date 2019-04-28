@@ -1745,21 +1745,21 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Draw pie
         /// </summary>
         /// <param name="p">The color</param>
-        /// <param name="x0">X center of circle</param>
-        /// <param name="y0">Y center of circle</param>
+        /// <param name="left">X center of circle</param>
+        /// <param name="top">Y center of circle</param>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <param name="spanAngle">Span of angle</param>
         /// <param name="startAngle">Start angle</param>
         /// <param name="thickness">Thickness of outline</param>
         /// <returns>Polygon describing the pie</returns>
-        public virtual IEnumerable<PointF> DrawPie(Representation p , int x0 , int y0 , double w , double h , double spanAngle , double startAngle , int thickness)
+        public virtual IEnumerable<PointF> DrawPie(Representation p , int left , int top , double w , double h , double spanAngle , double startAngle , int thickness)
         {
             if ( thickness <= 1 )
-                return DrawPie(p , x0 , y0 , w , spanAngle , startAngle);
+                return DrawPie(p , left , top , w, h, spanAngle , startAngle);
             else
             {
-                PointF[ ] poly2 = GetPiePolygon(x0 , y0 , w,h , spanAngle , startAngle);
+                PointF[ ] poly2 = GetPiePolygon(left , top , w,h , spanAngle , startAngle);
                 DrawPolygon(p , thickness , poly2);
                 return poly2;
             }

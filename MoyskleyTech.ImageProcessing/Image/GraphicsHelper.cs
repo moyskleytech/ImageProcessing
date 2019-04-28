@@ -44,16 +44,16 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <summary>
         /// Helper to get the polygin describing a Pie
         /// </summary>
-        /// <param name="x0">X center of circle</param>
-        /// <param name="y0">Y center of circle</param>
+        /// <param name="left">X upper left of circle</param>
+        /// <param name="top">Y upper top of circle</param>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <param name="spanAngle">Span of angle</param>
         /// <param name="startAngle">Start angle</param>
         /// <returns></returns>
-        public static PointF[ ] GetPiePolygon(double x0 , double y0 , double w , double h , double spanAngle , double startAngle)
+        public static PointF[ ] GetPiePolygon(double left , double top , double w , double h , double spanAngle , double startAngle)
         {
-            return GetEllipsePiePolygon(new PointF(x0 + w / 2 , y0 + h / 2) , w / 2 , h / 2 , startAngle , spanAngle);
+            return GetEllipsePiePolygon(new PointF(left + w / 2 , top + h / 2) , w / 2 , h / 2 , startAngle , spanAngle);
         }
         /// <summary>
         /// Helper to get circle

@@ -101,6 +101,15 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return p1.X != p2.X || p1.Y != p2.Y;
         }
+
+        public static Rectangle operator +(Point p, Size s)
+        {
+            return new Rectangle(p, s);
+        }
+        public static Rectangle operator +(Size s, Point p)
+        {
+            return new Rectangle(p, s);
+        }
     }
     /// <summary>
     /// Represent an integer point(16 bytes)
@@ -220,6 +229,15 @@ namespace MoyskleyTech.ImageProcessing.Image
         public static bool operator !=(PointF p1 , PointF p2)
         {
             return p1.X != p2.X || p1.Y != p2.Y;
+        }
+
+        public static RectangleF operator +(PointF p, SizeF s)
+        {
+            return new RectangleF(p, s);
+        }
+        public static RectangleF operator +(SizeF s, PointF p)
+        {
+            return new RectangleF(p, s);
         }
     }
 }

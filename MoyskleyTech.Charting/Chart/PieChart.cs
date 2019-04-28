@@ -8,30 +8,26 @@ using System.Threading.Tasks;
 using static System.Math;
 namespace MoyskleyTech.Charting.Chart
 {
-    public class PieChart
+    public class PieChart : PieChart<Pixel> { }
+    public partial class PieChart<R>
+        where R: unmanaged
     {
-        public enum PieChartMode
-        {
-            Pie2D, Pie3D
-        }
-        private Bitmap bmp;
-
+      
         public Font Font { get; set; } = BaseFonts.Premia;
         public float FontSize { get; set; } = 1;
         public int LineThickness { get; set; } = 0;
-        public Brush BackPixel { get; set; } = new SolidBrush(Pixels.Transparent);
-        public Pixel FontPixel { get; set; } = Pixels.WhiteSmoke;
+        public Brush<R> BackPixel { get; set; } = new SolidBrush<R>(ColorConvert.Convert<Pixel,R>(Pixels.Transparent));
+        public R FontPixel { get; set; } = ColorConvert.Convert <Pixel,R>(Pixels.WhiteSmoke);
         public IEnumerable<PieData> Datas { get; set; } = new PieData[0];
-        public IEnumerable<Pixel> Colors { get; set; } = null;
+        public IEnumerable<R> Colors { get; set; } = null;
         public Padding Padding { get; set; } = new Padding();
         public StringFormat StringFormat { get; set; }
         public PieChartMode Mode { get; set; } = PieChartMode.Pie2D;
-        public PieChart(Bitmap bmp)
+        public PieChart()
         {
-            this.bmp = bmp;
             StringFormat = new StringFormat() { Alignment = StringAlignment.Center , LineAlignment = StringAlignment.Center };
         }
-        private IEnumerable<Pixel> CreateColorScheme()
+        private IEnumerable<R> CreateColorScheme()
         {
             Random r = new Random();
             Pixel[] scheme = new Pixel[17]
@@ -55,34 +51,29 @@ namespace MoyskleyTech.Charting.Chart
                 Pixel.FromArgb(0xffFFA928),
                 Pixel.FromArgb(0xffC0FFF6)
             };
-
-            return scheme;
+            return from x in scheme select ColorConvert.Convert<Pixel, R>(x);
         }
-        private IEnumerable<Pixel> GetColors()
+        private IEnumerable<R> GetColors()
         {
             if ( Colors == null )
             {
                 return CreateColorScheme();
             }
-            return new CircularArray<Pixel>(Colors.ToArray());
+            return new CircularArray<R>(Colors.ToArray());
         }
-        public Bitmap Draw()
+        public Image<R> Draw(int bmpWidth, int bmpHeight)
         {
-            Graphics g = Graphics.FromImage(bmp);
-            Draw(g , 0 , 0 , bmp.Width , bmp.Height);
+            var bmp = Image<R>.Create(bmpWidth, bmpHeight);
+            Graphics<R> g = Graphics<R>.FromImage(bmp);
+            Draw(g , bmp.Width , bmp.Height);
             g.Dispose();
             return bmp;
         }
-        public void Draw(Graphics g , int bmpWidth , int bmpHeight)
+        public void Draw(Graphics<R> g , int bmpWidth , int bmpHeight)
         {
-            Draw(g , 0 , 0 , bmpWidth , bmpHeight);
-        }
-        public void Draw(Graphics g , int offsetX , int offsetY , int bmpWidth , int bmpHeight)
-        {
-            g.FillRectangle(BackPixel , offsetX , offsetY , bmpWidth , bmpHeight);
-
-            var width = bmpWidth-Padding.Horizontal;
-            var height = bmpHeight-Padding.Vertical;
+            var width = bmpWidth - Padding.Horizontal;
+            var height = bmpHeight - Padding.Vertical;
+            g.FillRectangle(BackPixel , Padding.Left , Padding.Top , width , height);
             
             double totalWeight = Datas.Sum((x)=>x.Weight);
 
@@ -94,19 +85,25 @@ namespace MoyskleyTech.Charting.Chart
             if ( Mode == PieChartMode.Pie2D )
             {
                 //g.FillCircle(FontPixel , offsetX+ Padding.Left + halfWidth , offsetY+ Padding.Top + halfHeight , r);
+                int x = width / 2 - r +Padding.Left;//offsetX + Padding.Left;
+                int y = height / 2 - r + Padding.Top;// offsetY + Padding.Top;
+
                 LinkedList<PointF> location = new LinkedList<PointF>();
                 foreach ( PieData pd in Datas )
                 {
                     enumColor.MoveNext();
 
                     var color = enumColor.Current;
-                    var borderColor = Pixel.FromArgb(50,0,0,0).Over(color);
+                    var borderColor = ColorConvert.Convert < Pixel, R> (Pixel.FromArgb(50,0,0,0).Over(ColorConvert.Convert < R,Pixel > (color)));
 
                     angleSpan = pd.Weight / totalWeight * 2 * PI;
                     if ( pd == Datas.Last() )
                         angleSpan = 2 * PI - angle;
-                    var poly = g.DrawPie(borderColor , offsetX+ Padding.Left , offsetY+ Padding.Top , r, angleSpan , angle, LineThickness);
-                    g.FillPie(color , offsetX + Padding.Left  , offsetY + Padding.Top  , r , angleSpan , angle);
+
+                    
+                    var poly = g.DrawPie(borderColor, x, y, r * 2, r * 2, angleSpan, angle, LineThickness);
+                    //g.FillPie(color , offsetX + Padding.Left  , offsetY + Padding.Top  , r * 2, r * 2, angleSpan , angle);
+                    g.FillPolygon(color, poly.ToArray());
 
                     var avgX = poly.Average((X) => X.X);
                     var avgY = poly.Average((X) => X.Y);
@@ -122,9 +119,11 @@ namespace MoyskleyTech.Charting.Chart
                     g.DrawString(pd.Name , new FontSizeF(Font , FontSize) , FontPixel , locationIter.Current , StringFormat);
                 }
             }
-            else
+            else // Mode == PieChartMode.Pie3D
             {
-                int x=offsetX+ Padding.Left-r, y=offsetY+ Padding.Top -r, w=r,h=(int)(r*0.9);
+                int w=r*2,h=(int)(r*1.9);
+                int x = width / 2 - r + Padding.Left;//offsetX + Padding.Left;
+                int y = height / 2 - r + Padding.Top;// offsetY + Padding.Top;
                 int xCenter = x+r;
                 int yCenter = y+r;
 
@@ -133,12 +132,13 @@ namespace MoyskleyTech.Charting.Chart
                 {
                     enumColor.MoveNext();
                     var color = enumColor.Current;
-                    var borderColor = Pixel.FromArgb(50,0,0,0).Over(color);
+                    var borderColor = ColorConvert.Convert < Pixel, R> (Pixel.FromArgb(50,0,0,0).Over(ColorConvert.Convert < R,Pixel >( color)));
                     angleSpan = pd.Weight / totalWeight * 2 * PI;
                     if ( pd == Datas.Last() )
                         angleSpan = 2 * PI - angle;
-                    var poly = g.DrawPie(borderColor , x+r , y+r , w,h, angleSpan , angle, LineThickness);
-                    g.FillPie(color , x + r , y + r , w , h , angleSpan , angle);
+                    var poly = g.DrawPie(borderColor , x , y , w,h, angleSpan , angle, LineThickness);
+                    g.FillPolygon(color, poly.ToArray());
+                    //g.FillPie(color , x , y , w , h , angleSpan , angle);
 
                     var lowerPoints = poly.Where((pt) => { return pt.Y > y + r; });
                     lowerPoints = lowerPoints.Concat(lowerPoints.Reverse().Select((pt) => new PointF(pt.X , pt.Y + r * 0.1)));

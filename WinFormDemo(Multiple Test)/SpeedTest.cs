@@ -60,6 +60,8 @@ namespace WinFormDemo_Multiple_Test_
             label1.Text += "Time To Transform from pixel to RGBA(Same buffer)" + timeConvertAndKeepBuffer + "\r\n";
             label1.Text += "Conversion " + (( RGBAImage.DataPointer == pxlImage.DataPointer ) ? "Sucess(Same buffer)" : "Fail(New buffer)");
 
+
+            
         }
     }
 }

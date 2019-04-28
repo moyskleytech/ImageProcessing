@@ -39,14 +39,15 @@ namespace MoyskleyTech.ImageProcessing.Image
                     for ( var j = 0; j < w; j++ )
                     {
                         x += size;
-                        if ( character[i , j] )
-                            for ( var k = 0; k < size; k++ )
-                            {
-                                for ( var l = 0; l < size; l++ )
-                                {
-                                    SetPixel(brh , x + k , y + l);
-                                }
-                            }
+                        if (character[i, j])
+                            FillRectangle(brh, x, y, size, size);
+                            //for ( var k = 0; k < size; k++ )
+                            //{
+                            //    for ( var l = 0; l < size; l++ )
+                            //    {
+                            //        SetPixel(brh , x + k , y + l);
+                            //    }
+                            //}
                     }
                 }
                 y += size;

@@ -17,7 +17,6 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         protected Image<Representation> img;
 
-
         public bool Readonly { get; private set; }
         /// <summary>
         /// Area rectangle
@@ -52,8 +51,18 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="rectangle"></param>
         public ImageProxy(ImageProxy<Representation> prx , Rectangle rectangle , bool rdonly = false) : this(prx.Readonly || rdonly)
         {
+            if ( prx.img == null )
+                throw new InvalidOperationException("Using special proxy type, unable to proxy again");
             this.img = prx.img;
-            this.Rect = new Rectangle(rectangle.X + prx.Rectangle.X , rectangle.Y + prx.Rectangle.Y , rectangle.Width , rectangle.Height);
+            this.Rect = new Rectangle(rectangle.X + prx.Rectangle.X, rectangle.Y + prx.Rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
+        public virtual ImageProxy<Representation> Proxy(Rectangle rectangle)
+        {
+            ImageProxy<Representation> r = new ImageProxy<Representation>(this.Readonly);
+            r.img = this.img;
+            r.Rect = new Rectangle(rectangle.X + this.Rectangle.X, rectangle.Y + this.Rectangle.Y, rectangle.Width, rectangle.Height);
+            return r;
         }
 
         /// <summary>
@@ -163,6 +172,30 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
         }
         /// <summary>
+        /// Get a pixel from image
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public virtual Representation this[Point p]
+        {
+            get => this[p.X, p.Y];
+            set => this[p.X, p.Y] = value;
+        }
+
+        /// <summary>
+        /// Proxy an image easy
+        /// </summary>
+        /// <param name="rec"></param>
+        /// <returns></returns>
+        public ImageProxy<Representation> this[Rectangle rec]
+        {
+            get
+            {
+                return this.Proxy(rec);
+            }
+        }
+        /// <summary>
         /// Convert to image
         /// </summary>
         /// <param name="ip"></param>
@@ -258,5 +291,14 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
         }
 
+        public override ImageProxy<RepresentationB> Proxy(Rectangle rectangle)
+        {
+            ImageTypeProxy<RepresentationA, RepresentationB> r = new ImageTypeProxy<RepresentationA, RepresentationB>(this.Readonly,converter);
+            r.img = this.img;
+            r.imgP = imgP;
+            r.Rect = new Rectangle(rectangle.X + this.Rectangle.X, rectangle.Y + this.Rectangle.Y, rectangle.Width, rectangle.Height);
+            return r;
+       
+        }
     }
 }

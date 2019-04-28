@@ -193,7 +193,7 @@ namespace WinFormDemo_Multiple_Test_
                     InitialFill(-100 , -100 , 200 , 200);
                     while ( !ended )
                     {
-                        await Fill();
+                        Fill();
                         await Task.Delay(5);
                     }
                     evtEnd.Set();
@@ -208,7 +208,7 @@ namespace WinFormDemo_Multiple_Test_
         }
         private void InitialFill(int left , int top , int cellCountH , int cellCountV)
         {
-            const int mx=BASE_CLOCK/CELL_WIDTH;
+            //const int mx=BASE_CLOCK/CELL_WIDTH;
             List<Point> C = new List<Point>();
             if ( moved || modified )
                 C.AddRange(
@@ -244,10 +244,10 @@ namespace WinFormDemo_Multiple_Test_
                     C.RemoveAt(idx);
             }
         }
-        private async Task Fill()
+        private void Fill()
         {
-            const int mx=BASE_CLOCK/CELL_WIDTH;
-            int ct=mx;
+            //const int mx=BASE_CLOCK/CELL_WIDTH;
+            //int ct=mx;
             List<Point> C = new List<Point>();
             if ( moved || modified )
                 C.AddRange(

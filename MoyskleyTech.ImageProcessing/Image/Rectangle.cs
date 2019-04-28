@@ -174,5 +174,9 @@ namespace MoyskleyTech.ImageProcessing.Image
         {
             return new RectangleF(rect.X , rect.Y , rect.Width , rect.Height);
         }
+        public static explicit operator Rectangle(RectangleF rect)
+        {
+            return new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+        }
     }
 }

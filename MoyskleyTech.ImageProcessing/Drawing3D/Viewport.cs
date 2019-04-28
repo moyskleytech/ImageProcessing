@@ -12,9 +12,7 @@ namespace MoyskleyTech.ImageProcessing.Drawing3D
     {
         double m_theta;
         double m_phi;
-        int m_x;
-        int m_y;
-        private List<IObject3D> m_list;
+
         double m_tx = 0;
         double m_ty = 0;
         double m_tz = 0;
@@ -22,12 +20,12 @@ namespace MoyskleyTech.ImageProcessing.Drawing3D
         public ViewTypes View { get => Camera.View; set => Camera.View = value; }
         public Camera Camera { get; set; }
         public bool DrawAxes { get; set; } = true;
-        public List<IObject3D> Items => m_list;
+        public List<IObject3D> Items { get; }
         public int LinePointCount { get; set; } = 10;
         public Viewport3D()
         {
             Camera = new Camera();
-            m_list = new List<IObject3D>();
+            Items = new List<IObject3D>();
         }
 
         public void Render(Graphics<Pixel> graphics , int width , int height)
@@ -58,7 +56,7 @@ namespace MoyskleyTech.ImageProcessing.Drawing3D
                 renderer.RenderText(new Point3D(0 , 0 , 1) , "Z" , Pixels.Blue , 1);
             }
 
-            foreach ( IObject3D obj in m_list )
+            foreach ( IObject3D obj in Items )
             {
                 obj.Render(renderer);
             }

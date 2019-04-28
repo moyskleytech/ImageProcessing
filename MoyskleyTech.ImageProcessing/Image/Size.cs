@@ -48,7 +48,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         /// <param name="w"></param>
         /// <param name="h"></param>
-        public SizeF(int w , int h)
+        public SizeF(double w , double h)
         {
             Width = w;
             Height = h;

@@ -299,7 +299,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             Yellow,
             YellowGreen
         };//);
-        public static readonly   string[] PixelNames = new string[]{
+        public static readonly string[] PixelNames = new string[]{
     //    public static readonly RArray<string> PixelNames = new RArray<string>(new string[ ]{
             "Transparent",
 "AliceBlue",
