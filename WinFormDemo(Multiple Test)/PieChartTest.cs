@@ -32,25 +32,30 @@ namespace WinFormDemo_Multiple_Test_
             Graphics.FromImage(bmp).Clear(Pixels.Black);
             pie = new PieChart();
             pie.Mode = PieChartMode.Pie3D;
+            pie.BackPixel = new SolidBrush<Pixel>(Pixels.Black);
             pie.Datas = new PieData[] {
                 new PieData(){ Name="a",Weight=4},
                 new PieData(){ Name="b",Weight=4},
-                new PieData(){ Name="c",Weight=9}
+                new PieData(){ Name="c",Weight=8}
             };
 
            var a = (PieChartMode[])Enum.GetValues(typeof(PieChartMode));
 
             comboBox1.Items.AddRange(a.Cast<object>().ToArray());
-
             comboBox1.SelectedValueChanged += ComboBox1_SelectedValueChanged;
+            comboBox1.SelectedIndex = 0;
+
+            propertyGrid1.SelectedObject = pie;
         }
 
         private void ComboBox1_SelectedValueChanged(object sender, EventArgs e)
         {
             pie.Mode = (PieChartMode)comboBox1.SelectedItem;
+            Draw();
         }
 
-        private void Timer1_Tick(object sender, EventArgs e)
+
+        private void Draw()
         {
             var g = new NativeGraphicsWrapper(pictureBox1.CreateGraphics());
             g.Clear(Pixels.Black);
@@ -61,6 +66,11 @@ namespace WinFormDemo_Multiple_Test_
             var old = pictureBox2.Image;
             pictureBox2.Image = bmp.ToWinFormBitmap();
             old?.Dispose();
+        }
+
+        private void PropertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            Draw();
         }
     }
 }

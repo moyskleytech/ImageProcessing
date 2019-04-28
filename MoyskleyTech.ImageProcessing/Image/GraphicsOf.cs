@@ -622,9 +622,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="points">Points describing polygon</param>
         /// <param name="constant">used by pnpoly</param>
         /// <param name="multiple">used by pnpoly</param>
-        private void PrecalculatePnPolyValues(PointF[ ] points , double[ ] constant , double[ ] multiple)
+        public static void PrecalculatePnPolyValues(PointF[ ] points , double[ ] constant , double[ ] multiple)
         {
-
             int   i, j=points.Length-1 ;
 
             for ( i = 0; i < points.Length; i++ )
@@ -651,9 +650,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="x">X to test</param>
         /// <param name="y">Y to test</param>
         /// <returns></returns>
-        private bool PnPolyUsingPrecalc(PointF[ ] points , double[ ] constant , double[ ] multiple , double x , double y)
+        public static bool PnPolyUsingPrecalc(PointF[ ] points , double[ ] constant , double[ ] multiple , double x , double y)
         {
-
             int   i, j=points.Length-1 ;
             bool  oddNodes=false      ;
 
@@ -677,7 +675,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="testx"></param>
         /// <param name="testy"></param>
         /// <returns></returns>
-        private bool IsPointInPolygon(PointF[ ] points , double testx , double testy)
+        private static bool IsPointInPolygon(PointF[ ] points , double testx , double testy)
         {
             int i, j;
             bool c=false;
