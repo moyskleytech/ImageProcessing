@@ -445,11 +445,20 @@ namespace MoyskleyTech.ImageProcessing.Image
         };//);
         public static Pixel GetPixel(string name)
         {
-           var idx= PixelNames.ToList().IndexOf(name);
+           var idx= PixelNames.ToList().FindIndex((m)=>string.Equals(m,name,StringComparison.OrdinalIgnoreCase));
             if ( idx < 0 )
                 return Pixels.Transparent;
             else
                 return NamedPixels[idx];
         }
+        public static IEnumerable<string> GetKnownPixelNames()
+        {
+            return PixelNames;
+        }
+        public static IEnumerable<Pixel> GetKnownPixels()
+        {
+            return NamedPixels;
+        }
+
     }
 }

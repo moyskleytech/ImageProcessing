@@ -110,7 +110,8 @@ namespace WinFormDemo_Multiple_Test_
             g.Clear(Pixels.Black);
             graph.Draw(g, pictureBox1.Width, pictureBox1.Height);
             g.Dispose();
-            graph.Draw(Graphics.FromImage(bmp), pictureBox2.Width, pictureBox2.Height);
+            if(cbLib.Checked)
+                graph.Draw(Graphics.FromImage(bmp), pictureBox2.Width, pictureBox2.Height);
 
             var old = pictureBox2.Image;
             pictureBox2.Image = bmp.ToWinFormBitmap();

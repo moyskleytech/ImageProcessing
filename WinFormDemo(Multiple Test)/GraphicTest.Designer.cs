@@ -34,6 +34,7 @@
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.cbLib = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -91,11 +92,24 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
+            // cbLib
+            // 
+            this.cbLib.AutoSize = true;
+            this.cbLib.Checked = true;
+            this.cbLib.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbLib.Location = new System.Drawing.Point(521, 10);
+            this.cbLib.Name = "cbLib";
+            this.cbLib.Size = new System.Drawing.Size(98, 17);
+            this.cbLib.TabIndex = 6;
+            this.cbLib.Text = "Draw using lib?";
+            this.cbLib.UseVisualStyleBackColor = true;
+            // 
             // GraphicTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 559);
+            this.Controls.Add(this.cbLib);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.propertyGrid1);
@@ -108,6 +122,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -119,5 +134,6 @@
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.CheckBox cbLib;
     }
 }
