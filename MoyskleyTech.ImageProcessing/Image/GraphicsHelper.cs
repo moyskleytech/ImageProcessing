@@ -32,12 +32,12 @@ namespace MoyskleyTech.ImageProcessing.Image
                 pts.Add(FindEllipsePoint(major , minor , angle , x , y , i));
             return pts;
         }
-        private static PointF FindEllipsePoint(double a , double b , double theta , double x , double y , double t)
+        public static PointF FindEllipsePoint(double a , double b , double ellipseAngle , double x , double y , double pointAngle)
         {
             Func<double,double> cos = System.Math.Cos;
             Func<double,double> sin = System.Math.Sin;
-            double xt = x+ (a*cos(t)*cos(theta)-b*sin(t)*sin(theta));
-            double yt = y+(a*cos(t)*sin(theta)+b*sin(t)*cos(theta));
+            double xt = x+ (a*cos(pointAngle)*cos(ellipseAngle)-b*sin(pointAngle)*sin(ellipseAngle));
+            double yt = y+(a*cos(pointAngle)*sin(ellipseAngle)+b*sin(pointAngle)*cos(ellipseAngle));
 
             return new PointF(xt , yt);
         }

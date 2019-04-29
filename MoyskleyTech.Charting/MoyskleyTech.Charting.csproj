@@ -50,23 +50,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Charting2D\ChartData2D.cs" />
-    <Compile Include="Charting2D\VerticalAxis.cs" />
-    <Compile Include="Charting2D\HorizontalAxis.cs" />
-    <Compile Include="Charting2D\IChartItem.cs" />
-    <Compile Include="Charting2D\Chart.cs" />
+    <Compile Include="Charting2D\Gauge.cs" />
+    <Compile Include="Charting2D\GaugeArea.cs" />
+    <Compile Include="Charting2D\GaugeType.cs" />
     <Compile Include="Charting3D\Plot3D.cs" />
     <Compile Include="Charting3D\ChartData3D.cs" />
-    <Compile Include="ChartOld%28TBD%29\Function.cs" />
-    <Compile Include="ChartOld%28TBD%29\Graduation.cs" />
-    <Compile Include="ChartOld%28TBD%29\IntelligentHorizontalGraduation.cs" />
-    <Compile Include="ChartOld%28TBD%29\IntelligentVerticalGraduation.cs" />
-    <Compile Include="Chart\PieChart.cs" />
-    <Compile Include="Chart\PieChartMode.cs" />
-    <Compile Include="Chart\PieData.cs" />
-    <Compile Include="ChartOld%28TBD%29\Plot.cs" />
-    <Compile Include="ChartOld%28TBD%29\PlotChart.cs" />
-    <Compile Include="ChartOld%28TBD%29\PlotValues.cs" />
+    <Compile Include="Charting2D\IDrawableChart.cs" />
+    <Compile Include="Charting2D\PieChart.cs" />
+    <Compile Include="Charting2D\PieChartMode.cs" />
+    <Compile Include="Charting2D\PieData.cs" />
     <Compile Include="Diagram\TreeDiagram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

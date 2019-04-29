@@ -84,11 +84,11 @@
     <Compile Include="RPG.Designer.cs">
       <DependentUpon>RPG.cs</DependentUpon>
     </Compile>
-    <Compile Include="PieChartTest.cs">
+    <Compile Include="GraphicTest.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PieChartTest.Designer.cs">
-      <DependentUpon>PieChartTest.cs</DependentUpon>
+    <Compile Include="GraphicTest.Designer.cs">
+      <DependentUpon>GraphicTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Scaling.cs">
       <SubType>Form</SubType>
@@ -129,8 +129,8 @@
     <EmbeddedResource Include="RPG.resx">
       <DependentUpon>RPG.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PieChartTest.resx">
-      <DependentUpon>PieChartTest.cs</DependentUpon>
+    <EmbeddedResource Include="GraphicTest.resx">
+      <DependentUpon>GraphicTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Scaling.resx">
       <DependentUpon>Scaling.cs</DependentUpon>

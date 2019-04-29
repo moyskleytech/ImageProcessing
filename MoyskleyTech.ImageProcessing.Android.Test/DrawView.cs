@@ -11,14 +11,14 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using MoyskleyTech.Charting.Chart;
+using MoyskleyTech.Charting.Charting2D;
 using MoyskleyTech.ImageProcessing.Image;
 
 namespace MoyskleyTech.ImageProcessing.Android.Test
 {
     public class DrawView : View
     {
-        Charting.Chart.PieChart pc;
+        Charting.Charting2D.PieChart pc;
         ImageProcessing.Image.Bitmap bmp;
         int count=0;
         public DrawView(Context context) : base(context)
@@ -44,8 +44,8 @@ namespace MoyskleyTech.ImageProcessing.Android.Test
             g.Clear(Pixels.LawnGreen);
             g.DrawLine(Pixels.Black , 0 , 0 , 100 , 100);
 
-            pc = new Charting.Chart.PieChart();
-            pc.Mode = PieChartMode.Pie3D;
+            pc = new Charting.Charting2D.PieChart();
+            pc.Mode = PieChartMode.Donut3D;
             pc.LineThickness = 1;
             pc.Padding = new Padding(15);
             pc.FontSize = 8;

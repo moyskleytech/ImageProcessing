@@ -62,7 +62,7 @@ namespace WinFormDemo_Multiple_Test_
 
         private void Button7_Click(object sender, EventArgs e)
         {
-            (new PieChartTest()).ShowDialog();
+            (new GraphicTest()).ShowDialog();
         }
     }
 }
