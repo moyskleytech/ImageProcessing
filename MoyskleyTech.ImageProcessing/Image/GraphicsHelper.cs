@@ -117,7 +117,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <returns></returns>
         public static PointF[ ] GetEllipsePolygon(double x , double y , double w , double h)
         {
-            return GetEllipseArcPolygon(new PointF(x + w / 2 , y + y / 2) , w / 2 , y / 2 , 0 , 2 * Math.PI);
+            return GetEllipseArcPolygon(new PointF(x + w / 2 , y + h / 2) , w / 2 , h / 2 , 0 , 2 * Math.PI);
         }
         public static PointF[ ] GetRoundedRectanglePolygon(RectangleF bounds , double radius)
         {
