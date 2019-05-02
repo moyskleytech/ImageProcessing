@@ -53,5 +53,15 @@ namespace MoyskleyTech.ImageProcessing.Image
             Width = w;
             Height = h;
         }
+       
+        public static explicit operator Size(SizeF p)
+        {
+            return new Size((int)p.Width, (int)p.Height);
+        }
+
+        public static implicit operator SizeF(Size p)
+        {
+            return new SizeF((int)p.Width, (int)p.Height);
+        }
     }
 }

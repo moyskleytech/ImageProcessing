@@ -16,6 +16,7 @@ namespace WinFormDemo_Multiple_Test_
     {
         Bitmap bmp;
         IDrawableChart<Pixel> graph;
+        Font f;
         public GraphicTest()
         {
             InitializeComponent();
@@ -30,6 +31,7 @@ namespace WinFormDemo_Multiple_Test_
         {
             bmp = new Bitmap(pictureBox2.Width, pictureBox2.Height);
             Graphics.FromImage(bmp).Clear(Pixels.Black);
+            f = FontLibrary.WindowsFonts.Get("Varela Round");
             SetPie();
         }
 
@@ -37,6 +39,7 @@ namespace WinFormDemo_Multiple_Test_
         {
             var pie = new PieChart();
             pie.Mode = PieChartMode.Pie3D;
+            pie.Font = f;
             pie.BackPixel = new SolidBrush<Pixel>(Pixels.Black);
             pie.Datas = new PieData[] {
                 new PieData(){ Name="a",Weight=4},
@@ -107,6 +110,7 @@ namespace WinFormDemo_Multiple_Test_
         private void Draw()
         {
             var g = new NativeGraphicsWrapper(pictureBox1.CreateGraphics());
+            //g.HandleStringNatively = false;
             g.Clear(Pixels.Black);
             graph.Draw(g, pictureBox1.Width, pictureBox1.Height);
             g.Dispose();

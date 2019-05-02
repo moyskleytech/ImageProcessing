@@ -13,6 +13,7 @@ namespace MoyskleyTech.ImageProcessing.WinForm
     {
         private System.Drawing.Graphics ctx;
         private const float FONT_FACTOR = 12f;
+        public bool HandleStringNatively { get; set; } = true;
         public NativeGraphicsWrapper(System.Drawing.Graphics context)
         {
             ctx = context;
@@ -162,6 +163,11 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         
         public override void DrawString(string str , Pixel p , int x , int y , Font f , float size , StringFormat sf = null)
         {
+            if (!HandleStringNatively)
+            {
+                base.DrawString(str, p, x, y, f, size, sf);
+                return;
+            }
             var brush = ConvertToBrush(p);
             var font=new System.Drawing.Font(f.Name , size*FONT_FACTOR);
             ctx.DrawString(str , font , brush , x , y , Convert(sf));
@@ -170,6 +176,11 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
         public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , float size , StringFormat sf = null)
         {
+            if (!HandleStringNatively)
+            {
+                base.DrawString(str, p, x, y, f, size, sf);
+                return;
+            }
             var brush = ConvertToBrush(p);
             var font=new System.Drawing.Font(f.Name , size*FONT_FACTOR);
             ctx.DrawString(str , font , brush , x , y , Convert(sf));
@@ -339,6 +350,11 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
         public override void DrawString(string text , FontSizeF f , Brush<Pixel> color , Rectangle area , StringFormat sf)
         {
+            if (!HandleStringNatively)
+            {
+                base.DrawString(text,f,color,area,sf);
+                return;
+            }
             var font=new System.Drawing.Font(f.Font.Name , f.Size*FONT_FACTOR);
             var b = ConvertToBrush(color);
             ctx.DrawString(text , font ,b , new System.Drawing.RectangleF(area.X , area.Y , area.Width , area.Height) , Convert(sf));
@@ -347,6 +363,11 @@ namespace MoyskleyTech.ImageProcessing.WinForm
         }
         public override void DrawString(string text , FontSizeF f , Pixel color , Rectangle area , StringFormat sf)
         {
+            if (!HandleStringNatively)
+            {
+                base.DrawString(text, f, color, area, sf);
+                return;
+            }
             var font=new System.Drawing.Font(f.Font.Name , f.Size*FONT_FACTOR);
             var b = ConvertToBrush(color);
             ctx.DrawString(text , font , b , new System.Drawing.RectangleF(area.X , area.Y , area.Width , area.Height) , Convert(sf));

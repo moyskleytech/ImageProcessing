@@ -376,6 +376,28 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// Draw a polygon outline
         /// </summary>
         /// <param name="p">The color</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPolygon(Representation p, List<Point> drawn, params PointF[] points)
+        {
+            for (var i = 0; i < points.Length - 1; i++)
+                DrawLine(p, drawn, points[i], points[i + 1]);
+            DrawLine(p, drawn, points[0], points[points.Length - 1]);
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="points">Points describing the polygon</param>
+        public void DrawPolygon(Brush<Representation> p, List<Point> drawn, params PointF[] points)
+        {
+            for (var i = 0; i < points.Length - 1; i++)
+                DrawLine(p, drawn, points[i], points[i + 1]);
+            DrawLine(p, drawn, points[0], points[points.Length - 1]);
+        }
+        /// <summary>
+        /// Draw a polygon outline
+        /// </summary>
+        /// <param name="p">The color</param>
         /// <param name="thickness">Thickness of outline</param>
         /// <param name="points">Points describing the polygon</param>
         public virtual void DrawPolygon(Representation p, int thickness, params PointF[] points)
@@ -570,7 +592,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="points">Points describing the polygon</param>
         public virtual void FillPolygon(Representation p, params PointF[] points)
         {
-            //DrawPolygon(p, points);
+            List<Point> pts = new List<Point>(); ;
+            DrawPolygon(p, pts, points);
             var minX = points.Min((x) => x.X);
             var minY = points.Min((x) => x.Y);
 
@@ -583,6 +606,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             {
                 for (var y = minY; y < maxY; y++)
                 {
+                    //if (!pts.Contains((Point)new PointF(x, y)))
                     if (PnPolyUsingPrecalc(points, a, b, x, y))
                         //if ( IsPointFInPolygon(points , x , y) )
                         SetPixel(p, x, y);
@@ -596,7 +620,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="points">Points describing the polygon</param>
         public virtual void FillPolygon(Brush<Representation> p, params PointF[] points)
         {
-            //DrawPolygon(p, points);
+            List<Point> pts = new List<Point>(); ;
+            DrawPolygon(p, pts, points);
             var minX = points.Min((x) => x.X);
             var minY = points.Min((x) => x.Y);
 
@@ -609,6 +634,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             {
                 for (var y = minY; y < maxY; y++)
                 {
+                    //if (!pts.Contains((Point)new PointF(x, y)))
                     if (PnPolyUsingPrecalc(points, a, b, x, y))
                         //if ( IsPointFInPolygon(points , x , y) )
                         SetPixel(p, x, y);
@@ -664,6 +690,16 @@ namespace MoyskleyTech.ImageProcessing.Image
                 }
                 j = i;
             }
+
+            //if (!oddNodes)
+            //{
+            //    for (i = 0; i < points.Length - 1; i++)
+            //    {
+            //        var pt = points[i];
+            //        var ptNext = points[i + 1];
+            //        var d = Math.Abs(ptNext.X)
+            //    }
+            //}
 
             return oddNodes;
         }
@@ -796,6 +832,40 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="y">Y origin</param>
         /// <param name="x2">X destination</param>
         /// <param name="y2">Y destination</param>
+        public virtual void DrawLine(Representation p, List<Point> drawn, double x, double y, double x2, double y2)
+        {
+            PointF p1, p2;
+
+            p1 = TransformUsingMatrix(new PointF(x, y));
+            p2 = TransformUsingMatrix(new PointF(x2, y2));
+
+            DrawLineInternal(p, p1, p2, drawn);
+        }
+        /// <summary>
+        /// Draw a line
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        /// <param name="x2">X destination</param>
+        /// <param name="y2">Y destination</param>
+        public virtual void DrawLine(Brush<Representation> p, List<Point> drawn, double x, double y, double x2, double y2)
+        {
+            PointF p1, p2;
+
+            p1 = TransformUsingMatrix(new PointF(x, y));
+            p2 = TransformUsingMatrix(new PointF(x2, y2));
+
+            DrawLineInternal(p, p1, p2, drawn);
+        }
+        /// <summary>
+        /// Draw a line
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="x">X origin</param>
+        /// <param name="y">Y origin</param>
+        /// <param name="x2">X destination</param>
+        /// <param name="y2">Y destination</param>
         /// <param name="thickness">Thickness of line</param>
         public virtual void DrawLine(Representation p, double x, double y, double x2, double y2, int thickness)
         {
@@ -881,7 +951,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                 return;
             }
             var polygon = new PointF[] {
-                
+
                 GraphicsHelper.FindEllipsePoint(thickness,thickness,0,x1,y1,angle-Math.PI/2),
                 GraphicsHelper.FindEllipsePoint(thickness,thickness,0,x1,y1,angle+Math.PI/2),
                 GraphicsHelper.FindEllipsePoint(thickness,thickness,0,x2,y2,angle+Math.PI/2),
@@ -909,6 +979,26 @@ namespace MoyskleyTech.ImageProcessing.Image
         public void DrawLine(Brush<Representation> p, PointF p1, PointF p2)
         {
             DrawLine(p, p1.X, p1.Y, p2.X, p2.Y);
+        }
+        /// <summary>
+        /// Draw line
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="p1">Origin</param>
+        /// <param name="p2">Destination</param>
+        public void DrawLine(Representation p, List<Point> drawn, PointF p1, PointF p2)
+        {
+            DrawLine(p, drawn, p1.X, p1.Y, p2.X, p2.Y);
+        }
+        /// <summary>
+        /// Draw line
+        /// </summary>
+        /// <param name="p">The color</param>
+        /// <param name="p1">Origin</param>
+        /// <param name="p2">Destination</param>
+        public void DrawLine(Brush<Representation> p, List<Point> drawn, PointF p1, PointF p2)
+        {
+            DrawLine(p, drawn, p1.X, p1.Y, p2.X, p2.Y);
         }
         /// <summary>
         /// Draw line
@@ -1092,7 +1182,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
-        private void DrawLineInternal(Representation p, PointF p1, PointF p2)
+        private void DrawLineInternal(Representation p, PointF p1, PointF p2, List<Point> drawn = null)
         {
 
             // < line x1 = "0" y1 = "0" x2 = "200" y2 = "200" style = "stroke:rgb(255,0,0);stroke-width:2" />
@@ -1109,19 +1199,27 @@ namespace MoyskleyTech.ImageProcessing.Image
                 double dydx = dy / dx;
                 double dxdy = dx / dy;
 
+                HashSet<PointF> toDraw = new HashSet<PointF>();
+
                 if (dx < 0)
                     for (var i = x2; i < x1; i++)
-                        SetPixelWithoutTransform(p, i, y2 + dydx * (i - x2));
+                        toDraw.Add(new PointF(i, y2 + dydx * (i - x2)));
                 else
                     for (var i = x1; i < x2; i++)
-                        SetPixelWithoutTransform(p, i, y1 + dydx * (i - x1));
+                        toDraw.Add(new PointF(i, y1 + dydx * (i - x1)));
 
                 if (dy < 0)
                     for (var i = y2; i < y1; i++)
-                        SetPixelWithoutTransform(p, x2 + dxdy * (i - y2), i);
+                        toDraw.Add(new PointF(x2 + dxdy * (i - y2), i));
                 else
                     for (var i = y1; i < y2; i++)
-                        SetPixelWithoutTransform(p, x1 + dxdy * (i - y1), i);
+                        toDraw.Add(new PointF(x1 + dxdy * (i - y1), i));
+
+                foreach (var pt in toDraw)
+                {
+                    SetPixelWithoutTransform(p, pt.X, pt.Y);
+                    drawn?.Add((Point)pt);
+                }
             }
             else if (LineMode == LineMode.FourConnex)
             {
@@ -1138,6 +1236,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var pt = FindBestOption(x2, y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
+                    drawn?.Add((Point)pt);
                     SetPixelWithoutTransform(p, x1, y1);
                 }
             }
@@ -1161,6 +1260,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var pt = FindBestOption(x2, y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
+                    drawn?.Add((Point)pt);
                     SetPixelWithoutTransform(p, x1, y1);
                 }
             }
@@ -1189,7 +1289,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// <param name="p">The color</param>
         /// <param name="p1">Origin</param>
         /// <param name="p2">Destination</param>
-        private void DrawLineInternal(Brush<Representation> p, PointF p1, PointF p2)
+        private void DrawLineInternal(Brush<Representation> p, PointF p1, PointF p2, List<Point> drawn = null)
         {
 
             // < line x1 = "0" y1 = "0" x2 = "200" y2 = "200" style = "stroke:rgb(255,0,0);stroke-width:2" />
@@ -1207,19 +1307,27 @@ namespace MoyskleyTech.ImageProcessing.Image
                 double dydx = dy / dx;
                 double dxdy = dx / dy;
 
+                HashSet<PointF> toDraw = new HashSet<PointF>();
+
                 if (dx < 0)
                     for (var i = x2; i < x1; i++)
-                        SetPixelInternal(p, i, y2 + dydx * (i - x2));
+                        toDraw.Add(new PointF(i, y2 + dydx * (i - x2)));
                 else
                     for (var i = x1; i < x2; i++)
-                        SetPixelInternal(p, i, y1 + dydx * (i - x1));
+                        toDraw.Add(new PointF(i, y1 + dydx * (i - x1)));
 
                 if (dy < 0)
                     for (var i = y2; i < y1; i++)
-                        SetPixelInternal(p, x2 + dxdy * (i - y2), i);
+                        toDraw.Add(new PointF(x2 + dxdy * (i - y2), i));
                 else
                     for (var i = y1; i < y2; i++)
-                        SetPixelInternal(p, x1 + dxdy * (i - y1), i);
+                        toDraw.Add(new PointF(x1 + dxdy * (i - y1), i));
+
+                foreach (var pt in toDraw)
+                {
+                    SetPixelWithoutTransform(p.GetColor((int)pt.X, (int)pt.Y), pt.X, pt.Y);
+                    drawn?.Add((Point)pt);
+                }
             }
             else if (LineMode == LineMode.FourConnex)
             {
@@ -1236,6 +1344,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var pt = FindBestOption(x2, y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
+                    drawn?.Add((Point)pt);
                     SetPixelInternal(p, x1, y1);
                 }
             }
@@ -1259,6 +1368,7 @@ namespace MoyskleyTech.ImageProcessing.Image
                     var pt = FindBestOption(x2, y2, options);
                     x1 = pt.X;
                     y1 = pt.Y;
+                    drawn?.Add((Point)pt);
                     SetPixelInternal(p, x1, y1);
                 }
             }

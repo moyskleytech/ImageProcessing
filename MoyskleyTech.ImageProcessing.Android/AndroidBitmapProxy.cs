@@ -60,6 +60,14 @@ namespace MoyskleyTech.ImageProcessing.Android
                     image[x , y] = converter(this[x , y]);
             return image;
         }
+        public override ImageProxy<Pixel> Proxy(Rectangle rectangle)
+        {
+            return new AndroidBitmapPixelProxy(image, rectangle);
+        }
+        public static explicit operator AndroidBitmapPixelProxy(G.Bitmap bmp)
+        {
+            return new AndroidBitmapPixelProxy(bmp);
+        }
     }
     public class AndroidBitmapProxy : ImageProxy<G.Color>
     {
@@ -95,6 +103,10 @@ namespace MoyskleyTech.ImageProcessing.Android
                     image.SetPixel(x , y , value);
             }
         }
+        public override ImageProxy<G.Color> Proxy(Rectangle rectangle)
+        {
+            return new AndroidBitmapProxy(image,rectangle);
+        }
         public override Image<G.Color> ToImage()
         {
             Image<G.Color> image = Image<G.Color>.Create(rct.Width,rct.Height);
@@ -110,6 +122,11 @@ namespace MoyskleyTech.ImageProcessing.Android
                 for ( var y = 0; y < Width; y++ )
                     image[x , y] = converter(this[x , y]);
             return image;
+        }
+
+        public static explicit operator AndroidBitmapProxy(G.Bitmap bmp)
+        {
+            return new AndroidBitmapProxy(bmp);
         }
     }
 }

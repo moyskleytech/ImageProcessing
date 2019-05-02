@@ -11,6 +11,7 @@ namespace MoyskleyTech.ImageProcessing.SVG
     public class SVGGraphics:Graphics
     {
         private XMLNode root;
+        public bool HandleStringNatively { get; set; }
         public SVGGraphics(XMLNode root)
         {
             this.root = root;
@@ -195,6 +196,12 @@ namespace MoyskleyTech.ImageProcessing.SVG
       
         public override void DrawString(string str , Brush<Pixel> p , int x , int y , Font f , float size , StringFormat sf = null)
         {
+            if (!HandleStringNatively)
+            {
+                base.DrawString(str, p, x, y, f, size, sf);
+                return;
+            }
+
             if ( sf == null )
                 sf = new StringFormat() { Alignment = StringAlignment.Near , LineAlignment = StringAlignment.Near };
             XMLNode text = new XMLNode() { Name="text" };

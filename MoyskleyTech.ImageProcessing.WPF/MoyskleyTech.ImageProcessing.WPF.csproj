@@ -63,6 +63,7 @@
     <Compile Include="VisualBrush.cs" />
     <Compile Include="WPFGraphics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WPFImageLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj">
