@@ -14,6 +14,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
 {
     public class WPFGraphics : Graphics
     {
+        public int FontFactor { get; set; }= 12;
         private Canvas ctx;
         public WPFGraphics(Canvas context)
         {
@@ -149,7 +150,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
         {
             System.Windows.Controls.Image img = new System.Windows.Controls.Image();
             MemoryStream ms = new MemoryStream();
-            new BitmapCodec().Save<Pixel>(bmp , ms);
+            new BitmapCodec().Save<Pixel>(source , ms);
            
             var imageSource = new System.Windows.Media.Imaging.BitmapImage();
             ms.Position = 0;
@@ -278,7 +279,7 @@ namespace MoyskleyTech.ImageProcessing.WPF
             {
                 Text = str ,
                 FontFamily = new System.Windows.Media.FontFamily(f.Name) ,
-                FontSize = size * 12 ,
+                FontSize = size * FontFactor,
                 Foreground = ConvertBrush(p)
             };
             Canvas.SetLeft(tb , x);
@@ -291,12 +292,25 @@ namespace MoyskleyTech.ImageProcessing.WPF
             {
                 Text = str ,
                 FontFamily = new System.Windows.Media.FontFamily(f.Name) ,
-                FontSize = size * 12 ,
+                FontSize = size * FontFactor,
                 Foreground = Convert(p , x , y)
             };
             Canvas.SetLeft(tb , x);
             Canvas.SetTop(tb , y);
             ctx.Children.Add(tb);
+        }
+        public override StringMeasurement MeasureString(string str, Font f, float size)
+        {
+            TextBlock tb = new TextBlock
+            {
+                Text = str,
+                FontFamily = new System.Windows.Media.FontFamily(f.Name),
+                FontSize = size * FontFactor
+            };
+            ctx.Children.Add(tb);
+            var tsize = new StringMeasurement() { Width = (float)tb.Width, Height = (float)tb.Height };
+            ctx.Children.Remove(tb);
+            return tsize;
         }
         public override void SetPixel(Brush<Pixel> p , double x , double y)
         {
