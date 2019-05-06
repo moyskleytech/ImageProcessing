@@ -74,5 +74,18 @@ namespace ProjectionDemo
                 imgSrc.Source = bmp;
             }
         }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var g = new WPFGraphics(mainCanvas);
+            g.MeasureString("bla", BaseFonts.Premia, 1);
+
+            g.DrawString("bla", new FontSizeF(BaseFonts.Premia, 1), Pixels.Red, new PointF(10, 10));
+
+            await Task.Delay(10000);
+            var w= mainCanvas.Children.OfType<TextBlock>().First().ActualWidth; 
+            var h = mainCanvas.Children.OfType<TextBlock>().First().ActualHeight;
+
+        }
     }
 }

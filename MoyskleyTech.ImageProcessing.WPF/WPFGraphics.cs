@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows;
 using System.Windows.Media.Composition;
+using System.Windows.Threading;
 
 namespace MoyskleyTech.ImageProcessing.WPF
 {
@@ -307,9 +308,20 @@ namespace MoyskleyTech.ImageProcessing.WPF
                 FontFamily = new System.Windows.Media.FontFamily(f.Name),
                 FontSize = size * FontFactor
             };
+
+            SizeF s_ = new SizeF();
             ctx.Children.Add(tb);
-            tb.Measure(ctx.RenderSize);
-            var tsize = new StringMeasurement() { Width = (float)tb.DesiredSize.Width, Height = (float)tb.DesiredSize.Height };
+            ctx.Dispatcher.Invoke(
+                DispatcherPriority.Background,
+                new DispatcherOperationCallback(delegate (Object state) {
+                    var s = tb.DesiredSize;
+                    s_.Width = s.Width;
+                    s_.Height = s.Height;
+                    return null;
+                }
+            ), null);
+           
+            var tsize = new StringMeasurement() { Width = (float)s_.Width, Height = (float)s_.Height };
             ctx.Children.Remove(tb);
             return tsize;
         }
