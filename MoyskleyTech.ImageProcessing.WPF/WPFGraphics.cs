@@ -308,7 +308,8 @@ namespace MoyskleyTech.ImageProcessing.WPF
                 FontSize = size * FontFactor
             };
             ctx.Children.Add(tb);
-            var tsize = new StringMeasurement() { Width = (float)tb.Width, Height = (float)tb.Height };
+            tb.Measure(ctx.RenderSize);
+            var tsize = new StringMeasurement() { Width = (float)tb.DesiredSize.Width, Height = (float)tb.DesiredSize.Height };
             ctx.Children.Remove(tb);
             return tsize;
         }
