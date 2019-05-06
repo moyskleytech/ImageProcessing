@@ -36,7 +36,7 @@ namespace MoyskleyTech.Mathematics.Statistics
         public static DescriptiveStatistics From1D(IEnumerable<double> x)
         {
             int i=0;
-            return From2D(from t in x select new Coordinate(i , t));
+            return From2D(from t in x select new Coordinate(i++ , t));
         }
         public static DescriptiveStatistics From2D(IEnumerable<Coordinate> points)
         {
@@ -60,11 +60,7 @@ namespace MoyskleyTech.Mathematics.Statistics
                 if ( y > statistics.MaxY )
                     statistics.MaxY = y;
             }
-            statistics.VarianceX = statistics.SumX2 / statistics.Count - statistics.AverageX * statistics.AverageX;
-            statistics.VarianceY = statistics.SumY2 / statistics.Count - statistics.AverageY * statistics.AverageY;
-            statistics.StandardDeviationX = Math.Sqrt(statistics.VarianceX);
-            statistics.StandardDeviationY = Math.Sqrt(statistics.VarianceY);
-
+            
             if ( statistics.Count > 0 )
             {
                 statistics.AverageX = statistics.SumX / statistics.Count;
@@ -98,6 +94,11 @@ namespace MoyskleyTech.Mathematics.Statistics
                     reg.Distort = 0;
 
                 statistics.LinearRegression = reg;
+
+                statistics.VarianceX = statistics.SumX2 / statistics.Count - statistics.AverageX * statistics.AverageX;
+                statistics.VarianceY = statistics.SumY2 / statistics.Count - statistics.AverageY * statistics.AverageY;
+                statistics.StandardDeviationX = Math.Sqrt(statistics.VarianceX);
+                statistics.StandardDeviationY = Math.Sqrt(statistics.VarianceY);
 
             }
             return statistics;
