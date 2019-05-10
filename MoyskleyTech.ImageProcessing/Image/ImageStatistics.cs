@@ -143,9 +143,9 @@ namespace MoyskleyTech.ImageProcessing.Image
             Histogram = new HistogramStatistic(band);
             foreach ( var b in selector )
             {
-                if ( b < Max )
+                if ( b > Max )
                     Max = b;
-                if ( b > Min )
+                if ( b < Min )
                     Min = b;
                 sum += b;
                 count++;

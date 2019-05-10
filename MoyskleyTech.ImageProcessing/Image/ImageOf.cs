@@ -92,6 +92,8 @@ namespace MoyskleyTech.ImageProcessing.Image
         /// </summary>
         public bool Disposed { get; private set; } = false;
 
+        public object MemoryObject { get; set; }
+
         public Size Size => new Size(width , height);
         /// <summary>
         /// Destrop bitmap
@@ -111,7 +113,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             return this[x , y];
         }
 
-
+        public virtual bool IsRefEnabled { get { return true; } }
         public virtual ref Representation GetRef(int x , int y)
         {
             return ref dataPointer[y * width + x];
