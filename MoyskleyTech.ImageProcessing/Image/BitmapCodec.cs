@@ -42,6 +42,7 @@ namespace MoyskleyTech.ImageProcessing.Image
             }
             return null;
         }
+
         /// <summary>
         /// Load bitmap from stream
         /// </summary>

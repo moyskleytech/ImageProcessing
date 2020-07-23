@@ -29,7 +29,7 @@ namespace ImageProcessing.JPEGCodec
             if ( signature.Length == 0 )
             {
                 JPEGDecoder decoder = new JPEGDecoder();
-                decoder.SetStream(new BufferedStream(f , new byte[0]));
+                decoder.SetStream(new MoyskleyTech.ImageProcessing.Image.BufferedStream(f , new byte[0]));
                 return decoder;
             }
             if ( signature[0] == 0xFF )
@@ -40,7 +40,7 @@ namespace ImageProcessing.JPEGCodec
                         for ( var i = 0; i < signature.Length; i++ )
                             buffer[i] = ( byte ) signature[i];
                         JPEGDecoder decoder = new JPEGDecoder();
-                        decoder.SetStream(new BufferedStream(f , buffer));
+                        decoder.SetStream(new MoyskleyTech.ImageProcessing.Image.BufferedStream(f , buffer));
                         return decoder;
                     }
             return null;
@@ -77,14 +77,14 @@ namespace ImageProcessing.JPEGCodec
         public Image<Pixel> DecodeStream(Stream s)
         {
             JPEGDecoder decoder = new JPEGDecoder();
-            decoder.SetStream(new BufferedStream(s , new byte[0]));
+            decoder.SetStream(new MoyskleyTech.ImageProcessing.Image.BufferedStream(s , new byte[0]));
             decoder.ReadHeader();
             return decoder.ReadBitmap();
         }
         public IEnumerable<ColorPoint<T>> ReadData<T>(Stream s) where T : unmanaged
         {
             JPEGDecoder decoder = new JPEGDecoder();
-            decoder.SetStream(new BufferedStream(s , new byte[0]));
+            decoder.SetStream(new MoyskleyTech.ImageProcessing.Image.BufferedStream(s , new byte[0]));
             decoder.ReadHeader();
             return decoder.ReadData<T>();
         }
@@ -96,7 +96,7 @@ namespace ImageProcessing.JPEGCodec
     }
     internal class JPEGDecoder : IBitmapDecoder
     {
-        BufferedStream s;
+        MoyskleyTech.ImageProcessing.Image.BufferedStream s;
         public int Height => 0;
 
         public int Width => 0;
@@ -158,7 +158,7 @@ namespace ImageProcessing.JPEGCodec
             return true;
         }
 
-        public void SetStream(BufferedStream s)
+        public void SetStream(MoyskleyTech.ImageProcessing.Image.BufferedStream s)
         {
             this.s = s;
         }

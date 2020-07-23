@@ -9,7 +9,7 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public static class BitmapFactoryExtention
     {
-        public static Bitmap Decode(this BitmapFactory fact, string filename)
+        public static Image<Pixel> Decode(this BitmapFactory fact, string filename)
         {
             var fs = System.IO.File.OpenRead(filename);
             var bmp = fact.Decode(fs);

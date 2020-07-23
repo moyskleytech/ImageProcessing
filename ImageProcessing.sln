@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing", "MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj", "{2C8478D7-77CC-4BC2-8909-CF0D2ECF2E0A}"
 EndProject
@@ -63,8 +63,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilterExample", "FilterExample\FilterExample.csproj", "{E068DDCD-02BC-43E6-91EA-974540C12E76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllBPPDemo", "AllBPPDemo\AllBPPDemo.csproj", "{2A347042-59CF-4ECA-ADFE-FAEEE52A8AC6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.Core", "MoyskleyTech.Core\MoyskleyTech.Core.csproj", "{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoyskleyTech.ImageProcessing.IO", "MoyskleyTech.ImageProcessing.IO\MoyskleyTech.ImageProcessing.IO.csproj", "{BCAF54B5-793A-449F-8926-AAC87277199B}"
 EndProject
@@ -380,22 +378,6 @@ Global
 		{2A347042-59CF-4ECA-ADFE-FAEEE52A8AC6}.Release|x64.Build.0 = Release|Any CPU
 		{2A347042-59CF-4ECA-ADFE-FAEEE52A8AC6}.Release|x86.ActiveCfg = Release|Any CPU
 		{2A347042-59CF-4ECA-ADFE-FAEEE52A8AC6}.Release|x86.Build.0 = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|x64.Build.0 = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Debug|x86.Build.0 = Debug|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|x64.ActiveCfg = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|x64.Build.0 = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|x86.ActiveCfg = Release|Any CPU
-		{ABF04CAE-0C9A-4A4B-B99A-4FAD666D5D86}.Release|x86.Build.0 = Release|Any CPU
 		{BCAF54B5-793A-449F-8926-AAC87277199B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BCAF54B5-793A-449F-8926-AAC87277199B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCAF54B5-793A-449F-8926-AAC87277199B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

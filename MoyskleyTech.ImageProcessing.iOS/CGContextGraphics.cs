@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Foundation;
 using MoyskleyTech.ImageProcessing.Image;
 using System;
 using System.Collections.Generic;
@@ -251,8 +252,26 @@ namespace MoyskleyTech.ImageProcessing.iOS
         }
         public override void Dispose()
         {
+            ctx.Dispose();
+        }
+        public override void DrawString(string str, Brush<Pixel> p, int ox, int oy, Font f, float size, StringFormat sf = null)
+        {
+            NSString s = new NSString(str);
+            ctx.SetStrokeColor(Convert(p));
 
+            UIStringAttributes usa = new UIStringAttributes();
+            usa.Font = UIFont.SystemFontOfSize(size * 6.5f);
+            usa.ForegroundColor = new UIColor(Convert(p));
+
+            UIGraphics.PushContext(ctx);
+            s.DrawString(new CGPoint(ox, oy), usa);
+            UIGraphics.PopContext();
+        }
+        public override void DrawString(string str, Pixel p, int ox, int oy, Font f, float size, StringFormat sf = null)
+        {
+            DrawString(str, new SolidBrush(p), ox, oy, f, size, sf);
         }
 
+        
     }
 }

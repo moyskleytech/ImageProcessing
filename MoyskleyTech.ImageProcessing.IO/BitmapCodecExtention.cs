@@ -9,31 +9,31 @@ namespace MoyskleyTech.ImageProcessing.Image
 {
     public static class BitmapCodecExtention
     {
-        public static void Save(this BitmapCodec fact,Bitmap bmp, string filename)
+        public static void Save(this BitmapCodec fact,ImageProxy<Pixel> bmp, string filename)
         {
             var fs = System.IO.File.OpenWrite(filename);
             fact.Save(bmp,fs);
             fs.Dispose();
         }
-        public static void Save(this BitmapCodec fact , Bitmap bmp , string filename, BitmapPalette1bpp palette)
+        public static void Save(this BitmapCodec fact , ImageProxy<Pixel> bmp , string filename, BitmapPalette1bpp palette)
         {
             var fs = System.IO.File.OpenWrite(filename);
             fact.Save(bmp , fs,palette);
             fs.Dispose();
         }
-        public static void Save(this BitmapCodec fact , Bitmap bmp , string filename , BitmapPalette2bpp palette)
+        public static void Save(this BitmapCodec fact , ImageProxy<Pixel> bmp , string filename , BitmapPalette2bpp palette)
         {
             var fs = System.IO.File.OpenWrite(filename);
             fact.Save(bmp , fs , palette);
             fs.Dispose();
         }
-        public static void Save(this BitmapCodec fact , Bitmap bmp , string filename , BitmapPalette4bpp palette)
+        public static void Save(this BitmapCodec fact , ImageProxy<Pixel> bmp , string filename , BitmapPalette4bpp palette)
         {
             var fs = System.IO.File.OpenWrite(filename);
             fact.Save(bmp , fs , palette);
             fs.Dispose();
         }
-        public static void Save(this BitmapCodec fact , Bitmap bmp , string filename , BitmapPalette8bpp palette)
+        public static void Save(this BitmapCodec fact, ImageProxy<Pixel> bmp , string filename , BitmapPalette8bpp palette)
         {
             var fs = System.IO.File.OpenWrite(filename);
             fact.Save(bmp , fs , palette);

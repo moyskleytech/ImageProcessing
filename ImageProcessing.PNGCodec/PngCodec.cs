@@ -37,14 +37,14 @@ namespace ImageProcessing.PNGCodec
             for ( var i = 0; i < signature.Length; i++ )
                 buffer[i] = ( byte ) signature[i];
             PngDecoder decoder = new PngDecoder();
-            decoder.SetStream(new BufferedStream(f , buffer));
+            decoder.SetStream(new MoyskleyTech.ImageProcessing.Image.BufferedStream(f , buffer));
             return decoder;
         }
 
         public Image<Pixel> DecodeStream(Stream s)
         {
             PngDecoder decoder = new PngDecoder();
-            decoder.SetStream(new BufferedStream(s , new byte[0]));
+            decoder.SetStream(new MoyskleyTech.ImageProcessing.Image.BufferedStream(s , new byte[0]));
             decoder.ReadHeader();
             return decoder.ReadBitmap(); 
         }
@@ -92,7 +92,7 @@ namespace ImageProcessing.PNGCodec
 
     internal class PngDecoder : IBitmapDecoder
     {
-        BufferedStream s;
+        MoyskleyTech.ImageProcessing.Image.BufferedStream s;
         public PngDecoder()
         {
         }
@@ -152,7 +152,7 @@ namespace ImageProcessing.PNGCodec
             return true;
         }
 
-        public void SetStream(BufferedStream s)
+        public void SetStream(MoyskleyTech.ImageProcessing.Image.BufferedStream s)
         {
             this.s = s;
         }

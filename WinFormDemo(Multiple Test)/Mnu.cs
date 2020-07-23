@@ -64,5 +64,10 @@ namespace WinFormDemo_Multiple_Test_
         {
             (new GraphicTest()).ShowDialog();
         }
+
+        private void Button8_Click(object sender, EventArgs e)
+        {
+            (new Printing()).ShowDialog();
+        }
     }
 }
