@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.Charting", "Mo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FontLibrary", "FontLibrary\FontLibrary.csproj", "{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.WPF", "MoyskleyTech.ImageProcessing.WPF\MoyskleyTech.ImageProcessing.WPF.csproj", "{0888669C-6CD9-4D58-80B5-1992AD695E47}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.SVG", "MoyskleyTech.ImageProcessing.SVG\MoyskleyTech.ImageProcessing.SVG.csproj", "{9F365135-F07D-489D-8741-3F8DFE6A94A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessing.PNGCodec", "ImageProcessing.PNGCodec\ImageProcessing.PNGCodec.csproj", "{154DD636-43AF-45E8-BF4F-D10F85298A4B}"
@@ -188,22 +186,6 @@ Global
 		{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}.Release|x64.Build.0 = Release|Any CPU
 		{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}.Release|x86.ActiveCfg = Release|Any CPU
 		{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}.Release|x86.Build.0 = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|x64.Build.0 = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Debug|x86.Build.0 = Debug|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|x64.ActiveCfg = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|x64.Build.0 = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|x86.ActiveCfg = Release|Any CPU
-		{0888669C-6CD9-4D58-80B5-1992AD695E47}.Release|x86.Build.0 = Release|Any CPU
 		{9F365135-F07D-489D-8741-3F8DFE6A94A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F365135-F07D-489D-8741-3F8DFE6A94A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F365135-F07D-489D-8741-3F8DFE6A94A9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

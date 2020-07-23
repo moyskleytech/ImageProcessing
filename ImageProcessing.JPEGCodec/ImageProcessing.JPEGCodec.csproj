@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Moyskley Tech.</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Moyskley Tech. 2020</Copyright>
+    <RepositoryUrl>https://github.com/moyskleytech/ImageProcessing</RepositoryUrl>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -31,5 +36,11 @@
   <ItemGroup>
     <PackageReference Include="BitMiracle.LibJpeg.NET" Version="1.5.324" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <None Include="..\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>
