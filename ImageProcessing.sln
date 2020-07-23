@@ -13,13 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.Serialization"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.Charting", "MoyskleyTech.Charting\MoyskleyTech.Charting.csproj", "{6A3DBB52-B853-4B96-AA2A-E8259C8737CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FontLibrary", "FontLibrary\FontLibrary.csproj", "{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.FontLibrary", "MoyskleyTech.ImageProcessing.FontLibrary\MoyskleyTech.ImageProcessing.FontLibrary.csproj", "{FF2821E6-C5FB-48F7-8A55-81FF7053EE14}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.SVG", "MoyskleyTech.ImageProcessing.SVG\MoyskleyTech.ImageProcessing.SVG.csproj", "{9F365135-F07D-489D-8741-3F8DFE6A94A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessing.PNGCodec", "ImageProcessing.PNGCodec\ImageProcessing.PNGCodec.csproj", "{154DD636-43AF-45E8-BF4F-D10F85298A4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.PNGCodec", "MoyskleyTech.ImageProcessing.PNGCodec\MoyskleyTech.ImageProcessing.PNGCodec.csproj", "{154DD636-43AF-45E8-BF4F-D10F85298A4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessing.TGACodec", "ImageProcessing.TGACodec\ImageProcessing.TGACodec.csproj", "{957BC93B-8DFF-4340-A2E1-0E83A775A680}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.TGACodec", "MoyskleyTech.ImageProcessing.TGACodec\MoyskleyTech.ImageProcessing.TGACodec.csproj", "{957BC93B-8DFF-4340-A2E1-0E83A775A680}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.Recognition", "MoyskleyTech.ImageProcessing.Recognition\MoyskleyTech.ImageProcessing.Recognition.csproj", "{90227F02-4CA5-436D-9691-78518DCEC4DB}"
 EndProject
@@ -52,7 +52,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EllipseDemo", "EllipseDemo\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobelExample", "SobelExample\SobelExample.csproj", "{99BD144E-D2DB-4F7B-99F7-248FC993F1FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessing.JPEGCodec", "ImageProcessing.JPEGCodec\ImageProcessing.JPEGCodec.csproj", "{CB142ADA-9646-42EE-B2B5-1BD1755C7F4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoyskleyTech.ImageProcessing.JPEGCodec", "MoyskleyTech.ImageProcessing.JPEGCodec\MoyskleyTech.ImageProcessing.JPEGCodec.csproj", "{CB142ADA-9646-42EE-B2B5-1BD1755C7F4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoyskleyTech.ImageProcessing.Filters", "MoyskleyTech.ImageProcessing.Filters\MoyskleyTech.ImageProcessing.Filters.csproj", "{D6048839-427C-4E84-9D3C-A56202D7A2D5}"
 EndProject

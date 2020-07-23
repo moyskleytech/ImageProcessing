@@ -7,6 +7,7 @@
     <Copyright>Moyskley Tech. 2020</Copyright>
     <RepositoryUrl>https://github.com/moyskleytech/ImageProcessing</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
