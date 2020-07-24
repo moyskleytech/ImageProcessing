@@ -5,6 +5,6 @@ The library is built to allow you to use System.Drawing style classes in .NetSta
 
 To use any of the Codecs, simply write ImageProcessing.CodecNamespace.CodecName.Register() for the BitmapFactory to understand the codec while decoding.
 
-The /dist Folder contains Releases
-
 *Known issue: On some system the PNGCodec won't compile, also exact for FontLibrary
+
+Nugets are available for all packages on both github and Nuget.org

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoyskleyTech.ImageProcessing", "MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj", "{2C8478D7-77CC-4BC2-8909-CF0D2ECF2E0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoyskleyTech.Mathematics", "MoyskleyTech.Math\MoyskleyTech.Mathematics.csproj", "{DB1E3F2B-B6FA-425A-A8C2-2A994303F05D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoyskleyTech.Mathematics", "MoyskleyTech.Mathematics\MoyskleyTech.Mathematics.csproj", "{DB1E3F2B-B6FA-425A-A8C2-2A994303F05D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FontEditor", "FontEditor\FontEditor.csproj", "{284D0B6E-A0DA-4B1F-A203-2E7C62D96FB5}"
 EndProject

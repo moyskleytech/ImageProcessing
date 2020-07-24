@@ -7,7 +7,8 @@
     <Copyright>Moyskley Tech. 2020</Copyright>
     <RepositoryUrl>https://github.com/moyskleytech/ImageProcessing</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
+    <Description>File system access for MoyskleyTech.ImageProcessing</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

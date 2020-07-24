@@ -7,7 +7,11 @@
     <Copyright>Moyskley Tech. 2020</Copyright>
     <RepositoryUrl>https://github.com/moyskleytech/ImageProcessing</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
+    <Description>TGA Codec for MoyskleyTech.ImageProcessing, allows to Open and edit TGA files.
+
+new TGACodec().Save ...
+new TGACodec().DecodeStream ...</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -33,10 +37,6 @@
       <Project>{2c8478d7-77cc-4bc2-8909-cf0d2ecf2e0a}</Project>
       <Name>MoyskleyTech.ImageProcessing</Name>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>

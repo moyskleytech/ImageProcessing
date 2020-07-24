@@ -7,7 +7,8 @@
     <Copyright>Moyskley Tech. 2020</Copyright>
     <RepositoryUrl>https://github.com/moyskleytech/ImageProcessing</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
+    <Description>JSON, XML and Binary Serializer on .NETStandard</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,9 +29,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|MCD'">
     <OutputPath>bin\$(Platform)\Release\</OutputPath>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\logo.png">
