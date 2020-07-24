@@ -8,11 +8,25 @@
     <RepositoryUrl>https://github.com/moyskleytech/ImageProcessing</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="FileImageCryptor.cs" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|MCD'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|MCD'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|MCD'">
+    <OutputPath>bin\$(Platform)\Release\</OutputPath>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
   </ItemGroup>
