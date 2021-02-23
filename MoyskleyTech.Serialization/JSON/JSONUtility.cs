@@ -55,69 +55,6 @@ namespace MoyskleyTech.Serialization.JSON
                 return d;
             }
         }
-
-        internal static dynamic getJsonDyn(StringBuilder sb , ref int pos)
-        {
-            ExpandoObject obj = new ExpandoObject( );
-            IDictionary<string,object> dico = obj;
-            pos = skipWhiteChar(sb , pos);
-            if ( sb[pos] == '[' )
-            {
-                List<object> o = new List<object>();
-                pos++;
-                while ( true )
-                {
-                    pos = skipWhiteChar(sb , pos);
-                    if ( sb[pos] == ']' )
-                    {
-                        pos++;
-                        return o;
-                    }
-                    else
-                    {
-                        object val = null;
-                        getValueDyn(sb , ref pos , ref val);
-                        o.Add(val);
-                        pos = skipWhiteChar(sb , pos);
-                        if ( sb[pos] == ',' )
-                            pos++;
-                    }
-                }
-            }
-            else if ( sb[pos] == '{' )
-            {
-                var isNext = true;
-                pos += 1;
-                while ( isNext )
-                {
-                    string key = getString(sb , ref pos);
-
-                    if ( key != null )
-                    {
-                        //pos = skipWhiteChar(sb , pos) + key.Length + 2;
-                        pos = skipWhiteChar(sb , pos);
-                        object value = null;
-                        if ( sb[pos] == ':' )
-                        {
-                            pos++;
-                            getValueDyn(sb , ref pos , ref value);
-                            dico[key] = value;
-                        }
-                    }
-                    pos = skipWhiteChar(sb , pos);
-                    if ( sb[pos] == '}' )
-                    {
-                        pos++;
-                        return obj;
-                    }
-                    isNext = sb[pos] == ',';
-                    if ( isNext )
-                        pos++;
-
-                }
-            }
-            return ( ExpandoObject ) dico;
-        }
         internal static List<object> getJsonArray(StringBuilder sb , ref int pos)
         {
             List<object> obj = null;
@@ -189,7 +126,7 @@ namespace MoyskleyTech.Serialization.JSON
                 throw new InvalidProgramException("JSON string is in an incorrect format");
             return obj;
         }
-        internal static void getValue(StringBuilder sb , ref int pos , ref object value , bool dyn = false)
+        internal static void getValue(StringBuilder sb , ref int pos , ref object value)
         {
             pos = skipWhiteChar(sb , pos);
             if ( sb[pos] == '\'' )
