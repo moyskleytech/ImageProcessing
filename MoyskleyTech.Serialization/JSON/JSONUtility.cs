@@ -12,42 +12,36 @@ namespace MoyskleyTech.Serialization.JSON
 {
     public class JSONUtility
     {
-        private static Dictionary<string , object> DictionaryFromType(object atype)
-        {
-            if ( atype == null )
-                return new Dictionary<string , object>();
-            if ( atype is ExpandoObject )
-            {
-                ExpandoObject eo = (ExpandoObject)atype;
-                Dictionary<string , object> eoadict = new Dictionary<string , object>( );
-                foreach ( var kv in eo )
-                {
-                    eoadict.Add(kv.Key , kv.Value);
-                }
-                return eoadict;
-            }
-            Type t = atype.GetType( );
-            IEnumerable<PropertyInfo> props = t.GetRuntimeProperties();
-            Dictionary<string , object> dict = new Dictionary<string , object>( );
-            foreach ( PropertyInfo prp in props )
-            {
-                object value = prp.GetValue(atype , new object[] { });
-                dict.Add(prp.Name , value);
-            }
-            return dict;
-        }
         [Obsolete("Use Parse")]
         public static Dictionary<string , object> parseJSON(string json)
         {
             return Parse(json);
         }
+        public static object Deserialize(string json)
+        {
+            StringBuilder sb = new StringBuilder(json.Trim( ));
+            int pos=0;
+            object output=null;
+            getValue(sb , ref pos , ref output);
+            return output;
+        }
+        public static List<object> ParseList(string json)
+        {
+            StringBuilder sb = new StringBuilder(json.Trim( ));
+            int pos=0;
+            return getJsonArray(sb , ref pos);
+        }
+        public static Dictionary<string , object> ParseObject(string json)
+        {
+            StringBuilder sb = new StringBuilder(json.Trim( ));
+            int pos=0;
+            return getJsonObj(sb , ref pos);
+        }
         public static Dictionary<string , object> Parse(string json)
         {
             if ( string.IsNullOrWhiteSpace(json) )
                 return null;
-            int pos = 0;
-            StringBuilder sb = new StringBuilder(json.Trim( ));
-            var ret = getJsonObj(sb , ref pos);
+            var ret = Deserialize(json);
             if ( ret is Dictionary<string , object> )
                 return ret as Dictionary<string , object>;
             else
@@ -60,95 +54,6 @@ namespace MoyskleyTech.Serialization.JSON
                 }
                 return d;
             }
-        }
-        public static dynamic ParseAsDynamic(string json)
-        {
-            if ( string.IsNullOrWhiteSpace(json) )
-                return null;
-            int pos = 0;
-            StringBuilder sb = new StringBuilder(json.Trim( ));
-            var ret = getJsonDyn(sb , ref pos);
-            return ret;
-        }
-        public static T parseJSON<T>(string json) where T : new()
-        {
-            var instance = default(T);
-            if ( string.IsNullOrWhiteSpace(json) )
-                return instance;
-            int pos = 0;
-            StringBuilder sb = new StringBuilder(json.Trim( ));
-            var ret = getJsonObj(sb , ref pos);
-
-            return ( T ) ConvertToT(typeof(T) , ret);
-        }
-
-        private static object ConvertToT(Type type , object ret)
-        {
-            var instance  = Activator.CreateInstance(type);
-            if ( instance is Array || instance is IList )
-            {
-                var list = ret as List<object>;
-                if ( instance is Array )
-                {
-                    Type t = type.GetElementType();
-                    Array a = Array.CreateInstance(t,list.Count);
-                    for ( var i = 0; i < list.Count; i++ )
-                        a.SetValue(ConvertToT(t , list[i]) , i);
-
-                    return a;
-                }
-                if ( instance is IList )
-                {
-                    Type t = type.GetRuntimeProperty("Item").PropertyType;
-                    IList a = (IList)instance;
-
-                    for ( var i = 0; i < list.Count; i++ )
-                        a.Add(ConvertToT(t , list[i]));
-
-                    return a;
-                }
-            }
-
-            object o;
-
-            o = TryType(type , typeof(Int16) , ret); if ( o != null ) return o;
-            o = TryType(type , typeof(Int32) , ret); if ( o != null ) return o;
-            o = TryType(type , typeof(Int64) , ret); if ( o != null ) return o;
-            o = TryType(type , typeof(UInt16) , ret); if ( o != null ) return o;
-            o = TryType(type , typeof(UInt32) , ret); if ( o != null ) return o;
-            o = TryType(type , typeof(UInt64) , ret); if ( o != null ) return o;
-
-            o = TryType(type , typeof(Byte) , ret); if ( o != null ) return o;
-            o = TryType(type , typeof(SByte) , ret); if ( o != null ) return o;
-
-            o = TryType(type , typeof(String) , ret); if ( o != null ) return o;
-
-            var dico  =ret as Dictionary<string , object>;
-
-            object obj = Activator.CreateInstance(type);
-
-            IEnumerable<FieldInfo> members = type.GetRuntimeFields();
-            foreach ( FieldInfo member in members  )
-            {
-                if ( dico.ContainsKey(member.Name) )
-                    member.SetValue(obj , ConvertToT(member.DeclaringType , dico[member.Name]));
-            }
-            IEnumerable<PropertyInfo> props = type.GetRuntimeProperties();
-            foreach ( PropertyInfo prp in  props  )
-            {
-                if ( dico.ContainsKey(prp.Name) )
-                    prp.SetValue(obj , ConvertToT(prp.PropertyType , dico[prp.Name]) , new object[0]);
-            }
-
-
-            return obj;
-        }
-
-        private static object TryType(Type type1 , Type type2 , object ret)
-        {
-            if ( type1 == type2 )
-                return ret;
-            return null;
         }
 
         internal static dynamic getJsonDyn(StringBuilder sb , ref int pos)
@@ -213,9 +118,9 @@ namespace MoyskleyTech.Serialization.JSON
             }
             return ( ExpandoObject ) dico;
         }
-        internal static object getJsonObj(StringBuilder sb , ref int pos)
+        internal static List<object> getJsonArray(StringBuilder sb , ref int pos)
         {
-            Dictionary<string , object> obj = new Dictionary<string , object>( );
+            List<object> obj = null;
             pos = skipWhiteChar(sb , pos);
             if ( sb[pos] == '[' )
             {
@@ -241,8 +146,16 @@ namespace MoyskleyTech.Serialization.JSON
                     }
                 }
             }
-            else if ( sb[pos] == '{' )
+            else
+                throw new InvalidProgramException("JSON string is in an incorrect format");
+        }
+        internal static Dictionary<string , object> getJsonObj(StringBuilder sb , ref int pos)
+        {
+            Dictionary<string , object> obj =null;
+            pos = skipWhiteChar(sb , pos);
+            if ( sb[pos] == '{' )
             {
+                obj = new Dictionary<string , object>();
                 var isNext = true;
                 pos += 1;
                 while ( isNext )
@@ -270,14 +183,11 @@ namespace MoyskleyTech.Serialization.JSON
                     isNext = sb[pos] == ',';
                     if ( isNext )
                         pos++;
-
                 }
             }
+            else
+                throw new InvalidProgramException("JSON string is in an incorrect format");
             return obj;
-        }
-        internal static void getValueDyn(StringBuilder sb , ref int pos , ref object value)
-        {
-            getValue(sb , ref pos , ref value , true);
         }
         internal static void getValue(StringBuilder sb , ref int pos , ref object value , bool dyn = false)
         {
@@ -314,13 +224,10 @@ namespace MoyskleyTech.Serialization.JSON
                 value = false;
                 pos += 5;
             }
-            else if ( sb[pos] == '[' || sb[pos] == '{' )
-            {
-                if ( dyn )
-                    value = getJsonDyn(sb , ref pos);
-                else
-                    value = getJsonObj(sb , ref pos);
-            }
+            else if ( sb[pos] == '[' )
+                value = getJsonArray(sb , ref pos);
+            else
+                value = getJsonObj(sb , ref pos);
         }
         internal static Tuple<object , int> getNumber(StringBuilder json , int pos)
         {
@@ -545,6 +452,30 @@ namespace MoyskleyTech.Serialization.JSON
                 sb.Append('}');
                 return sb.ToString();
             }
+        }
+        private static Dictionary<string , object> DictionaryFromType(object atype)
+        {
+            if ( atype == null )
+                return new Dictionary<string , object>();
+            if ( atype is ExpandoObject )
+            {
+                ExpandoObject eo = (ExpandoObject)atype;
+                Dictionary<string , object> eoadict = new Dictionary<string , object>( );
+                foreach ( var kv in eo )
+                {
+                    eoadict.Add(kv.Key , kv.Value);
+                }
+                return eoadict;
+            }
+            Type t = atype.GetType( );
+            IEnumerable<PropertyInfo> props = t.GetRuntimeProperties();
+            Dictionary<string , object> dict = new Dictionary<string , object>( );
+            foreach ( PropertyInfo prp in props )
+            {
+                object value = prp.GetValue(atype , new object[] { });
+                dict.Add(prp.Name , value);
+            }
+            return dict;
         }
     }
 }
