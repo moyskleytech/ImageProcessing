@@ -12,23 +12,24 @@ namespace FontLibrary
         static Dictionary<string,Font> Cache= new Dictionary<string, Font>();
         public static Font Get(string name)
         {
-            name = FontHelper(name);
+            var f_name = FontHelper(name);
             
-            if ( name == null )
+            if ( f_name == null )
                 throw new System.IO.FileNotFoundException(name);
-            if ( Cache.ContainsKey(name) )
-                return Cache[name];
-            Font f = Font.FromFileStream(typeof(WindowsFonts).GetTypeInfo().Assembly.GetManifestResourceStream((name)));
-            Cache[name] = f;
+            if ( Cache.ContainsKey(f_name) )
+                return Cache[f_name];
+            Font f = Font.FromFileStream(typeof(WindowsFonts).GetTypeInfo().Assembly.GetManifestResourceStream((f_name)));
+            Cache[f_name] = f;
             return f;
         }
 
         private static string FontHelper(string name)
         {
             string lowered = name.ToLower();
-            return GetFonts().Where((x) => x.ToLower() == lowered).FirstOrDefault() ??
-                GetFonts().Where((x) => x.ToLower() == "fontlibrary.fonts." + lowered).FirstOrDefault() ??
-                GetFonts().Where((x) => x.ToLower() == "fontlibrary.fonts." + lowered + ".bin").FirstOrDefault();
+            var fonts = GetFonts();
+            return fonts.Where((x) => x.ToLower() == lowered).FirstOrDefault() ??
+               fonts.Where((x) => x.ToLower() == "moyskleytech.imageprocessing.fontlibrary.fonts." + lowered).FirstOrDefault() ??
+                fonts.Where((x) => x.ToLower() == "moyskleytech.imageprocessing.fontlibrary.fonts." + lowered + ".bin").FirstOrDefault();
         }
         public static IEnumerable<string> GetFonts()
         {

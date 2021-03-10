@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MoyskleyTech.ImageProcessing.WinForm;
+using MoyskleyTech.ImageProcessing.Windows.Forms;
 using MoyskleyTech.ImageProcessing.Image;
 using System.IO;
 using Hjg.Pngcs;

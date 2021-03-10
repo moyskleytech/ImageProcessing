@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MoyskleyTech.ImageProcessing.Recognition.Border;
 using MoyskleyTech.ImageProcessing.Recognition.Shape;
-using MoyskleyTech.ImageProcessing.WinForm;
+using MoyskleyTech.ImageProcessing.Windows.Forms;
 namespace SobelExample
 {
     public class Program

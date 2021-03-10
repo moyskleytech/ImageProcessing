@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MoyskleyTech.ImageProcessing.Image;
-using MoyskleyTech.ImageProcessing.WinForm;
+using MoyskleyTech.ImageProcessing.Windows.Forms;
 
 namespace WinFormDemo_Multiple_Test_
 {
@@ -17,7 +17,8 @@ namespace WinFormDemo_Multiple_Test_
         public Printing()
         {
             InitializeComponent();
-            words = Properties.Resources.words.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            words = System.IO.File.ReadAllLines("Resources/words.txt");
+            //words = Properties.Resources.words.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private void Button1_Click(object sender, EventArgs e)

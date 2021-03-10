@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MoyskleyTech.ImageProcessing.WinForm;
+using MoyskleyTech.ImageProcessing.Windows.Forms;
 using MoyskleyTech.ImageProcessing.Image;
 using Bitmap = System.Drawing.Bitmap;
 using Graphics = System.Drawing.Graphics;
@@ -23,7 +23,7 @@ namespace WinFormDemo_Multiple_Test_
         int HEIGHT => pbRPG.Height;
         int MESSAGE_TOP => HEIGHT - MESSAGE_HEIGHT;
         int MESSAGE_HEIGHT => Math.Min(200 , HEIGHT / 3);
-        const string FONT_NAME = "POKEMON GB";
+        const string FONT_NAME = "Arial black";
         private Bitmap bmp;
         private Bitmap bmpTampon;
         private NativeGraphicsWrapper graphicsTampon;
@@ -93,8 +93,11 @@ namespace WinFormDemo_Multiple_Test_
         }
         private void CreateFrame()
         {
-            graphicsTampon.Clear(Pixels.Black);
-            ShowMessage(txt ?? "Welcome, this is a test message, very long test message that should get across multiple lines");
+            if ( rpgFont != null )
+            {
+                graphicsTampon.Clear(Pixels.Black);
+                ShowMessage(txt ?? "Welcome, this is a test message, very long test message that should get across multiple lines");
+            }
         }
 
 
