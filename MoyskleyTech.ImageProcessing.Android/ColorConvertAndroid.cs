@@ -20,7 +20,7 @@ namespace MoyskleyTech.ImageProcessing.Android
             return Pixel.FromArgb(src.ToArgb());
         }
 
-        internal static void RegisterIfNot()
+        public static void RegisterIfNot()
         {
             var convert =ColorConvert.GetConversionFrom<G.Color , Pixel>();
             if ( convert == null )

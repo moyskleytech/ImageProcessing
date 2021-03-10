@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MoyskleyTech.ImageProcessing.Android\MoyskleyTech.ImageProcessing.Android.csproj" />
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj" />
   </ItemGroup>
 

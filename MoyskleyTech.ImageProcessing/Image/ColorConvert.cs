@@ -816,7 +816,7 @@ namespace MoyskleyTech.ImageProcessing.Image
         }
         public static ARGB_16bit ToARGB_16bit(this Pixel p)
         {
-            return new ARGB_16bit() { A = ( ushort ) ( p.A << 8 ) , R = ( ushort ) ( p.R << 8 ) , G = ( ushort ) ( p.G << 8 ) , B = ( ushort ) ( p.B << 8 ) };
+            return new ARGB_16bit() { A = ( ushort ) ( p.A/255f * ushort.MaxValue ) , R = ( ushort ) ( p.R / 255f * ushort.MaxValue ) , G = ( ushort ) ( p.G / 255f * ushort.MaxValue ) , B = ( ushort ) ( p.B / 255f * ushort.MaxValue ) };
         }
         public static ARGB_16bit ToARGB_16bit(this ARGB_Float p)
         {
