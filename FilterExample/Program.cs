@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MoyskleyTech.ImageProcessing.WinForm;
+using MoyskleyTech.ImageProcessing.Windows.Forms;
 using MoyskleyTech.ImageProcessing.Filters;
 
 namespace FilterExample
@@ -34,10 +34,10 @@ namespace FilterExample
 
                 ShowImage(bmp , "squarified");
 
-                //bmp = ori.Clone();
-                //ColorReducer.FromKMeans(bmp , 10);
+                bmp = ori.Clone();
+                ColorReducer.FromKMeans(bmp , 10);
 
-                //ShowImage(bmp , "color reduced to 10");
+                ShowImage(bmp , "color reduced to 10");
 
                 //bmp = ori.Clone();
                 //ColorReducer.FromKMeans(bmp , 20);

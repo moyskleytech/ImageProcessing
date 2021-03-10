@@ -3,6 +3,8 @@ using MoyskleyTech.ImageProcessing.Recognition.Border;
 using MoyskleyTech.ImageProcessing.Recognition.Shape;
 using System;
 using MoyskleyTech.ImageProcessing;
+using MoyskleyTech.ImageProcessing.Recognition;
+
 namespace EllipseDetectionDemo
 {
     class Program
@@ -20,7 +22,7 @@ namespace EllipseDetectionDemo
                 var mn = r.Next(60,80);
                 var angle = 5.497;//r.NextDouble() * Math.PI * 2;
                 g.DrawRotatedEllipse(Pixels.Black , 100 , 100 ,mj,mn, angle);
-                var contours = ContourRecognition.Analyse<Pixel>(bitmap , (x) => x==Pixels.Black, false);
+                var contours = ContourRecognition.Analyse<Pixel>(bitmap , (x) => x==Pixels.Black, ContourRecognitionPointKeep.Border, ConnexMatching.Match8ConnexSelector);
                 g.DrawString(mj + ":" + mn + ":" + angle , Pixels.DodgerBlue , new PointF(0 , 0) , BaseFonts.Premia , 1);
                 foreach ( var ctr in contours )
                 {

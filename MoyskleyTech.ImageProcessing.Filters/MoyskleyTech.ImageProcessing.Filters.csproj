@@ -34,7 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoyskleyTech.ImageProcessing\MoyskleyTech.ImageProcessing.csproj" />
-    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Mathematics.csproj" />
+    <ProjectReference Include="..\MoyskleyTech.Mathematics\MoyskleyTech.Mathematics.csproj" />
   </ItemGroup>
 
   <ItemGroup>

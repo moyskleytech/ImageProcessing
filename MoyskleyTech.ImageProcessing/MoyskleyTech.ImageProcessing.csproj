@@ -36,7 +36,7 @@ To use any of the Codecs, simply write ImageProcessing.CodecNamespace.CodecName.
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\MoyskleyTech.Math\MoyskleyTech.Mathematics.csproj">
+    <ProjectReference Include="..\MoyskleyTech.Mathematics\MoyskleyTech.Mathematics.csproj">
       <Project>{db1e3f2b-b6fa-425a-a8c2-2a994303f05d}</Project>
       <Name>MoyskleyTech.Mathematics</Name>
     </ProjectReference>

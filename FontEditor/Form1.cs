@@ -10,8 +10,7 @@ using MoyskleyTech.ImageProcessing.Image;
 using MoyskleyTech.ImageProcessing;
 using Microsoft.VisualBasic;
 using System.Drawing.Text;
-using MoyskleyTech.ImageProcessing.WinForm;
-
+using MoyskleyTech.ImageProcessing.Windows.Forms;
 namespace FontEditor
 {
 
@@ -71,7 +70,32 @@ namespace FontEditor
 
         private void NouvelleToolStripMenuItem_Click(object sender , EventArgs e)
         {
-            current = new MoyskleyTech.ImageProcessing.Image.Font(Microsoft.VisualBasic.Interaction.InputBox("Quel nom?"));
+            current = new MoyskleyTech.ImageProcessing.Image.Font(InputBox("Quel nom?"));
+        }
+
+        private string InputBox(string v)
+        {
+            Form f = new Form();
+            
+            FlowLayoutPanel panel = new FlowLayoutPanel();
+            panel.FlowDirection = FlowDirection.TopDown;
+            panel.Dock = DockStyle.Fill;
+            f.Controls.Add(panel);
+            Label label = new Label();
+            label.Text = v;
+            panel.Controls.Add(label);
+            TextBox textBox = new TextBox();
+            textBox.Width = panel.Width;
+            panel.Controls.Add(textBox);
+
+            Button btnOk = new Button();
+            btnOk.Width = panel.Width;
+            btnOk.Text = "OK";
+            panel.Controls.Add(btnOk);
+            btnOk.Click += (s , e) => { f.DialogResult = DialogResult.OK; f.Close(); };
+
+            f.ShowDialog();
+            return f.DialogResult == DialogResult.OK? textBox.Text:null;
         }
 
         private void Button2_Click(object sender , EventArgs e)
@@ -82,8 +106,8 @@ namespace FontEditor
         private void BtnChangeSize_Click(object sender , EventArgs e)
         {
             string i1,i2;
-            i1 = Interaction.InputBox("Lignes");
-            i2 = Interaction.InputBox("Colonnes");
+            i1 = InputBox("Lignes");
+            i2 = InputBox("Colonnes");
 
             int w,h;
             h = int.Parse(i1);
